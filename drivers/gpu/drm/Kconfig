@@ -393,7 +393,7 @@ source "drivers/gpu/drm/tidss/Kconfig"
 
 source "drivers/gpu/drm/xlnx/Kconfig"
 
-source "../../vendor/qcom/opensource/display-drivers/msm/dp/Kconfig"
+source "drivers/gpu/drm/qcom-display/msm/dp/Kconfig"
 
 # Keep legacy drivers last
 

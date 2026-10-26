@@ -48,12 +48,12 @@ static void cam_sync_print_fence_table(void)
 	}
 }
 
-static inline __add_sync_manager_idx(int32_t sync_id, uint32_t sync_manager_idx)
+static inline int __add_sync_manager_idx(int32_t sync_id, uint32_t sync_manager_idx)
 {
 	return (sync_manager_idx << sync_dev->sync_manager_id_shift) | sync_id;
 }
 
-static inline get_sync_manager_idx(uint32_t sync_obj)
+static inline int get_sync_manager_idx(uint32_t sync_obj)
 {
 	return (sync_obj >> sync_dev->sync_manager_id_shift) & sync_dev->sync_manager_id_mask;
 }

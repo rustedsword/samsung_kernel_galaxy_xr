@@ -1,0 +1,39 @@
+# SPDX-License-Identifier: GPL-2.0-only
+menu "Samsung Galaxy XR vendor drivers"
+	depends on ARCH_ANORAK && m
+
+config GALAXYXR_AUDIO
+	tristate "Qualcomm audio DSP and codecs"
+	depends on SND_SOC
+
+config GALAXYXR_DISPLAY
+	tristate "Qualcomm SDE and Samsung XR displays"
+	depends on DRM && !DRM_MSM
+
+config GALAXYXR_CAMERA
+	tristate "Qualcomm Spectra and Samsung cameras"
+	depends on VIDEO_V4L2
+
+config GALAXYXR_VIDEO
+	tristate "Qualcomm Anorak video codec"
+	depends on VIDEO_V4L2
+
+config GALAXYXR_EVA
+	tristate "Qualcomm EVA computer vision accelerator"
+
+config GALAXYXR_MMRM
+	tristate "Qualcomm multimedia resource manager"
+
+config GALAXYXR_MMRM_TEST
+	tristate "Qualcomm multimedia resource manager tests"
+	depends on GALAXYXR_MMRM
+	default n
+
+config QCA_CLD_WLAN
+	tristate "Qualcomm Kiwi v2 WLAN (Samsung profile)"
+	depends on WLAN && CFG80211 && CNSS2
+	help
+	  Build wlan.ko using the supplied kiwi_v2 profile, including
+	  Samsung features. This needs the device's existing firmware.
+
+endmenu

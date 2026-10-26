@@ -1,0 +1,16 @@
+/out/
+/.config
+/.config.old
+/Module.symvers
+/System.map
+/vmlinux*
+/modules.order
+/include/generated/
+/include/config/
+*.o
+*.ko
+*.mod
+*.mod.c
+*.cmd
+.tmp_versions/
+/.tools/

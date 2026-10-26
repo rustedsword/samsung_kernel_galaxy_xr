@@ -13,5 +13,6 @@
   "vendor/qcom/opensource/wlan/qcacld-3.0": "drivers/net/wireless/qualcomm/qcacld-3.0",
   "vendor/qcom/opensource/wlan/qca-wifi-host-cmn": "drivers/net/wireless/qualcomm/qca-wifi-host-cmn",
   "vendor/qcom/opensource/wlan/fw-api": "drivers/net/wireless/qualcomm/fw-api",
-  "kernel_platform/external/dtc": "tools/vendor-dtc"
+  "kernel_platform/external/dtc": "tools/vendor-dtc",
+  "kernel_platform/common/Documentation/devicetree/bindings": "Documentation/devicetree/bindings"
 }

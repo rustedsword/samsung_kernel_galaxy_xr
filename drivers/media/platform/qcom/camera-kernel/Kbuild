@@ -1,3 +1,7 @@
+CAMERA_KERNEL_ROOT := $(srctree)/$(src)
+KERNEL_ROOT := $(srctree)
+TARGET_BOARD_PLATFORM := anorak
+
 # SPDX-License-Identifier: GPL-2.0-only
 
 ifeq ($(CONFIG_QCOM_CAMERA_DEBUG), y)

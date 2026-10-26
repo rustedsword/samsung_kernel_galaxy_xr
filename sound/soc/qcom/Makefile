@@ -29,3 +29,5 @@ obj-$(CONFIG_SND_SOC_QCOM_COMMON) += snd-soc-qcom-common.o
 
 #DSP lib
 obj-$(CONFIG_SND_SOC_QDSP6) += qdsp6/
+
+obj-$(CONFIG_GALAXYXR_AUDIO) += qdsp6-vendor/

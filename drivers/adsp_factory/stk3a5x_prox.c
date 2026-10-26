@@ -221,7 +221,7 @@ void set_prox_threshold(struct adsp_data *data, int type, int val)
 	mutex_unlock(&data->prox_factory_mutex);
 }
 
-static int calculate_nv1_prox_cal() {
+static int calculate_nv1_prox_cal(void) {
 	int sum = 0;
 	int prox_cal = 0;
 	int prox_offset = 0;

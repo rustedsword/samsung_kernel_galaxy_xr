@@ -2198,7 +2198,7 @@ int cam_sensor_power_down(struct cam_sensor_ctrl_t *s_ctrl)
 	return rc;
 }
 
-static void cam_dtof_safety_lock_register_write()
+static void cam_dtof_safety_lock_register_write(void)
 {
 	uint32_t value1, value2;
 

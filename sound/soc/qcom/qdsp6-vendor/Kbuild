@@ -1,1 +1,8 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# Use the supplied Anorak module configuration in this tree.
+export AUDIO_ROOT := $(srctree)/sound/soc/qcom/qdsp6-vendor
+export MODNAME := audio_dlkm
+export BOARD_PLATFORM := anorak
+include $(AUDIO_ROOT)/config/waipioauto.conf
+
 obj-y := dsp/ ipc/ soc/ asoc/ asoc/codecs/ asoc/codecs/lpass-cdc/ asoc/codecs/wsa883x/ asoc/codecs/wcd938x/ asoc/codecs/wcd937x/

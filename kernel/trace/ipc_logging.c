@@ -996,7 +996,7 @@ int ipc_log_context_destroy(void *ctxt)
 }
 EXPORT_SYMBOL(ipc_log_context_destroy);
 
-static int __init __create_dummy_ipc_context()
+static int __init __create_dummy_ipc_context(void)
 {
 	if (sec_debug_is_enabled())
 			return 0;

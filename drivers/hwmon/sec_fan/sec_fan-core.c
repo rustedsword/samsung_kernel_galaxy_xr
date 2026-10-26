@@ -505,7 +505,7 @@ static struct thermal_cooling_device_ops sec_fan1_cooling_ops = {
 	.set_cur_state = sec_fan_set_cur_state,
 };
 
-static void sec_fan_register_thermal_cooling_device() {
+static void sec_fan_register_thermal_cooling_device(void) {
 	struct thermal_cooling_device *cdev;
         // Cooling device name should be matched with cdev_map in thermalCommon.cpp.
 	cdev = thermal_cooling_device_register(

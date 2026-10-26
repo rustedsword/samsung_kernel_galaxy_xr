@@ -1,3 +1,5 @@
+export EVA_ROOT := $(srctree)/drivers/media/platform/qcom/eva-kernel
+
 # SPDX-License-Identifier: GPL-2.0-only
 
 CONFIG_BUILD_VENDORSI := true

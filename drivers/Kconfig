@@ -264,4 +264,6 @@ source "drivers/sti/Kconfig"
 # System S/W Performance, kperfmon
 source "drivers/kperfmon/Kconfig"
 
+source "drivers/platform/galaxyxr/Kconfig"
+
 endmenu

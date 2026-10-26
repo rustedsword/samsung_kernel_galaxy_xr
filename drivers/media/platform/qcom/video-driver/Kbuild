@@ -1,3 +1,6 @@
+VIDEO_ROOT := $(srctree)/$(src)
+BOARD_PLATFORM := anorak
+
 # SPDX-License-Identifier: GPL-2.0-only
 
 KBUILD_CPPFLAGS += -DCONFIG_MSM_MMRM=1

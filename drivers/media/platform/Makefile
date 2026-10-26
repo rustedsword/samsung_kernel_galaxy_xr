@@ -82,3 +82,7 @@ obj-$(CONFIG_VIDEO_QCOM_VENUS)		+= qcom/venus/
 obj-y					+= sunxi/
 
 obj-y					+= msm/
+
+obj-$(CONFIG_GALAXYXR_CAMERA) += qcom/camera-kernel/
+obj-$(CONFIG_GALAXYXR_VIDEO) += qcom/video-driver/
+obj-$(CONFIG_GALAXYXR_EVA) += qcom/eva-kernel/
