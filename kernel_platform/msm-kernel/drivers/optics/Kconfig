@@ -6,8 +6,9 @@ config SENSORS_STK6D2X
 	  This driver can also be built as a module.
 	  If so, the module will be called flicker_sensor.
 
-config FLICKER_PWM_CALIBRATION
-	bool "Support Flicker OSC Calibration"
+config FLICKER_ANTI_ALIASING
+	bool "Flicker Anti-Aliasing"
+	default y
 	help
-	  Using PWM pulse, Enhance resolution accuracy
-	  This config just enable sensor side functions.
+	  This module calculate frequency with multi samplerate of flicker sensor
+	  It needs multiple samplerate settings in flicker sensor

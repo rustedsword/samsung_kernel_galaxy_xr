@@ -1,6 +1,11 @@
 /*
- * Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+ * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
  * SPDX-License-Identifier: BSD-3-Clause-Clear
+ *//**
+ * @file CacV2ConfigExt.aidl
+ * @brief Struct for the CAC V2 extended configurations
+ *
+ * This structure holds the extended configuration parameters for the CAC V2 algorithm.
  */
 ///////////////////////////////////////////////////////////////////////////////
 // THIS FILE IS IMMUTABLE. DO NOT EDIT IN ANY CASE.                          //

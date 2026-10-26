@@ -1154,6 +1154,9 @@ static void s2mm006_int_factory_rid(void *data, int mode)
 				else
 					;
 			} else if (mode == S2MM006_RID) {
+#if IS_ENABLED(CONFIG_SEC_FACTORY)
+				s2mm006_muic_rid_det_isr(usbpd_data->muic_data);
+#endif
 				if (rid == RID_OPEN)
 					pdic_policy_send_msg(usbpd_data->pp_data, MSG_UOPEN, 0, 0);
 				else if (rid == RID_301K)

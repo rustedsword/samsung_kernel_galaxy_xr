@@ -908,7 +908,7 @@ static ssize_t antibanding_show(struct device *dev, struct device_attribute *att
 			antibanding_data = ANTIBANDING_MODE_AUTO; //for Arbitrary flicker feature
 		}
 	}
-	else if(data->flicker >= 240 && data->flicker <= 1020)
+	else if(data->flicker >= 240 && data->flicker <= 10000)
 	{
 		if(previous_data == ANTIBANDING_MODE_60HZ && 
 			(data->flicker == 240 || data->flicker == 288 || data->flicker == 330 || data->flicker == 360 || data->flicker == 480))

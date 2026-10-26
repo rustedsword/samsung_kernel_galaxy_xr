@@ -26,13 +26,42 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
  * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+/*
+ * Changes from Qualcomm Technologies, Inc. are provided under the following license:
+ * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+ * SPDX-License-Identifier: BSD-3-Clause-Clear
+ */
 
+/**
+ * @file Rect.aidl
+ * @brief Struct representing a rectangle with left, top, right, and bottom coordinates
+ *
+ * This struct defines the position of a rectangle on the display.
+ */
 package vendor.qti.hardware.display.config;
 
 @VintfStability
+/**
+ * @brief Rect
+ */
 parcelable Rect {
+    /**
+     * @brief Left-most pixel coordinate
+     */
     int left;
+
+    /**
+     * @brief Top-most pixel coordinate
+     */
     int top;
+
+    /**
+     * @brief Right-most pixel coordinate
+     */
     int right;
+
+    /**
+     * @brief Bottom-most pixel coordinate
+     */
     int bottom;
 }

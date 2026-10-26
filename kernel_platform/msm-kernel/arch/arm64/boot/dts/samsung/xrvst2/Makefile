@@ -39,6 +39,7 @@ SEC_XRVST2_USA_OPEN_DTBO := \
 		anorak-sec-xrvst2-usa-open-overlay-r20.dtbo \
 		anorak-sec-xrvst2-usa-open-overlay-r21.dtbo \
 		anorak-sec-xrvst2-usa-open-overlay-r22.dtbo \
+		anorak-sec-xrvst2-usa-open-overlay-r25.dtbo \
 		anorak-sec-xrvst2-kor-open-overlay-r25.dtbo
 
 $(eval $(call sec_dtbo_build, \

@@ -382,7 +382,57 @@ def main(argv):
   parser.add_argument('--version', action='version', version=__version__)
   args = parser.parse_args()
 
-  build_helper(args.image, args.qssi_build_path, args.target_build_path, args.merged_build_path, OUT_DIST, args.target_lunch, args.output_ota, args.skip_qiifa, args.no_tmp, args.keep_tmp)
+  global QSSI_TARGET, OUT_QSSI, QSSI_TARGET_FILES_ZIP
+
+  # use this dict to pair target lunch options with their corresponding qssi type.
+  vendor_qssi_mapping_dict = {
+    "qssi"      : ["holi", "taro", "kalama", "lahaina", "sdm710", "sdm845", "msmnile", "sm6150", "kona", "atoll", "trinket", "lito", "bengal", "parrot", "bengal_515", "bengal_515s", "crow", "anorak"],
+    "qssi_32"   : ["bengal_32"],
+    "qssi_32go" : ["bengal_32go", "msm8937_lily", "pitti_32go", "bengal_515_32go", "bengal_515s_32go"],
+    "qssi_64"   : ["kalama64", "pineapple", "blair", "sun", "pitti", "volcano", "anorak61"],
+    "qssi_xrM"  : ["niobe"],
+    "qssi_sdg"  : ["capri"],
+    "qssi_lite"  : ["neo"],
+    "qssi_xrl" : ["seraph", "neo61"],
+  }
+
+  if args.target_lunch   in vendor_qssi_mapping_dict['qssi']:
+    QSSI_TARGET="qssi"
+  elif args.target_lunch in vendor_qssi_mapping_dict['qssi_32go']:
+    QSSI_TARGET="qssi_32go"
+  elif args.target_lunch in vendor_qssi_mapping_dict['qssi_32']:
+    QSSI_TARGET="qssi_32"
+  elif args.target_lunch in vendor_qssi_mapping_dict['qssi_64']:
+    QSSI_TARGET="qssi_64"
+  elif args.target_lunch in vendor_qssi_mapping_dict['qssi_xrM']:
+    QSSI_TARGET="qssi_xrM"
+  elif args.target_lunch in vendor_qssi_mapping_dict['qssi_xrl']:
+    QSSI_TARGET="qssi_xrl"
+  elif args.target_lunch in vendor_qssi_mapping_dict['qssi_sdg']:
+    QSSI_TARGET="qssi_sdg"
+  elif args.target_lunch in vendor_qssi_mapping_dict['qssi_lite']:
+    QSSI_TARGET="qssi_lite"
+  else:
+    print("ERROR: Unrecognized target_lunch input. Need to add lunch option to the vendor_qssi_matching_dict")
+    return
+
+  OUT_QSSI = OUT_PREFIX + QSSI_TARGET + "/"
+  QSSI_TARGET_FILES_ZIP = QSSI_TARGET + "-target_files-*.zip"
+
+  if args.image == "super":
+    call_func_with_temp_dir(
+        lambda temp_dir: build_superimage(
+            temp_dir=temp_dir,
+            qssi_build_path=os.path.abspath(args.qssi_build_path),
+            target_build_path=os.path.abspath(args.target_build_path),
+            merged_build_path=os.path.abspath(args.merged_build_path),
+            target_lunch=args.target_lunch,
+            output_ota=args.output_ota,
+            skip_qiifa=args.skip_qiifa,
+            no_tmp=args.no_tmp), args.keep_tmp, args.no_tmp, os.path.abspath(args.merged_build_path))
+  else:
+    logging.error("No support to build \"" + args.image + "\" image, exiting..")
+  logging.info("Completed Successfully!")
 
 if __name__ == '__main__':
   main()

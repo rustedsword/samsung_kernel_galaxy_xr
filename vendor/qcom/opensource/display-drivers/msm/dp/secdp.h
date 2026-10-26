@@ -52,6 +52,7 @@
 /*#define SECDP_TEST_HDCP2P2_REAUTH*/
 /*#define NOT_SUPPORT_DEX_RES_CHANGE*/
 #define SECDP_MBF_WA
+/*#define SECDP_DEFAULT_DISABLE*/
 
 #define DPCD_IEEE_OUI			0x500
 #define DPCD_DEVID_STR			0x503
@@ -422,6 +423,9 @@ struct secdp_misc {
 	struct delayed_work poor_discon_work;
 #ifdef SECDP_MBF_WA
 	bool mbf_wa;          /* true by default, false for debug only */
+#endif
+#ifdef SECDP_DEFAULT_DISABLE
+	bool func_enable;    /* default false */
 #endif
 
 	bool cable_connected; /* previously known as "cable_connected_phy" */

@@ -400,6 +400,15 @@ static inline bool is_hevc_10bit_decode_session(struct msm_vidc_inst *inst)
 				is10bit;
 }
 
+static inline bool is_multi_view_session(struct msm_vidc_inst *inst)
+{
+	return (inst->codec == MSM_VIDC_HEVC &&
+		(inst->capabilities->cap[PROFILE].value ==
+		V4L2_MPEG_VIDEO_HEVC_PROFILE_MULTIVIEW_MAIN ||
+		inst->capabilities->cap[PROFILE].value ==
+		V4L2_MPEG_VIDEO_HEVC_PROFILE_MULTIVIEW_MAIN_10));
+}
+
 const char *cap_name(enum msm_vidc_inst_capability_type cap_id);
 const char *v4l2_pixelfmt_name(u32 pixelfmt);
 const char *v4l2_type_name(u32 port);

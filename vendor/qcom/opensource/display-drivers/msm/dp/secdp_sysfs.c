@@ -103,13 +103,17 @@ static CLASS_ATTR_WO(dp_sbu_sw_sel);
 #endif
 
 #define SECDP_DEX_ADAPTER_SKIP	"SkipAdapterCheck"
+#ifdef SECDP_DEFAULT_DISABLE
+#define SECDP_FUNC_ENABLE       "secdp_enable"
+#endif
 
 static ssize_t dex_show(struct class *class,
 				struct class_attribute *attr, char *buf)
 {
 	struct secdp_sysfs_private *sysfs = g_secdp_sysfs;
-	struct secdp_dex *dex = &sysfs->sec->dex;
 	int rc = 0;
+#ifndef SECDP_DEFAULT_DISABLE
+	struct secdp_dex *dex = &sysfs->sec->dex;
 
 	if (!secdp_get_cable_status() || !secdp_get_hpd_status() ||
 			secdp_get_poor_connection_status() ||
@@ -125,7 +129,9 @@ static ssize_t dex_show(struct class *class,
 
 	if (dex->status == DEX_MODE_CHANGING)
 		dex->status = dex->curr;
-
+#else
+	rc = scnprintf(buf, PAGE_SIZE, "%d\n", sysfs->sec->func_enable);
+#endif
 	return rc;
 }
 
@@ -194,6 +200,30 @@ static ssize_t dex_store(struct class *class,
 		goto exit;
 	}
 	mutex_unlock(&sec->hmd.lock);
+
+#ifdef SECDP_DEFAULT_DISABLE
+	if (len && !strncmp(SECDP_FUNC_ENABLE, tok, len)) {
+		int param = 0, sz = 0, ret;
+
+		tok = strsep(&p, ",");
+		if (!tok) {
+			DP_ERR("wrong input!\n");
+			goto exit;
+		}
+		sz  = strlen(tok);
+		ret = kstrtouint(tok, 2, &param);
+		if (ret) {
+			DP_ERR("error:%d\n", ret);
+			goto exit;
+		}
+
+		DP_INFO("[%s] param:%d sz:%d ret:%d\n", SECDP_FUNC_ENABLE,
+			param, sz, ret);
+
+		sec->func_enable = param ? true : false;
+		goto exit;
+	}
+#endif
 
 	if (len && !strncmp(SECDP_DEX_ADAPTER_SKIP, tok, len)) {
 		int param = 0, sz = 0, ret;

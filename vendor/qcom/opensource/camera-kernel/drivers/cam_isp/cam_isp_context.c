@@ -1247,7 +1247,7 @@ static int __cam_isp_ctx_enqueue_init_request(
 			req_isp_old->hw_update_data.mup_val = req_isp_new->hw_update_data.mup_val;
 			req_old->request_id = req->request_id;
 
-			 list_add_tail(&req->list, &ctx->free_req_list);
+			list_add_tail(&req->list, &ctx->free_req_list);
 		}
 	} else {
 		CAM_WARN(CAM_ISP,
@@ -4866,7 +4866,7 @@ static int cam_isp_ctx_reapply_iq_config(struct cam_context *ctx, struct cam_ctx
 		}
 	} else if (rc == -EALREADY) {
 		list_del_init(&req->list);
-		list_add(&req->list, &ctx->free_req_list);
+		__cam_isp_ctx_move_req_to_free_list(ctx, req);
 		CAM_DBG(CAM_REQ, "move request %lld to free list ctx %u",
 			req->request_id, ctx->ctx_id);
 	} else {
@@ -9902,7 +9902,7 @@ static int __cam_isp_ctx_no_crm_apply(struct cam_isp_context *ctx_isp,
 		__cam_isp_ctx_send_req_error(ctx_isp, req_isp);
 		mutex_lock(&ctx_isp->isp_mutex);
 		list_del_init(&req->list);
-		list_add_tail(&req->list, &cam_ctx->free_req_list);
+		__cam_isp_ctx_move_req_to_free_list(cam_ctx, req);
 		mutex_unlock(&ctx_isp->isp_mutex);
 		return -EBUSY;
 	}

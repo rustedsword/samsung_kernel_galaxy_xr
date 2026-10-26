@@ -318,6 +318,7 @@ extern int s2mm006_muic_remove(struct s2mm006_muic_data *muic_data);
 extern void s2mm006_muic_shutdown(struct s2mm006_muic_data *muic_data);
 extern int s2mm006_muic_suspend(struct s2mm006_muic_data *muic_data);
 extern int s2mm006_muic_resume(struct s2mm006_muic_data *muic_data);
+extern void s2mm006_muic_rid_det_isr(struct s2mm006_muic_data *muic_data);
 extern void process_muic(struct s2mm006_muic_data *muic_data, u8 irq);
 #else
 static inline void s2mm006_muic_dcd_rescan(struct s2mm006_muic_data *muic_data) {}
@@ -334,6 +335,7 @@ static inline int s2mm006_muic_suspend(struct s2mm006_muic_data *muic_data)
 	{return 0; }
 static inline int s2mm006_muic_resume(struct s2mm006_muic_data *muic_data)
 	{return 0; }
+static inline void s2mm006_muic_rid_det_isr(struct s2mm006_muic_data *muic_data) {}
 static inline void process_muic(struct s2mm006_muic_data *muic_data, u8 irq) {}
 #endif
 #endif /* __S2MM006_MUIC_H__ */

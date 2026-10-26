@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2021, The Linux Foundation. All rights reserved.
- * Copyright (c) 2022-2023, 2025 Qualcomm Innovation Center, Inc. All rights reserved.
+ * Copyright (c) 2022-2025 Qualcomm Innovation Center, Inc. All rights reserved.
  */
 
 #include "cam_tpg_core.h"
@@ -387,9 +387,12 @@ static int cam_tpg_validate_cmd_descriptor(
 {
 	int rc = 0;
 	uintptr_t generic_ptr;
-	size_t len_of_buff = 0;
-	uint32_t                *cmd_buf = NULL;
-	struct tpg_command_header_t *cmd_header = NULL;
+	size_t            len_of_buff                 = 0;
+	size_t            remain_len                  = 0;
+	ssize_t           cmd_header_size             = 0;
+	uint32_t          *cmd_buf                    = NULL;
+	struct tpg_command_header_t *cmd_header_user  = NULL;
+	struct tpg_command_header_t *cmd_header       = NULL;
 
 	if (!cmd_desc || !cmd_type || !cmd_addr)
 		return -EINVAL;
@@ -425,6 +428,62 @@ static int cam_tpg_validate_cmd_descriptor(
 		rc = -EINVAL;
 		goto end;
 	}
+	remain_len = len_of_buff - cmd_desc->offset;
+
+	if ((cmd_desc->size > remain_len) ||
+		(cmd_desc->length > cmd_desc->size)) {
+		CAM_ERR(CAM_TPG,"Got Invalid command descriptor"
+			"cmd desc size: %zu remain len: %zu cmd desc length: %zu",
+			cmd_desc->size,
+			remain_len,
+			cmd_desc->length);
+		rc = -EINVAL;
+		goto end;
+	}
+
+	if (remain_len < sizeof(struct tpg_command_header_t)) {
+		CAM_ERR(CAM_TPG, "Got invalid cmd descriptor buffer size"
+			"remain len: %zu TPG command header size: %zu",
+			remain_len,
+			sizeof(struct tpg_command_header_t));
+		rc = -EINVAL;
+		goto end;
+	}
+
+	cmd_buf = (uint32_t *)generic_ptr;
+	cmd_buf += cmd_desc->offset / sizeof(uint32_t);
+	cmd_header_user = (struct tpg_command_header_t *)cmd_buf;
+
+	cmd_header_size = cmd_header_user->size;
+
+	/* Check for cmd_header_size overflow or underflow condition */
+	if ((cmd_header_size < 0) ||
+		((SIZE_MAX - cmd_header_size) < cmd_desc->offset)) {
+		CAM_ERR(CAM_TPG, "Got invalid cmd header size"
+			"cmd header size: %zu,cmd desc offset: %d",
+			cmd_header_size,
+			cmd_desc->offset);
+		rc = -EINVAL;
+		goto end;
+	}
+
+	if ((cmd_desc->offset + (size_t)cmd_header_size) > len_of_buff) {
+		CAM_ERR(CAM_TPG, "Cmd header offset mismatch"
+			"cmd desc offset: %d cmd header size: %zu len of buff: %zu",
+			cmd_desc->offset,
+			cmd_header_size,
+			len_of_buff);
+		rc = -EINVAL;
+		goto end;
+	}
+
+	cmd_header = kmemdup(cmd_header_user, cmd_header_size, GFP_KERNEL);
+	if (!cmd_header) {
+		CAM_ERR(CAM_TPG, "Local cmd_header mem allocation failed");
+		rc = -ENOMEM;
+		goto end;
+	}
+	cmd_header->size = cmd_header_size;
 
 	switch (cmd_header->cmd_type) {
 	case TPG_CMD_TYPE_GLOBAL_CONFIG: {
@@ -522,6 +581,7 @@ static int cam_tpg_cmd_buf_parse(
 			rc = -EINVAL;
 			break;
 		}
+		kfree((void *)cmd_addr);
 	}
 end:
 	return rc;
@@ -590,12 +650,12 @@ static int cam_tpg_packet_parse(
 
 		if (csl_packet->num_cmd_buf <= 0) {
 			rc = -EINVAL;
-			goto end;
+			goto free_kdup;
 		}
 		rc = cam_tpg_cmd_buf_parse(tpg_dev, csl_packet);
 		if (rc < 0) {
 			CAM_ERR(CAM_TPG, "CMD buffer parse failed");
-			goto end;
+			goto free_kdup;
 		}
 		CAM_DBG(CAM_TPG, "TPG[%d] External Trigger request id: %llu",
 					tpg_dev->soc_info.index,

@@ -481,7 +481,7 @@ int32_t cam_actuator_i2c_pkt_parse(struct cam_actuator_ctrl_t *a_ctrl,
 	rc = cam_packet_util_copy_pkt_to_kmd(csl_packet_u, &csl_packet, remain_len);
 	if (rc) {
 		CAM_ERR(CAM_ACTUATOR, "Copying packet to KMD failed");
-		goto end;
+		goto put_buf;
 	}
 
 	CAM_DBG(CAM_ACTUATOR, "Pkt opcode: %d",	csl_packet->header.op_code);

@@ -56,6 +56,9 @@
 #include "debug-ipc.h"
 #include <linux/usb/typec/maxim/max77705_usbc.h>
 #include <linux/usb/typec/maxim/max77705_alternate.h>
+#if IS_ENABLED(CONFIG_USB_NOTIFY_LAYER)
+#include <linux/usb_notify.h>
+#endif
 #if IS_ENABLED(CONFIG_IF_CB_MANAGER)
 #include <linux/usb/typec/manager/if_cb_manager.h>
 #endif
@@ -4796,7 +4799,7 @@ static ssize_t mode_store(struct device *dev, struct device_attribute *attr,
 	else if (sysfs_streq(buf, "host"))
 		role = USB_ROLE_HOST;
 
-#ifdef CONFIG_USB_NOTIFIER
+#if IS_ENABLED(CONFIG_USB_NOTIFY_LAYER)
 	if (role == USB_ROLE_DEVICE) {
 		if (is_blocked(get_otg_notify(), NOTIFY_BLOCK_TYPE_CLIENT)) {
 			dev_err(dev, "blocked peripheral mode\n");
@@ -6394,18 +6397,28 @@ static int dwc3_otg_start_host(struct dwc3_msm *mdwc, int on)
 			dwc3_msm_clear_dp_only_params(mdwc);
 		}
 
-		usb_role_switch_set_role(mdwc->dwc3_drd_sw, USB_ROLE_DEVICE);
-		if (dwc->dr_mode == USB_DR_MODE_OTG)
-			flush_work(&dwc->drd_work);
-
-		usb_phy_notify_disconnect(mdwc->hs_phy, USB_SPEED_HIGH);
+		/*
+		 * Performing phy disconnect before flush work to
+		 * address TypeC certification--TD 4.7.4 failure.
+		 * In order to avoid any controller start/halt
+		 * sequences, switch to the UTMI as the clk source
+		 * as the notify_disconnect() callback to the QMP
+		 * PHY will power down the PIPE clock.
+		 */
+		dwc3_msm_switch_utmi(mdwc, true);
 		if (mdwc->ss_phy->flags & PHY_HOST_MODE) {
 			usb_phy_notify_disconnect(mdwc->ss_phy,
 					USB_SPEED_SUPER);
 			mdwc->ss_phy->flags &= ~PHY_HOST_MODE;
 		}
 		usb_redriver_notify_disconnect(mdwc->redriver);
+		usb_phy_notify_disconnect(mdwc->hs_phy, USB_SPEED_HIGH);
 
+		usb_role_switch_set_role(mdwc->dwc3_drd_sw, USB_ROLE_DEVICE);
+		if (dwc->dr_mode == USB_DR_MODE_OTG)
+			flush_work(&dwc->drd_work);
+
+		dwc3_msm_switch_utmi(mdwc, false);
 		mdwc->hs_phy->flags &= ~PHY_HOST_MODE;
 		usb_unregister_notify(&mdwc->host_nb);
 

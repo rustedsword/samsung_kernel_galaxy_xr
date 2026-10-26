@@ -169,9 +169,6 @@ if [ -z "${ANDROID_KP_OUT_DIR}" ]; then
   fi
 fi
 
-echo "Workaround, wipe ANDROID_KP_OUT_DIR: ${ANDROID_KP_OUT_DIR} to force a clean build."
-rm -rf ${ANDROID_KP_OUT_DIR}
-
 # Clean up temporary KP output directory
 rm -rf ${TEMP_KP_OUT_DIR}
 trap - EXIT
@@ -339,9 +336,6 @@ if [ -n "${ANDROID_PRODUCT_OUT}" ] && [ -n "${ANDROID_BUILD_TOP}" ]; then
   # redundantly do the same thing.
   ANDROID_EXT_MODULES_COMMON_OUT=${ANDROID_PRODUCT_OUT}/obj/DLKM_OBJ
   ANDROID_EXT_MODULES_OUT=${ANDROID_EXT_MODULES_COMMON_OUT}/kernel_platform
-
-  echo "Workaround, wipe ANDROID_EXT_MODULES_COMMON_OUT: ${ANDROID_EXT_MODULES_COMMON_OUT} to force a clean build."
-  rm -rf ${ANDROID_EXT_MODULES_COMMON_OUT}
 
   ################################################################################
   echo

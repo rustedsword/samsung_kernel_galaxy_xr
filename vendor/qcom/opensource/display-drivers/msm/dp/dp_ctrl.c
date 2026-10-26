@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /*
- * Copyright (c) 2022-2023 Qualcomm Innovation Center, Inc. All rights reserved.
+ * Copyright (c) 2022-2023, 2025 Qualcomm Innovation Center, Inc. All rights reserved.
  * Copyright (c) 2012-2021, The Linux Foundation. All rights reserved.
  */
 
@@ -1358,6 +1358,7 @@ static bool dp_ctrl_channel_eq_ok(struct dp_ctrl_private *ctrl)
 
 	return drm_dp_channel_eq_ok(link_status, num_lanes);
 }
+
 
 static int dp_ctrl_stream_on(struct dp_ctrl *dp_ctrl, struct dp_panel *panel)
 {

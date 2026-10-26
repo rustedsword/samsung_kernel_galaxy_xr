@@ -682,6 +682,10 @@ static int thermal_max_notifier_call(struct notifier_block *nb, unsigned long va
 	if (pwr->rt_pwrlevel_hint != INVALID_DCVS_IDX)
 		device->ftbl->set_thermal_index(device);
 
+	/* If RT hint is active, send thermal constraint to GMU */
+	if (pwr->rt_pwrlevel_hint != INVALID_DCVS_IDX)
+		device->ftbl->set_thermal_index(device);
+
 	/* Update the current level using the new limit */
 	kgsl_pwrctrl_pwrlevel_change(device, pwr->active_pwrlevel);
 

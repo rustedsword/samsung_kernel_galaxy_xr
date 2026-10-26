@@ -2830,6 +2830,74 @@ static ssize_t rear6_camera_hw_param_store(struct device *dev,
 	return size;
 }
 
+static ssize_t rear7_camera_hw_param_show(struct device *dev,
+	struct device_attribute *attr, char *buf)
+{
+	int rc = 0;
+	struct cam_hw_param *ec_param = NULL;
+	SYS_INFO(" enter ");
+	hw_bigdata_get_hw_param(&ec_param, HW_PARAM_REAR7);
+
+	if (ec_param != NULL) {
+		rc = fill_hw_bigdata_sysfs_node(buf, ec_param, rear7_module_id, hall_info_rear, HW_PARAM_REAR7);
+	}
+
+	if (rc)
+		return rc;
+	return 0;
+}
+
+static ssize_t rear7_camera_hw_param_store(struct device *dev,
+	struct device_attribute *attr, const char *buf, size_t size)
+{
+	struct cam_hw_param *ec_param = NULL;
+
+	SYS_INFO("[R] buf : %s\n", buf);
+
+	if (!strncmp(buf, "c", 1)) {
+		hw_bigdata_get_hw_param(&ec_param, HW_PARAM_REAR7);
+		if (ec_param != NULL) {
+			hw_bigdata_init_err_cnt_file(ec_param);
+		}
+	}
+
+	return size;
+}
+
+static ssize_t rear8_camera_hw_param_show(struct device *dev,
+	struct device_attribute *attr, char *buf)
+{
+	int rc = 0;
+	struct cam_hw_param *ec_param = NULL;
+	SYS_INFO(" enter ");
+	hw_bigdata_get_hw_param(&ec_param, HW_PARAM_REAR8);
+
+	if (ec_param != NULL) {
+		rc = fill_hw_bigdata_sysfs_node(buf, ec_param, rear8_module_id, hall_info_rear, HW_PARAM_REAR8);
+	}
+
+	if (rc)
+		return rc;
+	return 0;
+}
+
+static ssize_t rear8_camera_hw_param_store(struct device *dev,
+	struct device_attribute *attr, const char *buf, size_t size)
+{
+	struct cam_hw_param *ec_param = NULL;
+
+	SYS_INFO("[R] buf : %s\n", buf);
+
+	if (!strncmp(buf, "c", 1)) {
+		hw_bigdata_get_hw_param(&ec_param, HW_PARAM_REAR8);
+		if (ec_param != NULL) {
+			hw_bigdata_init_err_cnt_file(ec_param);
+		}
+	}
+
+	return size;
+}
+
 static ssize_t front_camera_hw_param_show(struct device *dev,
 	struct device_attribute *attr, char *buf)
 {
@@ -3049,6 +3117,83 @@ static ssize_t rear_camera_wifi_info_store(struct device *dev,
 	SYS_INFO("[HWB] buf : %s\n", buf);
 	scnprintf(wifi_info, sizeof(wifi_info), "%s", buf);
 
+	return size;
+}
+
+static ssize_t common_camera_hw_param_show(struct device *dev,
+    struct device_attribute *attr, char *buf)
+{
+	int rc = 0, hw_param_id = 0, buf_idx=0, hw_param_idx=0, len=0;
+    char hw_param_buf[PAGE_SIZE];
+	struct cam_hw_param *ec_param = NULL;
+
+    for(hw_param_id = HW_PARAM_REAR; hw_param_id<=HW_PARAM_REAR8 && buf_idx<(PAGE_SIZE-1); hw_param_id++)
+    {
+        ec_param = NULL;
+        len = 0;
+        hw_bigdata_get_hw_param(&ec_param, hw_param_id);
+        if(ec_param == NULL)
+        {
+            continue;
+        }
+        switch(hw_param_id)
+        {
+            case HW_PARAM_REAR:
+                len = fill_hw_bigdata_sysfs_node(hw_param_buf, ec_param, rear_module_id, hall_info_rear, hw_param_id);
+                break;
+            case HW_PARAM_REAR2:
+                len = fill_hw_bigdata_sysfs_node(hw_param_buf, ec_param, rear2_module_id, hall_info_rear, hw_param_id);
+                break;
+            case HW_PARAM_REAR3:
+                len = fill_hw_bigdata_sysfs_node(hw_param_buf, ec_param, rear3_module_id, hall_info_rear, hw_param_id);
+                break;
+            case HW_PARAM_REAR4:
+                len = fill_hw_bigdata_sysfs_node(hw_param_buf, ec_param, rear4_module_id, hall_info_rear, hw_param_id);
+                break;
+            case HW_PARAM_REAR5:
+                len = fill_hw_bigdata_sysfs_node(hw_param_buf, ec_param, rear5_module_id, hall_info_rear, hw_param_id);
+                break;
+            case HW_PARAM_REAR6:
+                len = fill_hw_bigdata_sysfs_node(hw_param_buf, ec_param, rear6_module_id, hall_info_rear, hw_param_id);
+                break;
+            case HW_PARAM_REAR7:
+                len = fill_hw_bigdata_sysfs_node(hw_param_buf, ec_param, rear7_module_id, hall_info_rear, hw_param_id);
+                break;
+            case HW_PARAM_REAR8:
+                len = fill_hw_bigdata_sysfs_node(hw_param_buf, ec_param, rear8_module_id, hall_info_rear, hw_param_id);
+                break;
+            default:
+                continue;
+                
+        }
+        hw_param_idx = 0;
+        while(hw_param_idx<len && buf_idx<(PAGE_SIZE-1))
+        {
+            buf[buf_idx] = hw_param_buf[hw_param_idx];
+            hw_param_idx++;
+            buf_idx++;
+        }
+        rc+=len;
+            
+    }
+    buf[buf_idx] = '\0';
+ 
+	if (rc)
+		return rc;
+	return 0;
+}
+
+static ssize_t common_camera_hw_param_store(struct device *dev,
+	struct device_attribute *attr, const char *buf, size_t size)
+{
+	uint32_t camera_id = 0;
+	kstrtouint(buf, 10, &camera_id);
+	SYS_INFO("[SUPPORT_DBG] buf : [%s] camera_id[%d]\n", buf, camera_id);
+	if(camera_id < SEC_SENSOR_ID_MAX)
+	{
+		hw_bigdata_i2c_from_sensor_id(camera_id);
+		hw_bigdata_i2c_from_eeprom_id(camera_id);
+	}
 	return size;
 }
 
@@ -8890,6 +9035,10 @@ static DEVICE_ATTR(rear5_hwparam, S_IRUGO|S_IWUSR|S_IWGRP,
 	rear5_camera_hw_param_show, rear5_camera_hw_param_store);
 static DEVICE_ATTR(rear6_hwparam, S_IRUGO|S_IWUSR|S_IWGRP,
 	rear6_camera_hw_param_show, rear6_camera_hw_param_store);
+static DEVICE_ATTR(rear7_hwparam, S_IRUGO|S_IWUSR|S_IWGRP,
+	rear7_camera_hw_param_show, rear7_camera_hw_param_store);
+static DEVICE_ATTR(rear8_hwparam, S_IRUGO|S_IWUSR|S_IWGRP,
+	rear8_camera_hw_param_show, rear8_camera_hw_param_store);
 static DEVICE_ATTR(front_hwparam, S_IRUGO|S_IWUSR|S_IWGRP,
 	front_camera_hw_param_show, front_camera_hw_param_store);
 static DEVICE_ATTR(front2_hwparam, S_IRUGO|S_IWUSR|S_IWGRP,
@@ -8904,6 +9053,10 @@ static DEVICE_ATTR(rear2_tof_hwparam, S_IRUGO|S_IWUSR|S_IWGRP,
 	rear2_tof_camera_hw_param_show, rear2_tof_camera_hw_param_store);
 static DEVICE_ATTR(cam_wifi_info, S_IRUGO|S_IWUSR|S_IWGRP,
 	rear_camera_wifi_info_show, rear_camera_wifi_info_store);
+
+static DEVICE_ATTR(common_hwparam, S_IRUGO|S_IWUSR|S_IWGRP,
+	common_camera_hw_param_show, common_camera_hw_param_store);
+
 #endif
 
 #if defined(CONFIG_SAMSUNG_REAR_TOF)
@@ -9297,9 +9450,12 @@ const struct device_attribute *rear_attrs[] = {
 	&dev_attr_rear4_hwparam,
 	&dev_attr_rear5_hwparam,
 	&dev_attr_rear6_hwparam,
+	&dev_attr_rear7_hwparam,
+	&dev_attr_rear8_hwparam,
 	&dev_attr_rear_tof_hwparam,
 	&dev_attr_rear2_tof_hwparam,
 	&dev_attr_cam_wifi_info,
+	&dev_attr_common_hwparam,
 #endif
 	NULL, // DO NOT REMOVE
 };

@@ -56,7 +56,7 @@ std::map<std::string, std::vector<LogicSensorConfig>> logicSensorConfigs = {
 			 return 0;
 		 }
 
-		 // Considers LRP if its severity is emergency or
+		 // Considers LRP if its severity is CRITICAL or
 		 // above.
 		 auto lrp_it = sensor.thermal_sensors.find("LRP");
 		 if (lrp_it == sensor.thermal_sensors.end()) {
@@ -64,8 +64,8 @@ std::map<std::string, std::vector<LogicSensorConfig>> logicSensorConfigs = {
 		 }
 		 auto &lrp_temp = lrp_it->second->t;
 		 if (lrp_temp.throttlingStatus >=
-			 LogicSensorConfig::ThrottlingSeverity::EMERGENCY &&
-		     lrp_temp.throttlingStatus > sensor.t.throttlingStatus) {
+			 LogicSensorConfig::ThrottlingSeverity::CRITICAL &&
+			 lrp_temp.throttlingStatus > sensor.t.throttlingStatus) {
 			 sensor.t.throttlingStatus = lrp_temp.throttlingStatus;
 		 }
 		 return 0;

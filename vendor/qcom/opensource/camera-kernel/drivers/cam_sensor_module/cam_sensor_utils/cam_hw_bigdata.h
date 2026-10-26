@@ -113,12 +113,14 @@ void hw_bigdata_init_mipi_param(struct cam_hw_param *hw_param);
 void hw_bigdata_init_mipi_param_sensor(struct cam_sensor_ctrl_t *s_ctrl);
 void hw_bigdata_deinit_mipi_param_sensor(struct cam_sensor_ctrl_t *s_ctrl);
 void hw_bigdata_i2c_from_sensor(struct cam_sensor_ctrl_t *s_ctrl);
+void hw_bigdata_i2c_from_sensor_id(uint32_t camera_id);
 void hw_bigdata_mipi_from_ife_csid_ver1(uint32_t hw_cam_position);
 void hw_bigdata_mipi_from_ife_csid_ver2(int csiphy_num);
 void hw_bigdata_i2c_from_actuator(struct cam_actuator_ctrl_t *a_ctrl);
 void hw_bigdata_i2c_from_ois_status_reg(uint32_t hw_cam_position);
 void hw_bigdata_i2c_from_ois_error_reg(uint32_t err_reg);
 void hw_bigdata_i2c_from_eeprom(struct cam_eeprom_ctrl_t *a_ctrl);
+void hw_bigdata_i2c_from_eeprom_id(uint32_t camera_id);
 void hw_bigdata_crc_from_eeprom(struct cam_eeprom_ctrl_t *a_ctrl);
 
 void hw_bigdata_init_all_cnt(void);

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2020-2021, The Linux Foundation. All rights reserved.
- * Copyright (c) 2022-2024, Qualcomm Innovation Center, Inc. All rights reserved.
+ * Copyright (c) 2022-2025, Qualcomm Innovation Center, Inc. All rights reserved.
  */
 
 #include <dt-bindings/soc/qcom,ipcc.h>
@@ -510,7 +510,6 @@ static int hwsched_sendcmd(struct adreno_device *adreno_dev,
 		return -EBUSY;
 	}
 
-
 	if (kgsl_context_detached(context)) {
 		rt_mutex_unlock(&device->mutex);
 		kmem_cache_free(obj_cache, obj);
@@ -577,7 +576,7 @@ done:
 
 	rt_mutex_unlock(&device->mutex);
 
-	return 0;
+	return ret;
 }
 
 /**

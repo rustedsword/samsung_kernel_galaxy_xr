@@ -175,7 +175,6 @@ PRODUCT_COPY_FILES += \
     $(CONFIG_PAL_SRC_DIR)/resourcemanager_anorak_idp.xml:$(CONFIG_SKU_OUT_DIR)/resourcemanager_anorak_idp.xml \
     $(CONFIG_HAL_SRC_DIR)/usecaseKvManager.xml:$(TARGET_COPY_OUT_VENDOR)/etc/usecaseKvManager.xml \
     vendor/qcom/opensource/audio-hal/primary-hal/configs/common/media_codecs_vendor_audio.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs_vendor_audio.xml
-#    frameworks/native/data/etc/android.hardware.audio.low_latency.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.audio.low_latency.xml
 
 # include usb mixer file
 PRODUCT_COPY_FILES += \

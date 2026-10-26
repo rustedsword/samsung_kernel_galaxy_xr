@@ -1462,7 +1462,6 @@ static void __dsp_cvp_sess_create(struct cvp_dsp_cmd_msg *cmd)
 		cmd->ret = -1;
 		return;
 	}
-
 	dprintk(CVP_ERR, "EVA_LOG_CREATE#1 %s eva_fastrpc_driver_register() done\n", __func__);
 	inst = msm_cvp_open(MSM_CORE_CVP, MSM_CVP_DSP);
 	if (!inst) {

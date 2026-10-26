@@ -739,6 +739,7 @@ static int _s2mm006_muic_detach_handler(struct s2mm006_muic_data *muic_data)
 		pr_err("%s Cable type already was detached\n", __func__);
 		goto detach_skip;
 	}
+	s2mm006_muic_handle_detach(muic_data);
 
 	pr_info("%s done(%s)\n", __func__, dev_to_str(sdata->attached_dev));
 detach_skip:
@@ -838,7 +839,7 @@ static void s2mm006_muic_vbus_det_isr(struct s2mm006_muic_data *muic_data)
 }
 
 #if IS_ENABLED(CONFIG_SEC_FACTORY)
-static void _s2mm006_muic_rid_det_isr(struct s2mm006_muic_data *muic_data)
+void s2mm006_muic_rid_det_isr(struct s2mm006_muic_data *muic_data)
 {
 	u8 rid;
 
@@ -859,7 +860,7 @@ static void _s2mm006_muic_rid_det_isr(struct s2mm006_muic_data *muic_data)
 void process_muic(struct s2mm006_muic_data *muic_data, u8 irq)
 {
 #if IS_ENABLED(CONFIG_SEC_FACTORY)
-	_s2mm006_muic_rid_det_isr(muic_data);
+	s2mm006_muic_rid_det_isr(muic_data);
 #endif
 	if (irq & BC_INT_SYS_MESSAGE_MASK)
 		s2mm006_muic_sys_msg_isr(muic_data);

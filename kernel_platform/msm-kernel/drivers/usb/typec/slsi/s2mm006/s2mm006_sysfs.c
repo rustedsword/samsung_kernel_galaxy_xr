@@ -227,6 +227,10 @@ static int s2mm006_sysfs_get_prop(struct _pdic_data_t *ppdic_data,
 		ret = sprintf(buf, "%d\n", usbpd_data->manual_lpm_mode);
 		pr_info("PDIC_SYSFS_PROP_LPM_MODE : %d", usbpd_data->manual_lpm_mode);
 		break;
+	case PDIC_SYSFS_PROP_STATE:
+		ret = sprintf(buf, "%d\n", usbpd_data->cc_status);
+		pr_info("PDIC_SYSFS_PROP_STATE : %d", usbpd_data->cc_status);
+		break;
 	case PDIC_SYSFS_PROP_CUR_VERSION:
 		s2mm006_read_byte(usbpd_data->i2c,
 				S2MM006_REG_DEVICE_FW_ID, &main_fw);

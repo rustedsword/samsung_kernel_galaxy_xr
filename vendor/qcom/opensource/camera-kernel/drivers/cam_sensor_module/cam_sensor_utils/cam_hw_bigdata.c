@@ -177,6 +177,25 @@ void hw_bigdata_i2c_from_sensor(struct cam_sensor_ctrl_t *s_ctrl)
 	}
 }
 
+void hw_bigdata_i2c_from_sensor_id(uint32_t camera_id)
+{
+	struct cam_hw_param *hw_param = NULL;
+	uint32_t hw_param_id;
+
+	hw_param_id = hw_bigdata_get_hw_param_id(camera_id);
+
+	if (!hw_bigdata_get_hw_param(&hw_param, hw_param_id))
+	{
+		if (hw_param != NULL) {
+			CAM_ERR(CAM_UTIL, "[HWB][%s][I2C]\n", hwparam_collector.camera_info);
+			hw_bigdata_update_err_cnt(hw_param, I2C_SENSOR_ERROR);
+#if defined(CONFIG_CAMERA_ADAPTIVE_MIPI) && defined(CONFIG_CAMERA_RF_MIPI)
+			hw_bigdata_get_rfinfo(hw_param);
+#endif
+		}
+	}
+}
+
 void hw_bigdata_mipi_from_ife_csid_ver1(uint32_t hw_cam_position)
 {
 	struct cam_hw_param *hw_param = NULL;
@@ -373,6 +392,25 @@ void hw_bigdata_i2c_from_eeprom(struct cam_eeprom_ctrl_t *e_ctrl)
 	uint32_t hw_param_id;
 
 	hw_param_id = hw_bigdata_get_hw_param_id(e_ctrl->soc_info.index);
+
+	if (!hw_bigdata_get_hw_param(&hw_param, hw_param_id) &&
+		!hw_bigdata_get_hw_param_static(&hw_param_eeprom, hw_param_id))
+	{
+		if (hw_param != NULL) {
+			CAM_INFO(CAM_UTIL, "[HWB][%s][EEP]\n", hwparam_collector.camera_info);
+			hw_bigdata_update_err_cnt(hw_param, I2C_EEPROM_ERROR);
+			hw_param_eeprom->eeprom_i2c_chk = 1;
+		}
+	}
+}
+
+void hw_bigdata_i2c_from_eeprom_id(uint32_t camera_id)
+{
+	struct cam_hw_param *hw_param = NULL;
+	struct cam_hw_param *hw_param_eeprom = NULL;
+	uint32_t hw_param_id;
+
+	hw_param_id = hw_bigdata_get_hw_param_id(camera_id);
 
 	if (!hw_bigdata_get_hw_param(&hw_param, hw_param_id) &&
 		!hw_bigdata_get_hw_param_static(&hw_param_eeprom, hw_param_id))

@@ -401,7 +401,7 @@ static struct msm_cvp_inst *cvp_get_inst_from_id(struct msm_cvp_core *core,
 retry:
 	if (mutex_trylock(&core->lock)) {
 		list_for_each_entry(inst, &core->instances, list) {
-			if (hash32_ptr(inst->session) == session_id) {
+			if (inst->sess_id  == session_id) {
 				match = true;
 				break;
 			}
@@ -413,21 +413,23 @@ retry:
 		if (core->state == CVP_CORE_UNINIT)
 			return NULL;
 		// When count crosses 1000 increase the sleep to ~2ms and retry for another 100 loops
-		if (count == 1000)
-			dprintk(CVP_ERR, "QCOM v3.5_08_29_25_1: count is greater than 1000\n");
-
-		if (count < 1000)
-			usleep_range(100, 200);
-		else if (count < 1100)
-			usleep_range(2000, 3000);
-
+		// This helps in giving more time for NRT thread to complete task and release the lock
 		count++;
+		if (count == 1001)
+			dprintk(CVP_WARN, "retries count crossed 1000\n");
 
-		if (count < 1100)
-			goto retry;
-		else{
-			dprintk(CVP_ERR, "QCOM v3.5_08_29_25_1: timeout locking core mutex\n");
+		if (count <= 1000) {
+			usleep_range(100, 200);
 		}
+		else if (count <= 1100) {
+			usleep_range(2000, 3000);
+		}
+		else {
+			dprintk(CVP_ERR, "timeout locking core mutex\n");
+			return NULL;
+		}
+
+		goto retry;
 	}
 
 	return inst;
@@ -522,9 +524,7 @@ static int hfi_process_session_cvp_msg(u32 device_id,
 		__func__, pkt->packet_type,
 		hfi_map_err_status(get_msg_errorcode(pkt)), session_id);
 
-	if(pkt->client_data.transaction_id % msm_cvp_logN == 0){
 		msm_cvp_msg_tracing_from_sw(pkt, "EVA_KMD_REV_BEGIN");
-	}
 
 	spin_lock(&sq->lock);
 	if (sq->msg_count >= MAX_NUM_MSGS_PER_SESSION) {

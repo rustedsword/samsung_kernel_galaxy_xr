@@ -16,6 +16,7 @@ struct sec_fan_ops {
 	//int (*get_step)(struct device *dev);
 	int (*get_curr_rpm)(struct device *dev);
 	int (*get_curr_rpm2)(struct device *dev);
+	int (*get_pwm)(struct device *dev);
 	int (*suspend)(struct device *dev);
 	int (*resume)(struct device *dev);
 	void (*enable_irq)(struct device *dev);

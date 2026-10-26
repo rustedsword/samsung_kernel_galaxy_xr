@@ -68,6 +68,18 @@ aidl_interface {
             version: "12",
             imports: ["android.hardware.common-V2"],
         },
+        {
+            version: "13",
+            imports: ["android.hardware.common-V2"],
+        },
+        {
+            version: "14",
+            imports: ["android.hardware.common-V2"],
+        },
+        {
+            version: "15",
+            imports: ["android.hardware.common-V2"],
+        },
 
     ],
     frozen: true,

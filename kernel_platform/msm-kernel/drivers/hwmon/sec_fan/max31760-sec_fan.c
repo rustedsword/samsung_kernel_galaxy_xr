@@ -467,6 +467,41 @@ int max31760_get_curr_rpm2(struct device *dev)
 	return max31760_get_rpm2(dev_get_drvdata(dev));
 }
 
+int max31760_get_pwm(struct device *dev)
+{
+	struct sec_fan_drvdata *sec_fan_ddata;
+	struct max31760_drvdata *max31760;
+	int ret = 0;
+	u8 pwm_V = 0;
+
+	if (!dev) {
+		pr_err("%s: device is NULL\n", __func__);
+		return -EINVAL;
+	}
+
+	sec_fan_ddata = dev_get_drvdata(dev);
+	if (!sec_fan_ddata) {
+		pr_err("%s: sec_fan_drvdata is NULL\n", __func__);
+		return -EINVAL;
+	}
+
+	max31760 = container_of(sec_fan_ddata, struct max31760_drvdata, sec_fan_ddata);
+
+	if (!max31760->client) {
+		pr_err("%s: i2c client is NULL\n", __func__);
+		return -EINVAL;
+	}
+
+	ret = read_u8_from_i2c(max31760->client, MAX31760_REG_PWMV, &pwm_V);
+	if (ret < 0) {
+		pr_err("%s error in reading pwmv register\n", __func__);
+		return ret;
+	}
+	pr_info("%s: pwm_V=%d\n", __func__, pwm_V);
+	return pwm_V;
+		
+}
+
 struct sec_fan_ops max31760_sec_fan_ops = {
 	.set_step = max31760_set_step,
 	.get_curr_rpm = max31760_get_curr_rpm1,
@@ -475,6 +510,7 @@ struct sec_fan_ops max31760_sec_fan_ops = {
 	.resume = max31760_init,
 	.enable_irq = max31760_enable_irq,
 	.disable_irq = max31760_disable_irq,
+	.get_pwm = max31760_get_pwm,
 };
 
 #ifndef CONFIG_SAMSUNG_PRODUCT_SHIP

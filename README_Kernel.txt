@@ -1,9 +1,5 @@
 ################################################################################
-1. Download and unzip the kernel source of I610UEU1AYIA.
- 
-2. Unzip and update the kernel source of I610UEU1AYKE.
- 
-3. How to Build
+1. How to Build
         - get Toolchain
                 get the proper toolchain packages from AOSP or CodeSourcery or ETC.
                 (Download link : https://opensource.samsung.com/uploadSearch?searchValue=toolchain )
@@ -35,11 +31,11 @@
                         RECOMPILE_KERNEL=1 ./kernel_platform/build/android/prepare_vendor.sh sec ${TARGET_PRODUCT}
 
 
-4. Output files
+2. Output files
         - Kernel : arch/${__arch_name}/boot/Image
         - module : drivers/*/*.ko
 
-5. How to Clean
+3. How to Clean
         Change to OUTPUT_DIR folder
         EX) /home/dpi/qb5_8814/workspace/P4_1716/android/out/target/product/xrvst2/out
         $ make clean

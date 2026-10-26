@@ -129,6 +129,8 @@ const char *pdic_event_id_string(pdic_notifier_id_t id)
 	case PDIC_NOTIFY_ID_POGO:
 		return "ID_POGO";
 #endif
+	case PDIC_NOTIFY_ID_BATTERY_STATUS:
+		return "ID_BATTERY_STATUS";
 	default:
 		return "UNDEFINED";
 	}

@@ -30,7 +30,7 @@
  */
 
 /*
- * Copyright (c) 2023-2024 Qualcomm Innovation Center, Inc. All rights reserved.
+ * Copyright (c) 2023-2025 Qualcomm Innovation Center, Inc. All rights reserved.
  * SPDX-License-Identifier: BSD-3-Clause-Clear
  */
 
@@ -93,14 +93,21 @@
 /* This flag is used to indicate UBWC_NV124R format usage */
 #define GRALLOC_USAGE_PRIVATE_ALLOC_UBWC_4R      1ULL << 55
 
-/* This flag is used to indicate UBWC - 8:5 compression ratio */
-#define GRALLOC_USAGE_PRIVATE_UBWC_L_8_TO_5      1ULL << 56
+/* Bit 56 is reserved */
 
 /* This flag is used to indicate UBWC - 2:1 compression ratio */
 #define GRALLOC_USAGE_PRIVATE_UBWC_L_2_TO_1      1ULL << 57
 
 /* This flag is used to indicate multiview use case */
 #define GRALLOC_USAGE_PRIVATE_MULTIVIEW          1ULL << 58
+
+/* This flag is used to indicate UBWC - 8:5 compression ratio */
+#define GRALLOC_USAGE_PRIVATE_UBWC_L_8_TO_5      1ULL << 59
+
+/* Bit 60 is reserved */
+
+/* This flag is used to indicate cloned multiview use case */
+#define GRALLOC_USAGE_PRIVATE_CLONED_MULTIVIEW   1ULL << 61
 
 // OEM specific HAL formats
 #define HAL_PIXEL_FORMAT_RGBA_5551 6

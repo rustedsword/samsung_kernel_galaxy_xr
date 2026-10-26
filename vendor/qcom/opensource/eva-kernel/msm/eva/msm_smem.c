@@ -314,7 +314,6 @@ static int alloc_dma_mem(size_t size, u32 align, int map_kernel,
 		"No IOMMU CB: allocate shared memory heap size %zx align %d\n",
 		size, align);
 	}
-
 	dprintk(CVP_ERR, "EVA_LOG_MEMALLOC#2 %s dma_heap_buffer_alloc() entry\n", __func__);
 	dbuf = dma_heap_buffer_alloc(heap, size, 0, 0);
 	if (IS_ERR_OR_NULL(dbuf)) {

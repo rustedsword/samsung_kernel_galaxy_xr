@@ -85,11 +85,12 @@ static int _rt_bus_hint_store(struct adreno_device *adreno_dev, u32 val)
 	struct kgsl_device *device = KGSL_DEVICE(adreno_dev);
 	struct kgsl_pwrctrl *pwrctrl = &device->pwrctrl;
 
-	if (!ADRENO_FEATURE(adreno_dev, ADRENO_RT_HINT))
+	if (!ADRENO_FEATURE(adreno_dev, ADRENO_RT_HINT) ||
+		val == pwrctrl->rt_bus_hint)
 		return 0;
 
 	if (val > pwrctrl->pwrlevels[0].bus_max)
-		return 0;
+		val = 0;
 
 	adreno_power_cycle_u32(adreno_dev, &pwrctrl->rt_bus_hint, val);
 

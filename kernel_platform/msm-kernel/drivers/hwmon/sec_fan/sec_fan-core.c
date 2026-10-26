@@ -138,6 +138,61 @@ static ssize_t curr_rpm2_show(struct device *dev, struct device_attribute *attr,
 }
 static DEVICE_ATTR_RO(curr_rpm2);
 
+static ssize_t get_status_show(struct device *dev, struct device_attribute *attr, char *buf)
+{
+	int rpm1 = 0;
+	int rpm2 = 0;
+	int pwm = 0;
+	int ret;
+
+	struct sec_fan_drvdata *ddata;
+
+	if (!dev) {
+		pr_err("%s: device is NULL\n", __func__);
+		return 0;
+	}
+
+	ddata = dev_get_drvdata(dev);
+	if (!ddata) {
+		pr_err("%s: sec_fan_drvdata is NULL\n", __func__);
+		return 0;
+	}
+
+	if(ddata->ops->get_curr_rpm) {
+		ret = ddata->ops->get_curr_rpm(ddata->chip_dev);
+		if (ret < 0) {
+			pr_err("%s: failed to read curr_rpm1: %d\n", __func__, ret);
+			rpm1 = 0;
+		} 
+		else
+			rpm1 = ret;
+	}
+
+	if (ddata->ops->get_curr_rpm2) {
+	    ret = ddata->ops->get_curr_rpm2(ddata->chip_dev);
+	    if (ret < 0) {
+	        pr_err("%s: failed to read curr_rpm2: %d\n", __func__, ret);
+	        rpm2 = 0;
+	    } 
+		else
+	        rpm2 = ret;
+	}
+
+	if(ddata->ops->get_pwm) {
+		ret = ddata->ops->get_pwm(ddata->chip_dev);
+		if (ret < 0) {
+			pr_err("%s: failed to read get_pwm: %d\n", __func__, ret);
+			pwm = 0;
+		} 
+		else
+			pwm = ret;
+	}
+
+	pr_info("%s: rpm1=%d, rpm2=%d, pwm=%d \n", __func__, rpm1, rpm2, pwm);
+
+	return snprintf(buf, PAGE_SIZE, "rpm1=%d, rpm2=%d, pwm=%d\n", rpm1, rpm2, pwm);
+}
+static DEVICE_ATTR_RO(get_status);
 
 #ifndef CONFIG_SAMSUNG_PRODUCT_SHIP
 /**
@@ -197,6 +252,7 @@ static struct attribute *sec_fan_attributes[] = {
 	&dev_attr_step.attr,
 	&dev_attr_curr_rpm.attr,
 	&dev_attr_curr_rpm2.attr,
+	&dev_attr_get_status.attr,
 #ifndef CONFIG_SAMSUNG_PRODUCT_SHIP
 	/* List of nodes, created for non ship binary */
 	&dev_attr_tune_steps_map.attr,  // To Do: Add sysfs for steps tuning via adb

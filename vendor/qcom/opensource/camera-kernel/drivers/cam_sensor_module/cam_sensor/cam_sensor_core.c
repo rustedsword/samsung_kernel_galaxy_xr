@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2017-2021, The Linux Foundation. All rights reserved.
- * Copyright (c) 2022-2024 Qualcomm Innovation Center, Inc. All rights reserved.
+ * Copyright (c) 2022-2025 Qualcomm Innovation Center, Inc. All rights reserved.
  */
 
 #include <linux/module.h>
@@ -1170,7 +1170,7 @@ int32_t cam_sensor_driver_cmd(struct cam_sensor_ctrl_t *s_ctrl,
 		}
 
 #if defined(CONFIG_USE_CAMERA_HW_BIG_DATA)
-		if (rc < 0) {
+		if (rc < 0 || s_ctrl->probe_mode == 2) {
 			CAM_ERR(CAM_UTIL, "[HWB]failed rc %d\n", rc);
 			if (s_ctrl != NULL) {
 					hw_bigdata_i2c_from_sensor(s_ctrl);

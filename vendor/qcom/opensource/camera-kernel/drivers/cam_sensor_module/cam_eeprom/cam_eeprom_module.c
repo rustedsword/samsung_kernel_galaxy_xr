@@ -432,8 +432,7 @@ int cam_eeprom_update_module_info(struct cam_eeprom_ctrl_t *e_ctrl)
 			CAM_DBG(CAM_EEPROM, "subdev_id: %d, map version = %c [0x%x]", e_ctrl->soc_info.index, map_ver, map_ver);
 		}
 	}
-    else if ((e_ctrl->soc_info.is_sensor_type == CAM_SENSOR_TYPE_IDX_OVOG0TB && e_ctrl->soc_info.hw_version < 5 && e_ctrl->soc_info.index == CAM_EEPROM_IDX_FT_LEFT) || 
-			(e_ctrl->soc_info.is_sensor_type == CAM_SENSOR_TYPE_IDX_S5K931_F && e_ctrl->soc_info.hw_version >= 5 && e_ctrl->soc_info.index == CAM_EEPROM_IDX_ET_LD) || 
+    else if ((e_ctrl->soc_info.is_sensor_type == CAM_SENSOR_TYPE_IDX_S5K931_F && e_ctrl->soc_info.hw_version >= 5 && e_ctrl->soc_info.index == CAM_EEPROM_IDX_ET_LD) || 
 			(e_ctrl->soc_info.is_sensor_type == CAM_SENSOR_TYPE_IDX_S5K931_F && e_ctrl->soc_info.hw_version >= 5 && e_ctrl->soc_info.index == CAM_EEPROM_IDX_ET_LD_FACTORY)) {
 		map_ver = e_ctrl->cal_data.mapdata[FRONT3_CAM_MAP_VERSION_ADDR];
 		if(map_ver >= 80 || !isalnum(map_ver)) {
@@ -443,8 +442,7 @@ int cam_eeprom_update_module_info(struct cam_eeprom_ctrl_t *e_ctrl)
 			CAM_DBG(CAM_EEPROM, "subdev_id: %d, map version = %c [0x%x]", e_ctrl->soc_info.index, map_ver, map_ver);
 		}
 	}
-    else if ((e_ctrl->soc_info.is_sensor_type == CAM_SENSOR_TYPE_IDX_OVOG0TB && e_ctrl->soc_info.hw_version < 5 && e_ctrl->soc_info.index == CAM_EEPROM_IDX_FT_RIGHT) || 
-			(e_ctrl->soc_info.is_sensor_type == CAM_SENSOR_TYPE_IDX_S5K931_F && e_ctrl->soc_info.hw_version >= 5 && e_ctrl->soc_info.index == CAM_EEPROM_IDX_ET_RD) || 
+    else if ((e_ctrl->soc_info.is_sensor_type == CAM_SENSOR_TYPE_IDX_S5K931_F && e_ctrl->soc_info.hw_version >= 5 && e_ctrl->soc_info.index == CAM_EEPROM_IDX_ET_RD) || 
 			(e_ctrl->soc_info.is_sensor_type == CAM_SENSOR_TYPE_IDX_S5K931_F && e_ctrl->soc_info.hw_version >= 5 && e_ctrl->soc_info.index == CAM_EEPROM_IDX_ET_RD_FACTORY)) {
 		map_ver = e_ctrl->cal_data.mapdata[FRONT4_CAM_MAP_VERSION_ADDR];
 		if(map_ver >= 80 || !isalnum(map_ver)) {
@@ -1993,8 +1991,7 @@ int cam_eeprom_update_module_info(struct cam_eeprom_ctrl_t *e_ctrl)
 			front2_fw_ver[10]);
 #endif
 	}
-    else if ((e_ctrl->soc_info.is_sensor_type == CAM_SENSOR_TYPE_IDX_OVOG0TB && e_ctrl->soc_info.hw_version < 5 && e_ctrl->soc_info.index == CAM_EEPROM_IDX_FT_LEFT) || 
-			(e_ctrl->soc_info.is_sensor_type == CAM_SENSOR_TYPE_IDX_S5K931_F && e_ctrl->soc_info.hw_version >= 5 && e_ctrl->soc_info.index == CAM_EEPROM_IDX_ET_LD) || 
+    else if ((e_ctrl->soc_info.is_sensor_type == CAM_SENSOR_TYPE_IDX_S5K931_F && e_ctrl->soc_info.hw_version >= 5 && e_ctrl->soc_info.index == CAM_EEPROM_IDX_ET_LD) || 
 			(e_ctrl->soc_info.is_sensor_type == CAM_SENSOR_TYPE_IDX_S5K931_F && e_ctrl->soc_info.hw_version >= 5 && e_ctrl->soc_info.index == CAM_EEPROM_IDX_ET_LD_FACTORY)) { //Front FT Cam
 		/* front3 otp data valid bank check */
 		if (!otp_data_s5k931_valid_bank)
@@ -2039,11 +2036,7 @@ int cam_eeprom_update_module_info(struct cam_eeprom_ctrl_t *e_ctrl)
 		CAM_DBG(CAM_EEPROM, "front3 mtf exif = %s", front3_mtf_exif);
 
 		/* front3 manufacturer info */
-		if (e_ctrl->soc_info.index == CAM_EEPROM_IDX_FT_LEFT) {
-			memcpy(front3_fw_ver, &e_ctrl->cal_data.mapdata[FRONT3_FT_MODULE_FW_VERSION], FROM_MODULE_FW_INFO_SIZE);
-		} else if (e_ctrl->soc_info.index == CAM_EEPROM_IDX_ET_LD || e_ctrl->soc_info.index == CAM_EEPROM_IDX_ET_LD_FACTORY) {
-			memcpy(front3_fw_ver, &e_ctrl->cal_data.mapdata[FRONT3_MODULE_FW_VERSION], FROM_MODULE_FW_INFO_SIZE);
-		}
+		memcpy(front3_fw_ver, &e_ctrl->cal_data.mapdata[FRONT3_MODULE_FW_VERSION], FROM_MODULE_FW_INFO_SIZE);
 		front3_fw_ver[FROM_MODULE_FW_INFO_SIZE] = '\0';
 		CAM_DBG(CAM_EEPROM,
 			"front3 manufacturer info = %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x",
@@ -2061,15 +2054,7 @@ int cam_eeprom_update_module_info(struct cam_eeprom_ctrl_t *e_ctrl)
 
 		bVerNull = FALSE;
 		for(i = 0; i < FROM_MODULE_FW_INFO_SIZE; i ++) {
-			if (e_ctrl->soc_info.index == CAM_EEPROM_IDX_FT_LEFT) {
-				if(e_ctrl->cal_data.mapdata[FRONT3_FT_MODULE_FW_VERSION + i] >= 0x80
-					|| !isalnum(e_ctrl->cal_data.mapdata[FRONT3_FT_MODULE_FW_VERSION + i])) {
-					cal_ver[i] = ' ';
-					bVerNull = TRUE;
-				} else {
-					cal_ver[i] = e_ctrl->cal_data.mapdata[FRONT3_FT_MODULE_FW_VERSION + i];
-				}
-			} else if (e_ctrl->soc_info.index == CAM_EEPROM_IDX_ET_LD || e_ctrl->soc_info.index == CAM_EEPROM_IDX_ET_LD_FACTORY){
+			if (e_ctrl->soc_info.index == CAM_EEPROM_IDX_ET_LD || e_ctrl->soc_info.index == CAM_EEPROM_IDX_ET_LD_FACTORY){
 				if(e_ctrl->cal_data.mapdata[FRONT3_MODULE_FW_VERSION + i] >= 0x80
 					|| !isalnum(e_ctrl->cal_data.mapdata[FRONT3_MODULE_FW_VERSION + i])) {
 					cal_ver[i] = ' ';
@@ -2122,8 +2107,7 @@ int cam_eeprom_update_module_info(struct cam_eeprom_ctrl_t *e_ctrl)
 			front3_fw_ver[10]);
 #endif
 	}
-    else if ((e_ctrl->soc_info.is_sensor_type == CAM_SENSOR_TYPE_IDX_OVOG0TB && e_ctrl->soc_info.hw_version < 5 && e_ctrl->soc_info.index == CAM_EEPROM_IDX_FT_RIGHT) || 
-			(e_ctrl->soc_info.is_sensor_type == CAM_SENSOR_TYPE_IDX_S5K931_F && e_ctrl->soc_info.hw_version >= 5 && e_ctrl->soc_info.index == CAM_EEPROM_IDX_ET_RD) || 
+    else if ((e_ctrl->soc_info.is_sensor_type == CAM_SENSOR_TYPE_IDX_S5K931_F && e_ctrl->soc_info.hw_version >= 5 && e_ctrl->soc_info.index == CAM_EEPROM_IDX_ET_RD) || 
 			(e_ctrl->soc_info.is_sensor_type == CAM_SENSOR_TYPE_IDX_S5K931_F && e_ctrl->soc_info.hw_version >= 5 && e_ctrl->soc_info.index == CAM_EEPROM_IDX_ET_RD_FACTORY)) { //Front FT Cam
 		/* front4 otp data valid bank check */
 		if (!otp_data_s5k931_valid_bank)
@@ -2168,11 +2152,7 @@ int cam_eeprom_update_module_info(struct cam_eeprom_ctrl_t *e_ctrl)
 		CAM_DBG(CAM_EEPROM, "front4 mtf exif = %s", front4_mtf_exif);
 
 		/* front4 manufacturer info */
-		if (e_ctrl->soc_info.index == CAM_EEPROM_IDX_FT_RIGHT) {
-			memcpy(front4_fw_ver, &e_ctrl->cal_data.mapdata[FRONT4_FT_MODULE_FW_VERSION], FROM_MODULE_FW_INFO_SIZE);
-		} else if (e_ctrl->soc_info.index == CAM_EEPROM_IDX_ET_RD || e_ctrl->soc_info.index == CAM_EEPROM_IDX_ET_RD_FACTORY) {
-			memcpy(front4_fw_ver, &e_ctrl->cal_data.mapdata[FRONT4_MODULE_FW_VERSION], FROM_MODULE_FW_INFO_SIZE);
-		}
+		memcpy(front4_fw_ver, &e_ctrl->cal_data.mapdata[FRONT4_MODULE_FW_VERSION], FROM_MODULE_FW_INFO_SIZE);
 		front4_fw_ver[FROM_MODULE_FW_INFO_SIZE] = '\0';
 		CAM_DBG(CAM_EEPROM,
 			"front4 manufacturer info = %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x",
@@ -2190,15 +2170,7 @@ int cam_eeprom_update_module_info(struct cam_eeprom_ctrl_t *e_ctrl)
 
 		bVerNull = FALSE;
 		for(i = 0; i < FROM_MODULE_FW_INFO_SIZE; i ++) {
-			if (e_ctrl->soc_info.index == CAM_EEPROM_IDX_FT_RIGHT) {
-				if(e_ctrl->cal_data.mapdata[FRONT4_FT_MODULE_FW_VERSION + i] >= 0x80
-					|| !isalnum(e_ctrl->cal_data.mapdata[FRONT4_FT_MODULE_FW_VERSION + i])) {
-					cal_ver[i] = ' ';
-					bVerNull = TRUE;
-				} else {
-					cal_ver[i] = e_ctrl->cal_data.mapdata[FRONT4_FT_MODULE_FW_VERSION + i];
-				}
-			} else if (e_ctrl->soc_info.index == CAM_EEPROM_IDX_ET_RD || e_ctrl->soc_info.index == CAM_EEPROM_IDX_ET_RD_FACTORY) {
+			if (e_ctrl->soc_info.index == CAM_EEPROM_IDX_ET_RD || e_ctrl->soc_info.index == CAM_EEPROM_IDX_ET_RD_FACTORY) {
 				if(e_ctrl->cal_data.mapdata[FRONT4_MODULE_FW_VERSION + i] >= 0x80
 					|| !isalnum(e_ctrl->cal_data.mapdata[FRONT4_MODULE_FW_VERSION + i])) {
 					cal_ver[i] = ' ';
@@ -2377,10 +2349,6 @@ int cam_eeprom_update_module_info(struct cam_eeprom_ctrl_t *e_ctrl)
 		rc = cam_eeprom_check_firmware_cal(e_ctrl->is_supported, map_ver, e_ctrl->soc_info.hw_version, CAM_EEPROM_IDX_ET_LEFT, CAM_SENSOR_TYPE_IDX_S5K931_F);
     else if (e_ctrl->soc_info.is_sensor_type == CAM_SENSOR_TYPE_IDX_S5K931_F && e_ctrl->soc_info.hw_version < 5 && e_ctrl->soc_info.index == CAM_EEPROM_IDX_ET_RIGHT)
 		rc = cam_eeprom_check_firmware_cal(e_ctrl->is_supported, map_ver, e_ctrl->soc_info.hw_version, CAM_EEPROM_IDX_ET_RIGHT, CAM_SENSOR_TYPE_IDX_S5K931_F);
-    else if (e_ctrl->soc_info.is_sensor_type == CAM_SENSOR_TYPE_IDX_OVOG0TB && e_ctrl->soc_info.hw_version < 5 && e_ctrl->soc_info.index == CAM_EEPROM_IDX_FT_LEFT)
-		rc = cam_eeprom_check_firmware_cal(e_ctrl->is_supported, map_ver, e_ctrl->soc_info.hw_version, CAM_EEPROM_IDX_FT_LEFT, CAM_SENSOR_TYPE_IDX_OVOG0TB);
-    else if (e_ctrl->soc_info.is_sensor_type == CAM_SENSOR_TYPE_IDX_OVOG0TB && e_ctrl->soc_info.hw_version < 5 && e_ctrl->soc_info.index == CAM_EEPROM_IDX_FT_RIGHT)
-		rc = cam_eeprom_check_firmware_cal(e_ctrl->is_supported, map_ver, e_ctrl->soc_info.hw_version, CAM_EEPROM_IDX_FT_RIGHT, CAM_SENSOR_TYPE_IDX_OVOG0TB);
 	else if (e_ctrl->soc_info.is_sensor_type == CAM_SENSOR_TYPE_IDX_OVOG0TB && e_ctrl->soc_info.hw_version < 5 && e_ctrl->soc_info.index == CAM_EEPROM_IDX_FT_MID)
 		rc = cam_eeprom_check_firmware_cal(e_ctrl->is_supported, map_ver, e_ctrl->soc_info.hw_version, CAM_EEPROM_IDX_FT_MID, CAM_SENSOR_TYPE_IDX_OVOG0TB);
     else if (e_ctrl->soc_info.is_sensor_type == CAM_SENSOR_TYPE_IDX_S5K931_F && e_ctrl->soc_info.hw_version >= 5 && e_ctrl->soc_info.index == CAM_EEPROM_IDX_ET_LD)
@@ -2502,14 +2470,14 @@ void cam_eeprom_update_sysfs_fw_version(
 		pCAM_fw_version = front2_cam_fw_ver;
 		pCAM_fw_full_version = front2_cam_fw_full_ver;
 	}
-	else if ((id_type == CAM_SENSOR_TYPE_IDX_OVOG0TB && hw_version < 5 && idx == CAM_EEPROM_IDX_FT_LEFT) || (id_type == CAM_SENSOR_TYPE_IDX_S5K931_F && hw_version >= 5 && (idx == CAM_EEPROM_IDX_ET_LD || idx == CAM_EEPROM_IDX_ET_LD_FACTORY))) {
+	else if (id_type == CAM_SENSOR_TYPE_IDX_S5K931_F && hw_version >= 5 && (idx == CAM_EEPROM_IDX_ET_LD || idx == CAM_EEPROM_IDX_ET_LD_FACTORY)) {
 		pEEPROM_fw_version = front3_fw_ver;
 		pPHONE_fw_version = front3_phone_fw_ver;
 		pLOAD_fw_version = front3_load_fw_ver;
 		pCAM_fw_version = front3_cam_fw_ver;
 		pCAM_fw_full_version = front3_cam_fw_full_ver;
 	}
-	else if ((id_type == CAM_SENSOR_TYPE_IDX_OVOG0TB && hw_version < 5 && idx == CAM_EEPROM_IDX_FT_RIGHT) || (id_type == CAM_SENSOR_TYPE_IDX_S5K931_F && hw_version >= 5 && (idx == CAM_EEPROM_IDX_ET_RD || idx == CAM_EEPROM_IDX_ET_RD_FACTORY))) {
+	else if (id_type == CAM_SENSOR_TYPE_IDX_S5K931_F && hw_version >= 5 && (idx == CAM_EEPROM_IDX_ET_RD || idx == CAM_EEPROM_IDX_ET_RD_FACTORY)) {
 		pEEPROM_fw_version = front4_fw_ver;
 		pPHONE_fw_version = front4_phone_fw_ver;
 		pLOAD_fw_version = front4_load_fw_ver;
@@ -2605,11 +2573,11 @@ int32_t cam_eeprom_check_firmware_cal(uint32_t camera_cal_crc, uint8_t cal_map_v
 		version_isp = front2_fw_ver[3];
 		version_module_maker_ver = front2_fw_ver[10];
 	}
-	else if ((id_type == CAM_SENSOR_TYPE_IDX_OVOG0TB && hw_version < 5 && idx == CAM_EEPROM_IDX_FT_LEFT) || (id_type == CAM_SENSOR_TYPE_IDX_S5K931_F && hw_version >= 5 && (idx == CAM_EEPROM_IDX_ET_LD || idx == CAM_EEPROM_IDX_ET_LD_FACTORY))) {
+	else if (id_type == CAM_SENSOR_TYPE_IDX_S5K931_F && hw_version >= 5 && (idx == CAM_EEPROM_IDX_ET_LD || idx == CAM_EEPROM_IDX_ET_LD_FACTORY)) {
 		version_isp = front3_fw_ver[3];
 		version_module_maker_ver = front3_fw_ver[10];
 	}
-	else if ((id_type == CAM_SENSOR_TYPE_IDX_OVOG0TB && hw_version < 5 && idx == CAM_EEPROM_IDX_FT_RIGHT) || (id_type == CAM_SENSOR_TYPE_IDX_S5K931_F && hw_version >= 5 && (idx == CAM_EEPROM_IDX_ET_RD || idx == CAM_EEPROM_IDX_ET_RD_FACTORY))) {
+	else if (id_type == CAM_SENSOR_TYPE_IDX_S5K931_F && hw_version >= 5 && (idx == CAM_EEPROM_IDX_ET_RD || idx == CAM_EEPROM_IDX_ET_RD_FACTORY)) {
 		version_isp = front4_fw_ver[3];
 		version_module_maker_ver = front4_fw_ver[10];
 	}
@@ -2754,9 +2722,9 @@ int32_t cam_eeprom_check_firmware_cal(uint32_t camera_cal_crc, uint8_t cal_map_v
 			strcpy(final_cmd_ack, front_cam_fw_full_ver);
 		else if (id_type == CAM_SENSOR_TYPE_IDX_S5K931_F && ((hw_version < 5 && idx == CAM_EEPROM_IDX_ET_RIGHT) || (hw_version >= 5 && (idx == CAM_EEPROM_IDX_ET_RU || idx == CAM_EEPROM_IDX_ET_RU_FACTORY))))
 			strcpy(final_cmd_ack, front2_cam_fw_full_ver);
-		else if ((id_type == CAM_SENSOR_TYPE_IDX_OVOG0TB && hw_version < 5 && idx == CAM_EEPROM_IDX_FT_LEFT) || (id_type == CAM_SENSOR_TYPE_IDX_S5K931_F && hw_version >= 5 && (idx == CAM_EEPROM_IDX_ET_LD || idx == CAM_EEPROM_IDX_ET_LD_FACTORY)))
+		else if (id_type == CAM_SENSOR_TYPE_IDX_S5K931_F && hw_version >= 5 && (idx == CAM_EEPROM_IDX_ET_LD || idx == CAM_EEPROM_IDX_ET_LD_FACTORY))
 			strcpy(final_cmd_ack, front3_cam_fw_full_ver);
-		else if ((id_type == CAM_SENSOR_TYPE_IDX_OVOG0TB && hw_version < 5 && idx == CAM_EEPROM_IDX_FT_RIGHT) || (id_type == CAM_SENSOR_TYPE_IDX_S5K931_F && hw_version >= 5 && (idx == CAM_EEPROM_IDX_ET_RD || idx == CAM_EEPROM_IDX_ET_RD_FACTORY)))
+		else if (id_type == CAM_SENSOR_TYPE_IDX_S5K931_F && hw_version >= 5 && (idx == CAM_EEPROM_IDX_ET_RD || idx == CAM_EEPROM_IDX_ET_RD_FACTORY))
 			strcpy(final_cmd_ack, front4_cam_fw_full_ver);
 		else if (id_type == CAM_SENSOR_TYPE_IDX_OVOG0TB && idx == CAM_EEPROM_IDX_FT_MID)
 			strcpy(final_cmd_ack, front5_cam_fw_full_ver);
@@ -2991,10 +2959,10 @@ uint32_t cam_eeprom_match_crc(struct cam_eeprom_memory_block_t *data, uint32_t s
 	else if (subdev_type == CAM_SENSOR_TYPE_IDX_S5K931_F && ((hw_version < 5 && subdev_id == CAM_EEPROM_IDX_ET_RIGHT) || (hw_version >= 5 && (subdev_id == CAM_EEPROM_IDX_ET_RU || subdev_id == CAM_EEPROM_IDX_ET_RU_FACTORY)))) {
 		map_ver = data->mapdata[FRONT2_CAM_MAP_VERSION_ADDR];
 	}
-	else if ((subdev_type == CAM_SENSOR_TYPE_IDX_OVOG0TB && hw_version < 5 && subdev_id == CAM_EEPROM_IDX_FT_LEFT) || (subdev_type == CAM_SENSOR_TYPE_IDX_S5K931_F && hw_version >= 5 && (subdev_id == CAM_EEPROM_IDX_ET_LD || subdev_id == CAM_EEPROM_IDX_ET_LD_FACTORY))) {
+	else if (subdev_type == CAM_SENSOR_TYPE_IDX_S5K931_F && hw_version >= 5 && (subdev_id == CAM_EEPROM_IDX_ET_LD || subdev_id == CAM_EEPROM_IDX_ET_LD_FACTORY)) {
 		map_ver = data->mapdata[FRONT3_CAM_MAP_VERSION_ADDR];
 	}
-	else if ((subdev_type == CAM_SENSOR_TYPE_IDX_OVOG0TB && hw_version < 5 && subdev_id == CAM_EEPROM_IDX_FT_RIGHT) || (subdev_type == CAM_SENSOR_TYPE_IDX_S5K931_F && hw_version >= 5 && (subdev_id == CAM_EEPROM_IDX_ET_RD || subdev_id == CAM_EEPROM_IDX_ET_RD_FACTORY))) {
+	else if (subdev_type == CAM_SENSOR_TYPE_IDX_S5K931_F && hw_version >= 5 && (subdev_id == CAM_EEPROM_IDX_ET_RD || subdev_id == CAM_EEPROM_IDX_ET_RD_FACTORY)) {
 		map_ver = data->mapdata[FRONT4_CAM_MAP_VERSION_ADDR];
 	}
 	else if (subdev_type == CAM_SENSOR_TYPE_IDX_OVOG0TB && hw_version < 5 && subdev_id == CAM_EEPROM_IDX_FT_MID) {
@@ -3970,7 +3938,7 @@ retry:
 			}
 			else
 #endif
-			e_ctrl->is_supported |= cam_eeprom_match_crc(&e_ctrl->cal_data, e_ctrl->soc_info.index, e_ctrl->soc_info.is_sensor_type, e_ctrl->soc_info.hw_version);
+			e_ctrl->is_supported = normal_crc_value;
 			if (e_ctrl->is_supported != normal_crc_value) {
 				e_ctrl->is_supported = CAMERA_NORMAL_CAL_CRC;
 				CAM_WARN(CAM_EEPROM, "Any CRC values at F-ROM are not matched.");

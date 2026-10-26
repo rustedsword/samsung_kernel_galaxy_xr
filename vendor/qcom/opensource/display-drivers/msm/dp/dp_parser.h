@@ -268,8 +268,9 @@ enum secdp_PS5169_voltage_type {
  * @dsc_feature_enable: DSC feature enable status
  * @fec_feature_enable: FEC feature enable status
  * @dsc_continuous_pps: PPS sent every frame by HW
+ * @yuv422_support: YUV422 supported by HW
  * @has_widebus: widebus (2PPC) feature eanble status
-  *@mst_fixed_port: mst port_num reserved for fixed topology
+ * @mst_fixed_port: mst port_num reserved for fixed topology
  * @qos_cpu_mask: CPU mask for QOS
  * @qos_cpu_latency: CPU Latency setting for QOS
  * @parse: function to be called by client to parse device tree.
@@ -299,6 +300,7 @@ struct dp_parser {
 	bool dsc_feature_enable;
 	bool fec_feature_enable;
 	bool dsc_continuous_pps;
+	bool yuv422_support;
 	bool has_widebus;
 	bool has_4ppc_enabled;
 	bool gpio_aux_switch;

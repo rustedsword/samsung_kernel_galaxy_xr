@@ -37,7 +37,7 @@
 #include <linux/power_supply.h>
 
 #define ROLE_SWAP_TIME_MS 5000
-#define HOST_ON_WAIT_TIME_SEC 3
+#define HOST_ON_WAIT_TIME_SEC 5
 
 enum pp_status {
 	PP_GOOD,
@@ -882,6 +882,7 @@ static void process_policy_data_role(struct pdic_policy *pp_data, int msg)
 		if (pp_data->data_role == PP_UFP)
 			goto skip;
 		if (pp_data->data_role == PP_DFP) {
+			pp_data->usb_host.detach_done_wait = 1;
 			pdic_policy_alt_dev_detach(pp_data);
 			pdic_policy_dp_detach(pp_data);
 			

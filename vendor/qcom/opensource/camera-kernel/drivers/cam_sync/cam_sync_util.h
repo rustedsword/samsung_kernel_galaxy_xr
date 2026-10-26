@@ -152,7 +152,7 @@ void cam_sync_util_cleanup_parents_list(struct sync_table_row *row,
  *
  * @return Status of operation.
  */
-int cam_sync_util_send_exit_poll_event(void);
+int cam_sync_util_send_exit_poll_event(void *fh);
 
 /**
  * @brief    : Checks if the uid is equal to or greater than the current uid

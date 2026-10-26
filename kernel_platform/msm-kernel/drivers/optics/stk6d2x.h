@@ -323,6 +323,7 @@ enum fft_size {
 
 // average/max thd
 #define FLICKER_AVGMAX_THD		65LL
+
 // sec_ calc_thd
 #define FLICKER_THD_CLEAR       1800LL    /* 1.8 * 1000 */
 #define FLICKER_THD_RATIO       3LL       /* 0.003 * 1000 */
@@ -421,6 +422,14 @@ typedef enum
 } stk6d2x_als_pd_reduce_multi;
 #endif
 
+enum Sample_Rate {
+    Sample_Rate_MIN = 0,
+    Sample_Rate_2000 = Sample_Rate_MIN,
+    Sample_Rate_2048,
+    Sample_Rate_2098,
+    Sample_Rate_MAX = Sample_Rate_2098,
+};
+
 typedef struct stk6d2x_cali_table
 {
 	uint32_t als_version;
@@ -459,6 +468,16 @@ typedef struct stk6d2x_als_info
 	uint32_t                    als_sum_gain_div[3];
 #endif
 } stk6d2x_als_info;
+
+typedef struct sample_rate_setting
+{
+	uint32_t                    als_it;
+	uint32_t                    als_it_ext;
+	uint32_t                    IC_delay;
+	uint32_t                    buf_size;
+	uint32_t                    sampling_time;
+	uint32_t                    sample_rate;
+} sample_rate_setting;
 
 #ifdef STK_FIFO_ENABLE
 typedef struct stk6d2x_fifo_info
@@ -572,6 +591,9 @@ struct stk6d2x_data
 	bool als_flag;
 	bool flicker_flag;
 #endif
+#if IS_ENABLED(CONFIG_FLICKER_ANTI_ALIASING)
+	int 					cur_sample_rate;
+#endif
 	int         			ext_clk_gpio;
 	struct clk				*pclk;
 	struct rcg_clk			*camcc_mclk5_rcg_clk;
@@ -663,4 +685,7 @@ int32_t stk_power_ctrl(struct stk6d2x_data *alps_data, bool en);
 void stk6d2x_pin_control(struct stk6d2x_data *alps_data, bool pin_set);
 void stk6d2x_ext_clk_control(struct stk6d2x_data *alps_data, bool clk_enable);
 void stk_sec_report(struct stk6d2x_data *alps_data);
+#if IS_ENABLED(CONFIG_FLICKER_ANTI_ALIASING)
+void stk6d2x_switch_sample_rate(struct stk6d2x_data *alps_data);
+#endif
 #endif // __STK6D2X_H__

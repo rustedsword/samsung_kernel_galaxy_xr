@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # Copyright (c) 2012-2021, The Linux Foundation. All rights reserved.
-# Copyright (c) 2022-2025, Qualcomm Innovation Center, Inc. All rights reserved.
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 2 and
@@ -86,29 +86,7 @@ def has_debug_info(objdump_path, file):
 def get_ftrace_args(option, opt, value, parser):
     setattr(parser.values, option.dest, value.split(','))
 
-def prepare_vttbr_for_svm(options):
-    '''
-    two methods to address ttbr and vttbr for svm
-    1. read ttbr or vttbr from hyp with symbols (default way)
-    2. read ttbr or vttbr from corevcpu (this way was suitable for customer)
-
-    corevcpu was based on host environment.
-
-    this method was used to generate corevcpu with host vmlinux and other host arguments
-    '''
-    if has_debug_info(objdump_path, options.hyp):
-        return
-
-    for _file in VCPU_CMM_FILES:
-        ## find in dump folder
-        cmm_files = glob.glob(os.path.join(options.autodump, _file))
-        if len(cmm_files) > 0:
-            return
-        ## find in output folder
-        cmm_files = glob.glob(os.path.join(options.outdir, "host", _file))
-        if len(cmm_files) > 0:
-            return
-
+def get_pvm_dump(options):
     options.vmlinux = options.host_vmlinux
     options.mod_path_list = options.host_mod_path_list
     if options.force_hardware.strip().endswith("svm"):
@@ -125,9 +103,32 @@ def prepare_vttbr_for_svm(options):
             print ("Failed to create %s. You probably don't have permissions there. Bailing." % options.outdir)
             sys.exit(1)
 
+    dump = RamDump(options, nm_path, gdb_path, objdump_path, gdb_ndk_path)
+    return dump
+
+def prepare_vttbr_for_svm(options, dump):
+    '''
+    two methods to address ttbr and vttbr for svm
+    1. read ttbr or vttbr from hyp with symbols (default way)
+    2. read ttbr or vttbr from corevcpu (this way was suitable for customer)
+
+    corevcpu was based on host environment.
+
+    this method was used to generate corevcpu with host vmlinux and other host arguments
+    '''
+
+    for _file in VCPU_CMM_FILES:
+        ## find in dump folder
+        cmm_files = glob.glob(os.path.join(options.autodump, _file))
+        if len(cmm_files) > 0:
+            return
+        ## find in output folder
+        cmm_files = glob.glob(os.path.join(options.outdir, "host", _file))
+        if len(cmm_files) > 0:
+            return
+
     print_out_str("\n######### Using host vmlinux firstly to determine vttbr##########\n")
     print_out_str('change to use vmlinux file {0}'.format(options.vmlinux))
-    dump = RamDump(options, nm_path, gdb_path, objdump_path,gdb_ndk_path)
     if not dump.print_command_line():
         print_out_str('!!! Error printing saved command line.')
         print_out_str('!!! The vmlinux is probably wrong for the ramdumps')
@@ -145,7 +146,7 @@ def prepare_vttbr_for_svm(options):
     print_out_str("\n######### Using host vmlinux firstly to determine vttbr end!!!##########\n")
 
 if __name__ == '__main__':
-    starttime = time.time()
+    starttime = time.perf_counter()
     usage = 'usage: %prog [options to print]. Run with --help for more details'
     parser = OptionParser(usage)
     parser.add_option('', '--logcat_limit_time_sec',
@@ -262,6 +263,11 @@ if __name__ == '__main__':
     parser.add_option('', '--skip_TLB_Cache_parse', action='store_true', help='Skip parsing TLB Cache Dumps in parse_debug_image')
     parser.add_option('--iommu-pg-table-format', action='store', choices=['fastrpc', 'default'],
                       default='default')
+    parser.add_option("--zram_parser_override", type='string', dest="zram_parser_override",
+                      help="""
+                      Specify a separate program to parse ZRAM-compressed pages with. The program must take in
+                      compressed input through stdin and output decompressed output through stdout.
+                      """)
 
     for p in parser_util.get_parsers():
         parser.add_option(p.shortopt or '',
@@ -295,7 +301,11 @@ if __name__ == '__main__':
         default_list.append("PStore")
         default_list.append("Kconfig")
         default_list.append("ThermalTemp")
+        default_list.append("GpuParser")
         default_list.append("ipc_logging_cn")
+        default_list.append("VaMinidump")
+        default_list.append("SoftirqStat")
+        default_list.append("DumpTasks")
 
     if options.everything:
         everything_exclusion_list.append("ROData")
@@ -458,13 +468,16 @@ if __name__ == '__main__':
     if options.everything:
         options.qtf = True
 
-    if options.svm:
+    if options.svm and options.host_vmlinux:
         ## prepare for vttbr on svm mode
         import copy
         copied_options = copy.deepcopy(options)
-        prepare_vttbr_for_svm(copied_options)
+        pvmdump = get_pvm_dump(copied_options)
+        prepare_vttbr_for_svm(copied_options, pvmdump)
 
     dump = RamDump(options, nm_path, gdb_path, objdump_path,gdb_ndk_path)
+    if options.svm and options.host_vmlinux:
+        dump.dump = pvmdump
 
     if options.eval:
         if options.eval == '-':
@@ -553,8 +566,8 @@ if __name__ == '__main__':
     if options.timeout:
         from func_timeout import func_timeout, FunctionTimedOut
 
-    print_out_str("Time taken to setup the subparsers run : {}".format(time.time()-starttime))
-    starttime = time.time()
+    print_out_str("Time taken to setup the subparsers run : {:.6f}".format(time.perf_counter()-starttime))
+    starttime = time.perf_counter()
     for i,p in enumerate(parsers_to_run):
         if options.everything:
             if p.cls.__name__ in everything_exclusion_list:
@@ -571,8 +584,8 @@ if __name__ == '__main__':
 
         print("    [%d/%d] %s ... " %
                          (i + 1, len(parsers_to_run), p.longopt), end='', flush=True)
-        before = time.time()
-        print_out_str("start time {0}".format(before))
+        before = time.perf_counter()
+        print_out_str("start time {:.6f}".format(before))
         with print_out_section(p.cls.__name__):
             try:
                 if options.timeout:
@@ -590,9 +603,9 @@ if __name__ == '__main__':
                     print("FAILED! ")
                 else:
                     raise
-        after = time.time()
-        print_out_str("end time {0} time cost {1} for {2}".format(after, (after - before), p.cls.__name__))
-        print("%fs" % (after - before),  flush=True)
+        after = time.perf_counter()
+        print_out_str("end time {:.6f} time cost {:.6f} for {}".format(after, (after - before), p.cls.__name__))
+        print("{:.6f}s".format(after - before),  flush=True)
         flush_outfile()
 
     sys.stderr.write("\n")
@@ -601,7 +614,9 @@ if __name__ == '__main__':
         dump.create_t32_launcher()
 
     dump.gdbmi.close()
-    print_out_str("Time taken to complete ramparser subscripts : {}".format(time.time()-starttime))
+    print_out_str("Time taken to complete ramparser subscripts : {:.6f}".format(time.perf_counter()-starttime))
     if options.reduceddump:
         print_out_str("Number of cache hits on full cache : {}".format(elfutil.cachehits))
         print_out_str("Number of cache misses on full cache : {}".format(elfutil.cachemiss))
+    if hasattr(dump, 'phys_cache'):
+        dump.phys_cache.print_stats("phys_cache")

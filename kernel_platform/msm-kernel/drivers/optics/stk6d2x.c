@@ -28,6 +28,10 @@
 static int32_t stk6d2x_set_als_thd(struct stk6d2x_data *alps_data, uint16_t thd_h, uint16_t thd_l);
 void stk6d2x_get_data_polling(stk_timer_info *t_info);
 
+#if IS_ENABLED(CONFIG_FLICKER_ANTI_ALIASING)
+extern sample_rate_setting sr_table[];
+#endif
+
 #ifdef STK_FIFO_ENABLE
 	void stk6d2x_fifo_switch_it(struct stk6d2x_data *alps_data, bool is_long_it);
 #endif
@@ -1127,6 +1131,37 @@ void stk6d2x_fifo_switch_it(struct stk6d2x_data *alps_data, bool is_long_it)
 	alps_data->alps_timer_info.change_interval_time = true;
 	STK6D2X_TIMER_REGISTER(alps_data, &alps_data->alps_timer_info);
 	STK6D2X_TIMER_START(alps_data, &alps_data->alps_timer_info);
+}
+#endif
+
+#if IS_ENABLED(CONFIG_FLICKER_ANTI_ALIASING)
+void stk6d2x_switch_sample_rate(struct stk6d2x_data *alps_data)
+{
+	if (!alps_data->als_info.enable)
+	{
+		APS_ERR("Sensor is not enable return");
+		return;
+	}
+	if (als_info || alps_data->is_first)
+		ALS_dbg("work here");
+
+	stk6d2x_enable_fifo(alps_data, false);
+	STK6D2X_REG_WRITE(alps_data, STK6D2X_REG_IT1, (sr_table[alps_data->cur_sample_rate].als_it >> 8) & STK6D2X_ALS_IT1_MASK);
+	STK6D2X_REG_WRITE(alps_data, STK6D2X_REG_IT2, sr_table[alps_data->cur_sample_rate].als_it & 0xFF);
+	STK6D2X_REG_WRITE(alps_data, STK6D2X_REG_ALS_IT_EXT, sr_table[alps_data->cur_sample_rate].als_it_ext);
+	stk6d2x_enable_fifo(alps_data, true);
+	if (als_info || alps_data->is_first) {
+		APS_ERR("Switch to short IT = %d\n", sr_table[alps_data->cur_sample_rate].als_it);
+		APS_ERR("Switch to short ext IT = %d\n", sr_table[alps_data->cur_sample_rate].als_it_ext);
+	}
+
+	stk6d2x_fsm_restart(alps_data);
+	stk6d2x_als_get_data(alps_data, 1);
+	stk6d2x_als_latency(alps_data);
+	alps_data->alps_timer_info.interval_time = alps_data->als_info.als_it;
+	alps_data->alps_timer_info.change_interval_time = true;
+	// STK6D2X_TIMER_REGISTER(alps_data, &alps_data->alps_timer_info);
+	// STK6D2X_TIMER_START(alps_data, &alps_data->alps_timer_info);
 }
 #endif
 

@@ -282,17 +282,22 @@ struct private_handle_t : public native_handle_t {
   std::vector<FdPair> getFds();
   void closeFds();
   uint32_t getViewInfo();
-  private_handle_t* CreateViewHandle(uint32_t view);
+  private_handle_t *CreateViewHandle(uint32_t view, uint32_t view_in_handle);
 
-  static private_handle_t *createSingleHandle(
-      int fd, int meta_fd, int flags, int width_in_bytes, int height, int uw,
-      int uh, int format, int buf_type, uint64_t id1, unsigned int size,
-      unsigned int reserved_size, unsigned int layer_count, uint64_t usage);
+  static private_handle_t *createSingleHandle(int fd, int meta_fd, int flags, int width_in_bytes,
+                                              int height, int uw, int uh, int format, int buf_type,
+                                              uint64_t id1, unsigned int size,
+                                              unsigned int reserved_size, unsigned int layer_count,
+                                              uint64_t usage,
+                                              unsigned int custom_content_md_reserved_size = 0);
 
-  static private_handle_t *createLRMetaHandle(
-      int fd1, int meta_fd1, int fd2, int meta_fd2, int flags, int width_in_bytes,
-      int height, int uw, int uh, int format, int buf_type, uint64_t id1, uint64_t id2,
-      unsigned int size, unsigned int reserved_size, unsigned int layer_count, uint64_t usage);
+  static private_handle_t *createLRMetaHandle(int fd1, int meta_fd1, int fd2, int meta_fd2,
+                                              int flags, int width_in_bytes, int height, int uw,
+                                              int uh, int format, int buf_type, uint64_t id1,
+                                              uint64_t id2, unsigned int size,
+                                              unsigned int reserved_size, unsigned int layer_count,
+                                              uint64_t usage,
+                                              unsigned int custom_content_md_reserved_size = 0);
 
  private:
   private_handle_t(const private_handle_t &other) = delete;
@@ -388,10 +393,10 @@ struct PvtHandleData : public private_handle_t {
     return sizeof(std::array<PvtHandleProperties, N>) / sizeof(int);
   }
 
-  void setProperties(PvtHandleProperties &prop, int flags, uint32_t view, int width,
-                     int height, int uw, int uh, int format, int buf_type, uint64_t id,
-                     unsigned int size, unsigned int reserved_size, unsigned int layer_count,
-                     uint64_t usage = 0) {
+  void setProperties(PvtHandleProperties &prop, int flags, uint32_t view, int width, int height,
+                     int uw, int uh, int format, int buf_type, uint64_t id, unsigned int size,
+                     unsigned int reserved_size, unsigned int layer_count, uint64_t usage = 0,
+                     unsigned int custom_content_md_reserved_size = 0) {
     prop.magic = kMagic;
     prop.flags = flags;
     prop.width = width;
@@ -410,7 +415,7 @@ struct PvtHandleData : public private_handle_t {
     prop.base_metadata = 0;
     prop.gpuaddr = 0;
     prop.reserved_size = reserved_size;
-    prop.custom_content_md_reserved_size = 0;
+    prop.custom_content_md_reserved_size = custom_content_md_reserved_size;
     prop.linear_size = 0;
     prop.ubwcp_format = format;
     prop.view = view;
@@ -552,9 +557,9 @@ inline int private_handle_t::validate(native_handle_t *h) {
 }
 
 inline private_handle_t *private_handle_t::createSingleHandle(
-    int fd, int meta_fd, int flags, int width_in_bytes, int height, int uw,
-    int uh, int format, int buf_type, uint64_t id, unsigned int size,
-    unsigned int reserved_size, unsigned int layer_count, uint64_t usage) {
+    int fd, int meta_fd, int flags, int width_in_bytes, int height, int uw, int uh, int format,
+    int buf_type, uint64_t id, unsigned int size, unsigned int reserved_size,
+    unsigned int layer_count, uint64_t usage, unsigned int custom_content_md_reserved_size) {
   size_t handle_size = sizeof(PvtHandleProperties) + sizeof(FdPair) + sizeof(native_handle_t);
   PvtHandleData<1> *h = static_cast<PvtHandleData<1> *>(malloc(handle_size));
 
@@ -567,15 +572,17 @@ inline private_handle_t *private_handle_t::createSingleHandle(
   fd_primary.fd_metadata = meta_fd;
 
   PvtHandleProperties &prop = h->getProperties(0);
-  h->setProperties(prop, flags, PRIV_VIEW_MASK_PRIMARY, width_in_bytes, height, uw, uh,
-                   format, buf_type, id, size, reserved_size, layer_count, usage);
+  h->setProperties(prop, flags, PRIV_VIEW_MASK_PRIMARY, width_in_bytes, height, uw, uh, format,
+                   buf_type, id, size, reserved_size, layer_count, usage,
+                   custom_content_md_reserved_size);
   return h;
 }
 
 inline private_handle_t *private_handle_t::createLRMetaHandle(
-    int fd1, int meta_fd1, int fd2, int meta_fd2, int flags, int width_in_bytes, int height,
-    int uw, int uh, int format, int buf_type, uint64_t id1, uint64_t id2, unsigned int size,
-    unsigned int reserved_size, unsigned int layer_count, uint64_t usage) {
+    int fd1, int meta_fd1, int fd2, int meta_fd2, int flags, int width_in_bytes, int height, int uw,
+    int uh, int format, int buf_type, uint64_t id1, uint64_t id2, unsigned int size,
+    unsigned int reserved_size, unsigned int layer_count, uint64_t usage,
+    unsigned int custom_content_md_reserved_size) {
   size_t handle_size =
       ((sizeof(PvtHandleProperties) + sizeof(FdPair)) * 2 + sizeof(native_handle_t));
   PvtHandleData<2> *h = static_cast<PvtHandleData<2> *>(malloc(handle_size));
@@ -594,11 +601,13 @@ inline private_handle_t *private_handle_t::createLRMetaHandle(
 
   PvtHandleProperties &prop_primary = h->getProperties(0);
   h->setProperties(prop_primary, flags, PRIV_VIEW_MASK_PRIMARY, width_in_bytes, height, uw, uh,
-                   format, buf_type, id1, size, reserved_size, layer_count, usage);
+                   format, buf_type, id1, size, reserved_size, layer_count, usage,
+                   custom_content_md_reserved_size);
 
   PvtHandleProperties &prop_secondary = h->getProperties(1);
-  h->setProperties(prop_secondary, flags, PRIV_VIEW_MASK_SECONDARY, width_in_bytes, height,
-                   uw, uh, format, buf_type, id2, size, reserved_size, layer_count, usage);
+  h->setProperties(prop_secondary, flags, PRIV_VIEW_MASK_SECONDARY, width_in_bytes, height, uw, uh,
+                   format, buf_type, id2, size, reserved_size, layer_count, usage,
+                   custom_content_md_reserved_size);
 
   return h;
 }
@@ -613,7 +622,8 @@ inline void private_handle_t::Dump(private_handle_t *hnd) {
         hnd->layer_count(), hnd->reserved_size(), hnd->custom_content_md_reserved_size());
 }
 
-inline private_handle_t* private_handle_t::CreateViewHandle(uint32_t view) {
+inline private_handle_t *private_handle_t::CreateViewHandle(uint32_t view,
+                                                            uint32_t view_in_handle) {
   int N = getN();
 
   if (N > 2) {
@@ -656,6 +666,7 @@ inline private_handle_t* private_handle_t::CreateViewHandle(uint32_t view) {
                 F_DUPFD_CLOEXEC, 0);
       view_handle->getProperties(0) =
           static_cast<PvtHandleData<2>*>(this)->getProperties(view_index);
+      view_handle->propertiesArray[0].view = view_in_handle;
       break;
     default:
       ALOGE("Unsupported Meta Handle");

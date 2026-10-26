@@ -305,7 +305,8 @@ uint64_t __read_aon_time(struct iris_hfi_device *device);
 #define msm_cvp_msg_tracing_from_sw(msg_hdr, tag) ({ \
 	if (((msm_cvp_debug & CVP_TRACE) == CVP_TRACE) && \
 			(msg_hdr->packet_type > HFI_MSG_SESSION_CVP_START) && \
-			(msg_hdr->size >= sizeof(struct cvp_hfi_msg_session_hdr))) { \
+			(msg_hdr->size >= sizeof(struct cvp_hfi_msg_session_hdr)) && \
+			(msg_hdr->client_data.transaction_id % msm_cvp_logN == 0)) { \
 		u32 t_id = 0; \
 		u64 aon_cycles = 0; \
 		u32 pkt_id = 0; \

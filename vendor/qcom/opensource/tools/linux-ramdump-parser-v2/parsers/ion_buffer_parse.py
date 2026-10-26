@@ -1,6 +1,5 @@
 """
 Copyright (c) 2016, 2018, 2020-2021 The Linux Foundation. All rights reserved.
-Copyright (c) 2023-2025 Qualcomm Innovation Center, Inc. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
 met:
@@ -26,8 +25,8 @@ WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-Changes from Qualcomm Innovation Center are provided under the following license:
-Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+Changes from Qualcomm Technologies, Inc. are provided under the following license
+Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 SPDX-License-Identifier: BSD-3-Clause-Clear
 """
 
@@ -105,7 +104,9 @@ def ion_buffer_info(self, ramdump, ion_info):
     size_offset = ramdump.field_offset('struct dma_buf', 'size')
     ops_offset = ramdump.field_offset('struct dma_buf', 'ops')
     file_offset = ramdump.field_offset('struct dma_buf', 'file')
-    f_count_offset = ramdump.field_offset('struct file', 'f_count')
+    f_count_offset = ramdump.field_offset('struct file', 'f_ref')
+    if f_count_offset is None:
+        f_count_offset = ramdump.field_offset('struct file', 'f_count')
     name_offset = ramdump.field_offset('struct dma_buf', 'buf_name')
     if name_offset is None:
         name_offset = ramdump.field_offset('struct dma_buf', 'name')
@@ -119,7 +120,7 @@ def ion_buffer_info(self, ramdump, ion_info):
     while (head != db_list):
         dma_buf_addr = head - list_node_offset
         size = ramdump.read_word(dma_buf_addr + size_offset)
-        total_dma_heap = total_dma_heap + size
+        total_dma_heap += size
         file = ramdump.read_word(dma_buf_addr + file_offset)
         f_count = ramdump.read_u64(file + f_count_offset)
         exp_name = ramdump.read_word(dma_buf_addr + exp_name_offset)
@@ -139,10 +140,11 @@ def ion_buffer_info(self, ramdump, ion_info):
                 ionheap_name_addr = ramdump.read_structure_field(ion_heap, 'struct dma_heap', 'name')
                 ionheap_name = ramdump.read_cstring(ionheap_name_addr, 48)
                 dma_heap_ops = ramdump.read_structure_field(ion_heap, 'struct dma_heap', 'ops')
-                look = ramdump.unwind_lookup(dma_heap_ops)
-                if look !=None:
-                    fop, offset = look
-                    ops = fop
+                if dma_heap_ops != None:
+                    look = ramdump.unwind_lookup(dma_heap_ops)
+                    if look !=None:
+                        fop, offset = look
+                        ops = fop
         else:
             if exp_name == 'ion':
                 ion_buffer = ramdump.read_structure_field(dma_buf_addr, 'struct dma_buf', 'priv')
@@ -160,9 +162,9 @@ def ion_buffer_info(self, ramdump, ion_info):
                              ionheap_name, size, ops, dma_buf_ops, file])
         head = ramdump.read_word(head)
     dma_buf_info = sorted(dma_buf_info, key=lambda l: l[6], reverse=True)
-    total_dma_heap_mb = bytes_to_mb(total_dma_heap)
-    total_dma_heap_mb = str(total_dma_heap_mb) + "MB"
-    total_dma_info.write("Total dma memory: {0}".format(total_dma_heap_mb))
+    total_dma_info.write("Total dma memory: {} Bytes ({} MB)".format(total_dma_heap, 
+                                                                     bytes_to_mb(total_dma_heap)))
+
     for item in dma_buf_info:
         print("v.v (struct file *)0x%x      v.v (struct dma_buf*)0x%x   %2d   %8s  0x%-8x  %-24s  %-24s  %16dKB  %-32s %-32s"
               %(item[9], item[0], item[1], item[2], item[3],  item[4], item[5], item[6]/1024, item[7], item[8]), file = ion_info)
@@ -568,6 +570,8 @@ class DumpIonBuffer(RamParser):
     def __init__(self, *args):
         super(DumpIonBuffer, self).__init__(*args)
         self.timekeeper = self.ramdump.address_of('shadow_timekeeper')
+        if self.timekeeper is None:
+            self.timekeeper = self.ramdump.address_of('tk_core.shadow_timekeeper')
         self.files_offset = self.ramdump.field_offset(
                                      'struct task_struct', 'files')
         self.fdt_offset = self.ramdump.field_offset(

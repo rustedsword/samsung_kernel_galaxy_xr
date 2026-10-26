@@ -32,10 +32,8 @@ ifeq ($(TARGET_NAME),qssi_lite)
   PRODUCT_SYSTEM_EXT_PROPERTIES += bluetooth.profile.sap.server.enabled=false
 else ifneq ($(TARGET_BOARD_TYPE),auto)
   PRODUCT_PRODUCT_PROPERTIES += \
-      bluetooth.profile.a2dp.source.enabled=true \
       bluetooth.profile.avrcp.target.enabled=true \
       bluetooth.profile.avrcp.controller.enabled=true \
-      bluetooth.profile.hfp.ag.enabled=true \
       bluetooth.profile.asha.central.enabled=true \
       bluetooth.profile.gatt.enabled=true \
       bluetooth.profile.hid.host.enabled=true \
@@ -46,7 +44,10 @@ else ifneq ($(TARGET_BOARD_TYPE),auto)
 
   PRODUCT_SYSTEM_EXT_PROPERTIES += bluetooth.profile.sap.server.enabled=false
   PRODUCT_SYSTEM_EXT_PROPERTIES += bluetooth.profile.pbap.server.enabled=true
+  PRODUCT_SYSTEM_EXT_PROPERTIES += bluetooth.profile.pbap.client.enabled=false
   PRODUCT_SYSTEM_EXT_PROPERTIES += bluetooth.profile.map.server.enabled=true
+  PRODUCT_SYSTEM_EXT_PROPERTIES += bluetooth.profile.hfp.ag.enabled=true
+  PRODUCT_SYSTEM_EXT_PROPERTIES += bluetooth.profile.a2dp.source.enabled=true
 endif #TARGET_BOARD_TYPE
 
 ifeq ($(TARGET_FWK_SUPPORTS_FULL_VALUEADDS), true)
@@ -55,6 +56,7 @@ TARGET_USE_QTI_BT_STACK := false
 endif
 
 ifeq ($(TARGET_USE_QTI_BT_STACK),true)
+PRODUCT_SYSTEM_EXT_PROPERTIES += bluetooth.profile.csip.set_coordinator.enabled=true
 # BT Related Libs
 PRODUCT_PACKAGES += libbluetooth_qti
 PRODUCT_PACKAGES += libbluetooth_qti_jni
