@@ -1,0 +1,4 @@
+config SEC_PM_LOG
+	tristate "Samsung Power/Thermal Log driver"
+	help
+	  TODO: help is not ready.

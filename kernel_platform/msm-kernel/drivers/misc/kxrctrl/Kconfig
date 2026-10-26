@@ -1,0 +1,10 @@
+config KINECTICS_XR_NORDIC
+    tristate "KXR Nordic SPI support"
+    default m
+    help
+      Say Y here if you need KXR Nordic SPI support.
+
+      If unsure, say N.
+
+      To compile this driver as a module, choose M here: the
+      module will be called kxr_aphost.

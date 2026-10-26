@@ -1,0 +1,24 @@
+&${wpc_det_parent} {
+	mfc_det_default: mfc_det_default {
+			 GPIO_CONFIG_PUD(${mfc_det_gpio}, FUNC_INPUT_WAKEUP, PULL_NONE);
+		 };
+};
+
+&${wireless_i2c} {
+	#address-cells = <1>;
+	#size-cells = <0>;
+	status = "okay";
+	clock-frequency = <100000>;
+
+	sb_mfc: sb-mfc@3b {
+		compatible = "sb-mfc";
+		reg = <0x3b>;
+		status = "okay";
+
+		pinctrl-names = "default";
+		pinctrl-0 = <&mfc_det_default>;
+
+		wpc_det_gpio = <SEC_GPIO_REF(${mfc_det_gpio}) 0>;
+		chg_name = "${charger_name}";
+	};
+};

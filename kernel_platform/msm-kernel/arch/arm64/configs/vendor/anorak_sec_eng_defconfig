@@ -1,0 +1,11 @@
+#POWER
+CONFIG_SEC_GPIO_DVS=m
+
+# Samsung Eng PCIe PHY Tune
+CONFIG_SEC_PCIE_DEV=y
+
+# ABC Hub bootc eng mode
+CONFIG_SEC_ABC_HUB_BOOTC_ENG=m
+
+# sec_bsp / sec_debug
+CONFIG_SEC_FORCE_ERR=y

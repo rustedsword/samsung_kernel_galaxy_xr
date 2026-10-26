@@ -1,0 +1,10 @@
+#
+# Samsung XRVST2 Projects
+#
+config MACH_XRVST2_USA_OPEN
+	default n
+	bool "Samsung XRVST2 USA OPEN"
+	help
+	  Support for Samsung XRVST2 USA OPEN device.
+
+

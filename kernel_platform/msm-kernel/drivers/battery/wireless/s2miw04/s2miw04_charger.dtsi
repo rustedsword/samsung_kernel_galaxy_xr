@@ -1,0 +1,79 @@
+#include <dt-bindings/battery/sec-battery.h>
+
+&${mfc_irq_parent} {
+	lsi_irq_default: lsi_int_default {
+		GPIO_CONFIG_PUD_DRV(${lsi_irq_gpio}, FUNC_INPUT_WAKEUP, PULL_NONE, DRV_LV1);
+	};
+};
+
+&${wpc_det_parent} {
+	lsi_det_default: lsi_det_default {
+		GPIO_CONFIG_PUD(${lsi_det_gpio}, FUNC_INPUT_WAKEUP, PULL_NONE);
+	};
+};
+
+&${wpc_en_parent} {
+	lsi_en_default: lsi_en_default {
+		GPIO_CONFIG_PUD(${lsi_en_gpio}, FUNC_OUTPUT_LOW, PULL_NONE);
+	};
+};
+
+&${wireless_i2c} {
+	#address-cells = <1>;
+	#size-cells = <0>;
+	status = "okay";
+	clock-frequency = <100000>;
+
+	s2miw04_charger: s2miw04-charger@3b {
+		compatible = "lsi,s2miw04-charger";
+		reg = <0x3b>;
+		status = "okay";
+
+		pinctrl-names = "default";
+		pinctrl-0 = <&lsi_irq_default &lsi_det_default &lsi_en_default>;
+
+		battery,wpc_int = <SEC_GPIO_REF(${lsi_irq_gpio}) 1>; /* MFC_AP_INT */
+		battery,wpc_det = <SEC_GPIO_REF(${lsi_det_gpio}) 0>; /* WPC_DET */
+#if ${feature_use_gpio_mst_pwr_en}(get)
+		battery,mst_pwr_en = <SEC_GPIO_REF(${lsi_pwr_en_gpio}) 0>; /* MST_PWR_EN */
+#endif
+		battery,wpc_en = <SEC_GPIO_REF(${lsi_en_gpio}) 0>; /* WPC_EN */
+
+		battery,charger_name = "${charger_name}";
+		battery,fuelgauge_name = "${fuelgauge_name}";
+		battery,wireless_charger_name = "s2miw04-charger";
+		battery,wc_cover_rpp = <0x44>;
+		battery,phone_fod_threshold = <0x3b>;
+		battery,wireless20_vout_list = <WIRELESS_VOUT_11V /* 0xA0 */
+						WIRELESS_VOUT_11V /* 0xA1 */
+						WIRELESS_VOUT_11V /* 0xA2 */
+						WIRELESS_VOUT_11V /* 0xA3 */
+						WIRELESS_VOUT_11V /* 0xA4 */
+						WIRELESS_VOUT_11V>; /* 0xA5 */
+		battery,wireless20_vrect_list = <MFC_AFC_CONF_12V_TX
+						MFC_AFC_CONF_12_5V_TX
+						MFC_AFC_CONF_12_5V_TX
+						MFC_AFC_CONF_12_5V_TX
+						MFC_AFC_CONF_12_5V_TX
+						MFC_AFC_CONF_12_5V_TX>;
+		battery,wireless20_max_power_list = <SEC_WIRELESS_RX_POWER_12W
+						SEC_WIRELESS_RX_POWER_15W
+						SEC_WIRELESS_RX_POWER_15W
+						SEC_WIRELESS_RX_POWER_15W
+						SEC_WIRELESS_RX_POWER_15W
+						SEC_WIRELESS_RX_POWER_15W>;
+		battery,oc_fod1 = <1100>;
+
+		fod_list {
+			count = <1>;
+
+			pad_0x00 { /* DEFAULT */
+				flag = <(SET_FOD_CC(ADD) | SET_FOD_CV(USE_CC) | SET_FOD_FULL(ADD))>;
+				cc = <0x06 0xAA 0x06 0xAA 0x06 0xAA 0x06 0x99 0x06 0x99
+					0x06 0x99 0x0C 0x85 0x0C 0x85 0x08 0x9E 0x08 0x9E>;
+				full = <0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF
+					0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF>;
+			};
+		};
+	};
+};

@@ -1,0 +1,34 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# Settings for compiling lito camera architecture
+
+# Localized KCONFIG settings
+CONFIG_SPECTRA_FD := y
+CONFIG_SPECTRA_ISP := y
+CONFIG_SPECTRA_ICP := y
+CONFIG_SPECTRA_JPEG := y
+CONFIG_SPECTRA_SENSOR := y
+CONFIG_CAMERA_SYSFS_V2 := y
+CONFIG_LEDS_PMIC_QPNP := y
+CONFIG_SAMSUNG_REAR_TOF := y
+CONFIG_SEC_VST_PROJECT := y
+CONFIG_CAMERA_CDR_TEST := y
+CONFIG_USE_CAMERA_HW_BIG_DATA := y
+CONFIG_SEC_ABC := y
+
+# Flags to pass into C preprocessor
+ccflags-y += -DCONFIG_SPECTRA_FD=1
+ccflags-y += -DCONFIG_SPECTRA_ISP=1
+ccflags-y += -DCONFIG_SPECTRA_ICP=1
+ccflags-y += -DCONFIG_SPECTRA_JPEG=1
+ccflags-y += -DCONFIG_SPECTRA_SENSOR=1
+ifneq ($(TARGET_BOARD_PLATFORM), anorak61)
+ccflags-y += -DCONFIG_SECURE_CAMERA_V3
+endif
+ccflags-y += -DCONFIG_KTHREAD_WORKER
+ccflags-y += -DCONFIG_CAMERA_SYSFS_V2=1
+ccflags-y += -DCONFIG_LEDS_PMIC_QPNP=1
+ccflags-y += -DCONFIG_SAMSUNG_REAR_TOF=1
+ccflags-y += -DCONFIG_SEC_VST_PROJECT=1
+ccflags-y += -DCONFIG_CAMERA_CDR_TEST=1
+ccflags-y += -DCONFIG_USE_CAMERA_HW_BIG_DATA=1
+ccflags-y += -DCONFIG_SEC_ABC=1

@@ -1,0 +1,164 @@
+#include <dt-bindings/battery/sec-battery.h>
+
+&${mfc_irq_parent} {
+	nu_irq_default: nu_irq_default {
+		GPIO_CONFIG_PUD_DRV(${nu_irq_gpio}, FUNC_INPUT_WAKEUP, PULL_NONE, DRV_LV1);
+	};
+};
+
+&${wpc_det_parent} {
+	nu_det_default: nu_det_default {
+		GPIO_CONFIG_PUD(${nu_det_gpio}, FUNC_INPUT_WAKEUP, PULL_NONE);
+	};
+};
+
+&${wpc_en_parent} {
+	nu_en_default: nu_en_default {
+		GPIO_CONFIG_PUD(${nu_en_gpio}, FUNC_OUTPUT_LOW, PULL_NONE);
+	};
+};
+
+&${wpc_pdrc_parent} {
+	nu_pdrc_default: nu_pdrc_default {
+		GPIO_CONFIG_PUD(${nu_pdrc_gpio}, FUNC_INPUT_WAKEUP, PULL_NONE);
+	};
+};
+
+#if ${feature_use_gpio_ping_nen}(get)
+&${ping_nen_parent} {
+	nu_ping_nen_default: nu_ping_nen_default {
+		GPIO_CONFIG_PUD(${nu_ping_nen_gpio}, FUNC_OUTPUT_HIGH, PULL_NONE);
+	};
+};
+#endif
+
+#if ${feature_use_gpio_pdet_b}(get)
+&${pdet_b_parent} {
+	nu_pdet_b_default: nu_pdet_b_default {
+		GPIO_CONFIG_PUD(${nu_pdet_b_gpio}, FUNC_INPUT_WAKEUP, PULL_NONE);
+	};
+};
+#endif
+
+#if ${feature_use_gpio_mag_det}(get)
+&${mag_det_parent} {
+	nu_mag_det_default: nu_mag_det_default {
+		GPIO_CONFIG_PUD(${nu_mag_det_gpio}, FUNC_OUTPUT_HIGH, PULL_NONE);
+	};
+};
+#endif
+
+&${wireless_i2c} {
+	#address-cells = <1>;
+	#size-cells = <0>;
+	status = "okay";
+	clock-frequency = <100000>;
+
+	nu1668_charger: nu1668-charger@41 {
+		compatible = "nuvolta,nu1668-charger";
+		reg = <0x41>;
+		status = "okay";
+
+		pinctrl-names = "default";
+		pinctrl-0 = <&nu_irq_default &nu_det_default &nu_en_default &nu_pdrc_default
+#if ${feature_use_gpio_ping_nen}(get)
+			&nu_ping_nen_default
+#endif
+#if ${feature_use_gpio_pdet_b}(get)
+			&nu_pdet_b_default
+#endif
+#if ${feature_use_gpio_mag_det}(get)
+			&nu_mag_det_default
+#endif
+			>;
+
+		battery,wpc_int = <SEC_GPIO_REF(${nu_irq_gpio}) 1>; /* MFC_AP_INT */
+		battery,wpc_det = <SEC_GPIO_REF(${nu_det_gpio}) 0>; /* WPC_DET */
+#if ${feature_use_gpio_mst_pwr_en}(get)
+		battery,mst_pwr_en = <SEC_GPIO_REF(${nu_pwr_en_gpio}) 0>; /* MST_PWR_EN */
+#endif
+#if ${feature_use_gpio_ping_nen}(get)
+		battery,wpc_ping_nen = <SEC_GPIO_REF(${nu_ping_nen_gpio}) 1>; /* PING_NEN */
+#endif
+#if ${feature_use_gpio_pdet_b}(get)
+		battery,wpc_pdet_b = <SEC_GPIO_REF(${nu_pdet_b_gpio}) 1>; /* PDET_B */
+#endif
+		battery,wpc_en = <SEC_GPIO_REF(${nu_en_gpio}) 0>; /* WPC_EN */
+		battery,wpc_pdrc = <SEC_GPIO_REF(${nu_pdrc_gpio}) 1>; /* VRECT_INT */
+#if ${feature_use_gpio_mag_det}(get)
+		battery,wpc_mag_det = <SEC_GPIO_REF(${nu_mag_det_gpio}) 0>; /* MAG_DET */
+#endif
+
+		battery,charger_name = "${charger_name}";
+		battery,fuelgauge_name = "${fuelgauge_name}";
+		battery,wireless_charger_name = "nu1668-charger";
+		battery,wc_cover_rpp = <0x44>;
+		battery,phone_fod_threshold = <0x3b>;
+		battery,wireless20_vout_list = <WIRELESS_VOUT_9V /* 0xA0 */
+						WIRELESS_VOUT_12V /* 0xA1 */
+						WIRELESS_VOUT_12V /* 0xA2 */
+						WIRELESS_VOUT_12V /* 0xA3 */
+						WIRELESS_VOUT_12V /* 0xA4 */
+						WIRELESS_VOUT_12V>; /* 0xA5 */
+		battery,wireless20_vrect_list = <MFC_AFC_CONF_12V_TX
+						MFC_AFC_CONF_12_5V_TX
+						MFC_AFC_CONF_12_5V_TX
+						MFC_AFC_CONF_12_5V_TX
+						MFC_AFC_CONF_12_5V_TX
+						MFC_AFC_CONF_12_5V_TX>;
+		battery,wireless20_max_power_list = <SEC_WIRELESS_RX_POWER_12W
+						SEC_WIRELESS_RX_POWER_15W
+						SEC_WIRELESS_RX_POWER_15W
+						SEC_WIRELESS_RX_POWER_15W
+						SEC_WIRELESS_RX_POWER_15W
+						SEC_WIRELESS_RX_POWER_15W>;
+
+		battery,buds_fod_ta_thresh = <0x0898>; /* 2200mW */
+		battery,wpc_vout_ctrl_full = <WIRELESS_VOUT_5V_STEP>;
+		battery,mis_align_guide;
+		battery,mis_align_target_vout = <5000>;
+		battery,enable_qfod_param;
+		battery,mpp_epp_vout = <WIRELESS_VOUT_12V>;
+
+		fod_list {
+			count = <1>;
+
+			pad_0x00 { /* DEFAULT */
+				bpp { /* DEFAULT OP MODE */
+					flag = <(SET_FOD_CC(ADD) | SET_FOD_CV(USE_CC) | SET_FOD_FULL(ADD))>;
+					cc = <0x28 0x54 0x28 0x54 0x28 0x32 0x28 0x32 0x28 0x32
+						0x28 0x32 0x28 0x32 0x32 0x40 0x32 0x40 0x32 0x40>;
+					full = <0xFF 0x7F 0xFF 0x7F 0xFF 0x7F 0xFF 0x7F 0xFF 0x7F
+						0xFF 0x7F 0xFF 0x7F 0xFF 0x7F 0xFF 0x7F 0xFF 0x7F>;
+				};
+
+				ppde {
+					flag = <(SET_FOD_CC(USE_DEF_OP) | SET_FOD_CV(USE_DEF_OP) | SET_FOD_FULL(USE_DEF_OP))>;
+				};
+
+				epp {
+					flag = <(SET_FOD_CC(USE_DEF_OP) | SET_FOD_CV(USE_DEF_OP) | SET_FOD_FULL(USE_DEF_OP))>;
+				};
+
+				mpp {
+					flag = <(SET_FOD_CC(USE_DEF_OP) | SET_FOD_CV(USE_DEF_OP) | SET_FOD_FULL(USE_DEF_OP))>;
+				};
+			};
+		};
+
+		qfod_list {
+			number = <1>;
+
+			rx_0x00 { /* DEFAULT */
+				sspth_value = <74>;
+				qbase_value = <1700>;
+				qfod_th0 = <51>;
+				qfod_th1 = <116>;
+				qfod_th2 = <51>;
+				qfod_th3 = <117>;
+				qfod_tws_th3 = <600>;
+				qfod_phone_th4 = <1100>;
+			};
+		};
+	};
+};

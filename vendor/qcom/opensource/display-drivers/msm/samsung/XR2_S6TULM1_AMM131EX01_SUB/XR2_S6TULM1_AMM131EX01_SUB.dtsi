@@ -1,0 +1,318 @@
+/* Copyright (c) 2013-2014, The Linux Foundation. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+&mdss_mdp0 {
+	XR2_S6TULM1_AMM131EX01_SUB: XR2_S6TULM1_AMM131EX01_SUB {
+		qcom,mdss-dsi-panel-name = "XR2_S6TULM1_AMM131EX01_SUB";
+		label = "XR2_S6TULM1_AMM131EX01_SUB";
+
+		qcom,mdss-dsi-bpp = <24>;
+		qcom,mdss-dsi-h-left-border = <0>;
+		qcom,mdss-dsi-h-right-border = <0>;
+		qcom,mdss-dsi-v-top-border = <0>;
+		qcom,mdss-dsi-v-bottom-border = <0>;
+
+		qcom,mdss-dsi-underflow-color = <0xFF>;
+		qcom,mdss-dsi-border-color = <0>;
+
+		qcom,mdss-dsi-bl-pmic-control-type = "bl_ctrl_dcs";
+
+		qcom,mdss-dsi-interleave-mode = <0>;
+		qcom,mdss-dsi-panel-type = "dsi_video_mode";
+		qcom,mdss-dsi-force-clock-lane-hs;
+
+		qcom,mdss-dsi-wr-mem-start = <0x2C>;
+		qcom,mdss-dsi-wr-mem-continue = <0x3C>;
+
+		qcom,mdss-dsi-bllp-eof-power-mode;
+		qcom,mdss-dsi-bllp-power-mode;
+//		qcom,mdss-dsi-traffic-mode= "non_burst_sync_pulse";
+		qcom,mdss-dsi-traffic-mode= "non_burst_sync_event";
+
+		qcom,mdss-dsi-pixel-packing = "loose";
+
+		qcom,mdss-dsi-virtual-channel-id = <0>;
+		qcom,mdss-dsi-color-order = "rgb_swap_rgb";
+		qcom,mdss-dsi-lane-0-state;
+		qcom,mdss-dsi-lane-1-state;
+		qcom,mdss-dsi-lane-2-state;
+		qcom,mdss-dsi-lane-3-state;
+		qcom,mdss-dsi-lane-map = "lane_map_0123";
+
+		qcom,mdss-dsi-stream = <0>;
+		qcom,mdss-dsi-mdp-trigger = "none";
+		qcom,mdss-dsi-dma-trigger = "trigger_sw";
+
+		qcom,mdss-pan-physical-width-dimension = <18>;
+		qcom,mdss-pan-physical-height-dimension = <18>;
+
+		qcom,mdss-dsi-panel-mode-gpio-state = "invalid";
+
+		/* temp add to avoid error log */
+		qcom,mdss-dsi-reset-sequence = <1 5>, <0 5>, <1 5>;
+
+		qcom,mdss-dsi-init-delay-us = <1000>;
+		qcom,mdss-dsi-rx-eot-ignore;
+
+		qcom,mdss-dsi-panel-hdr-enabled;
+		qcom,mdss-dsi-panel-hdr-color-primaries = <14880 15935 32435
+			16555 14945 30910 7790 3415>;
+		qcom,mdss-dsi-panel-peak-brightness = <5643000>;
+		qcom,mdss-dsi-panel-average-brightness = <2000000>;
+		qcom,mdss-dsi-panel-blackness-level = <6134>;
+
+		qcom,mdss-dsi-bl-min-level = <1>;
+		qcom,mdss-dsi-bl-max-level = <1023>;
+		qcom,mdss-brightness-max-level = <1023>;
+		qcom,mdss-brightness-default-level = <1023>;
+
+/* *************************************************************
+ *  Rx (Module Information READ)
+ * *************************************************************
+ */
+		samsung,manufacture_id0_rx_cmds_revA	= [06 01 00 00 00 00 01 DA 01 00];
+		samsung,manufacture_id1_rx_cmds_revA	= [06 01 00 00 00 00 01 DB 01 00];
+		samsung,manufacture_id2_rx_cmds_revA	= [06 01 00 00 00 00 01 DC 01 00];
+
+		samsung,mtp_read_sysfs_rx_cmds_revA	= [06 01 00 00 00 00 01 00 00 00];
+		samsung,mtp_write_sysfs_tx_cmds_revA	= [
+			39 00 00 00 00 00 3D 00
+						00 00 00 00 00 00 00 00 00 00
+						00 00 00 00 00 00 00 00 00 00
+						00 00 00 00 00 00 00 00 00 00
+						00 00 00 00 00 00 00 00 00 00
+						00 00 00 00 00 00 00 00 00 00
+						00 00 00 00 00 00 00 00 00 00
+		];
+/*
+ * ************************************************************************************************************************************
+ *
+ *
+ *			Below  parameters are samsung dependent things
+ *
+ *
+ * ************************************************************************************************************************************
+ */
+		samsung,panel-vendor = "SDC";
+		samsung,disp-model = "AMM131EX01";
+		samsung,support_gamma_mode2;
+
+		/* BRIGHTNESS_MAX_PACKET = 100 */
+		samsung,brightness_tx_cmds_revA = [
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+			39 00 00 00 00 00 01 00
+		];
+#if 0
+		samsung,gamma_mode2_normal_tx_cmds_revA = [
+			29 00 00 00 00 00 03 F0 AA 11	/* CMD2 P1 */
+			29 00 00 00 00 00 07 C2 01 66 01 66 01 66	/* EM=100%*/
+		];
+
+		samsung,candela_map_table_revA = < /* THIS TABLE USED FOR DIMMING */
+		/* <idx> <from> <till> <gm2_wrdisbv> <cd> */
+			0	0	49	71	10
+			1	50	99	143	20
+			2	100	149	214	30
+			3	150	199	286	40
+			4	200	255	358	50
+		>;
+#endif
+		/*
+		* ************************************************************************************************************************
+		* MULTI_RESOLUTION (DSC configs were moved all to below timing set)
+		* (C10P does not support MULTI_RESOLUTION, only FHD.)
+		* ************************************************************************************************************************
+		*/
+		qcom,mdss-dsi-display-timings {
+			fhd90 {
+				qcom,display-topology = <4 4 2>;
+				qcom,default-topology-index = <0>;
+
+				qcom,mdss-dsi-panel-width = <1920>; /* 2544 / 2(intf_num) */
+				qcom,mdss-dsi-panel-height = <3840>;
+
+				qcom,mdss-dsi-t-clk-pre = <0x33>;
+				qcom,mdss-dsi-t-clk-post = <0x15>;
+				qcom,mdss-dsi-panel-phy-timings = [00 41 11 11 24 2D 10 11 0F 02 04 00 33 15];
+				qcom,mdss-dsi-panel-framerate = <90>;
+				qcom,mdss-dsi-h-front-porch = <136>;
+				qcom,mdss-dsi-h-back-porch = <148>;
+				qcom,mdss-dsi-h-pulse-width = <64>;
+				qcom,mdss-dsi-h-sync-skew = <0>;
+				qcom,mdss-dsi-v-front-porch = <48>;
+				qcom,mdss-dsi-v-back-porch = <95>;
+				qcom,mdss-dsi-v-pulse-width = <1>;
+				qcom,mdss-dsi-on-command = [
+					/* Sleep Out(11h) */
+					05 00 00 00 78 00 01 11
+					/* TCON pw */
+					39 00 00 00 00 00 03 9F A5 A5
+					/* Compression Mode */
+					07 00 00 00 00 00 01 01
+					/* set_pps */
+					39 00 00 00 00 00 59 9E
+						11 00 00 89 30 80 0F 00
+						07 80 00 20 03 C0 03 C0
+						02 00 02 E0 00 20 03 F6
+						00 0D 00 0C 03 19 01 CA
+						18 00 10 F0 03 0C 20 00
+						06 0B 0B 33 0E 1C 2A 38
+						46 54 62 69 70 77 79 7B
+						7D 7E 01 02 01 00 09 40
+						09 BE 19 FC 19 FA 19 F8
+						1A 38 1A 78 1A B6 2A F6
+						2B 34 2B 74 3B 74 6B F4
+					/*Duty 25%*/
+					39 00 00 00 32 00 03 B0 6D 00
+					39 00 00 00 32 00 03 62 0B AC
+					/* SET_TCON_LVDS */
+					39 00 00 00 32 00 13 B2 A5 A5 A5 0D 80 04 54 10 10 81 00 00 00 40 00 00 04 02
+					39 00 00 00 32 00 13 B2 A5 A5 A5 0D 80 04 54 18 10 81 00 00 00 40 00 00 04 02
+					39 00 00 00 32 00 13 B2 A5 A5 A5 0D 80 04 54 20 10 81 00 00 00 40 00 00 04 02
+					39 00 00 00 32 00 13 B2 A5 A5 A5 0D 80 04 54 28 10 81 00 00 00 40 00 00 04 02
+					39 00 00 00 32 00 13 B2 A5 A5 A5 0D 80 04 55 10 10 81 00 00 00 40 00 00 04 02
+					39 00 00 00 32 00 13 B2 A5 A5 A5 0D 80 04 55 18 10 81 00 00 00 40 00 00 04 02
+					39 00 00 00 32 00 13 B2 A5 A5 A5 0D 80 04 55 20 10 81 00 00 00 40 00 00 04 02
+					39 00 00 00 32 00 13 B2 A5 A5 A5 0D 80 04 55 28 10 81 00 00 00 40 00 00 04 02
+					39 00 00 00 32 00 13 B2 A5 A5 A5 0D 80 04 56 10 10 81 00 00 00 40 00 00 04 02
+					39 00 00 00 32 00 13 B2 A5 A5 A5 0D 80 04 56 18 10 81 00 00 00 40 00 00 04 02
+					39 00 00 00 32 00 13 B2 A5 A5 A5 0D 80 04 56 20 10 81 00 00 00 40 00 00 04 02
+					39 00 00 00 32 00 13 B2 A5 A5 A5 0D 80 04 56 28 10 81 00 00 00 40 00 00 04 02
+					39 00 00 00 32 00 13 B2 A5 A5 A5 0D 80 04 57 10 10 81 00 00 00 40 00 00 04 02
+					39 00 00 00 32 00 13 B2 A5 A5 A5 0D 80 04 57 18 10 81 00 00 00 40 00 00 04 02
+					39 00 00 00 32 00 13 B2 A5 A5 A5 0D 80 04 57 20 10 81 00 00 00 40 00 00 04 02
+					39 00 00 00 32 00 13 B2 A5 A5 A5 0D 80 04 57 28 10 81 00 00 00 40 00 00 04 02
+					/* SET_BP_LVDS */
+					39 00 00 00 32 00 13 B2 A5 A5 A5 0D 80 04 03 06 00 81 00 00 00 20 00 A0 02 27
+					39 00 00 00 32 00 13 B2 A5 A5 A5 0D 80 04 03 06 04 81 00 00 00 20 01 00 e4 00
+					39 00 00 00 32 00 13 B2 A5 A5 A5 0D 80 04 03 06 04 81 00 00 00 20 01 01 e4 00
+					39 00 00 00 32 00 13 B2 A5 A5 A5 0D 80 04 03 06 00 81 00 00 00 20 00 A0 02 28
+					39 00 00 00 32 00 13 B2 A5 A5 A5 0D 80 04 03 06 04 81 00 00 00 20 01 00 04 00
+					39 00 00 00 32 00 13 B2 A5 A5 A5 0D 80 04 03 06 04 81 00 00 00 20 01 01 04 00
+					39 00 00 00 00 00 01 29
+				];
+
+				qcom,mdss-dsi-on-command-state = "dsi_hs_mode";
+				qcom,mdss-dsi-off-command=[
+					05 01 00 00 00 00 01 28		/* display off */
+					05 01 00 00 00 00 01 10		/* sleep in */
+				];
+				qcom,mdss-dsi-off-command-state = "dsi_hs_mode";
+				qcom,compression-mode = "dsc";
+				qcom,mdss-dsc-slice-height = <32>;
+				qcom,mdss-dsc-slice-width = <960>;
+				qcom,mdss-dsc-slice-per-pkt = <1>;
+				qcom,mdss-dsc-bit-per-component = <8>;
+				qcom,mdss-dsc-bit-per-pixel = <8>;
+				qcom,mdss-dsc-block-prediction-enable;
+			};
+		};
+	};
+};

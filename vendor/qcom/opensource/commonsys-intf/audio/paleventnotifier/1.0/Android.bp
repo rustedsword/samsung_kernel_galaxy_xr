@@ -1,0 +1,28 @@
+hidl_interface {
+    name: "vendor.qti.hardware.paleventnotifier@1.0",
+    root: "vendor.qti.hardware.paleventnotifier",
+    srcs: [
+        "types.hal",
+        "IPALEventNotifier.hal",
+        "IPALEventNotifierCallback.hal"
+    ],
+    interfaces: [
+        "android.hidl.base@1.0",
+    ],
+    types: [
+        "PalStreamHandle",
+        "PalStreamType",
+        "PalStreamInfo",
+        "PalStreamFlag",
+        "PalStreamDirection",
+        "PalChannelInfo",
+        "PalChannelMap",
+        "PalAudioFmt",
+        "PalMediaConfig",
+        "PalStreamAttributes",
+        "PalDeviceId",
+        "PalCallbackConfig",
+    ],
+    gen_java: true,
+}
+

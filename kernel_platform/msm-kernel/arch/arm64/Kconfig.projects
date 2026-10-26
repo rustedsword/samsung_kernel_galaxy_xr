@@ -1,0 +1,11 @@
+config SEC_XRVST2_PROJECT
+	depends on ARCH_ANORAK
+	default n
+	bool "Samsung XRVST2 Project"
+	help
+	  Support for Samsung XRVST2 Project
+
+menu "Samsung XRVST2"
+	depends on SEC_XRVST2_PROJECT
+	source "arch/arm64/Kconfig.xrvst2"
+endmenu

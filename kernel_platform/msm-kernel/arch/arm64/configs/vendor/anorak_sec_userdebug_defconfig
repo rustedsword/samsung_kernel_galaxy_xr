@@ -1,0 +1,5 @@
+#POWER
+CONFIG_SEC_GPIO_DVS=m
+
+# sec_bsp / sec_debug
+CONFIG_SEC_FORCE_ERR=y

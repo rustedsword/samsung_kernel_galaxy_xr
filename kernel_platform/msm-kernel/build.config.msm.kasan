@@ -1,0 +1,38 @@
+function update_kasan_config() {
+     ABI_DEFINITION=""
+     KMI_SYMBOL_LIST=""
+     TRIM_NONLISTED_KMI=""
+     KMI_SYMBOL_LIST_STRICT_MODE=""
+
+    ${KERNEL_DIR}/scripts/config --file ${OUT_DIR}/.config \
+         -e CONFIG_KASAN \
+         -e CONFIG_KASAN_OUTLINE \
+         -e CONFIG_KASAN_STACK \
+         -e CONFIG_KCOV \
+         -e CONFIG_KCOV_ENABLE_COMPARISONS \
+         -e CONFIG_PANIC_ON_WARN_DEFAULT_ENABLE \
+         -e CONFIG_CMDLINE_EXTEND \
+         -d CONFIG_RANDOMIZE_BASE \
+         -d CONFIG_UH \
+         -d CONFIG_RKP \
+         -d CONFIG_KDP \
+         -d CONFIG_HDM \
+         -d CONFIG_KDP_CRED \
+         -d CONFIG_KDP_NS \
+         --set-val CONFIG_FRAME_WARN 0 \
+         --set-str CONFIG_CMDLINE "kasan_multi_shot" \
+         -d CONFIG_KASAN_HW_TAGS \
+         -d LTO \
+         -d LTO_CLANG \
+         -d CFI \
+         -d CFI_PERMISSIVE \
+         -d CFI_CLANG \
+         -d SHADOW_CALL_STACK \
+         -d RANDOMIZE_BASE
+
+    (cd ${OUT_DIR} && \
+     make ${TOOL_ARGS} O=${OUT_DIR} olddefconfig)
+}
+append_cmd POST_DEFCONFIG_CMDS update_kasan_config
+
+KERNEL_CMDLINE="kasan_multi_shot panic_on_taint=0x0"

@@ -1,0 +1,25 @@
+#
+# Sec Fan common & chip drivers configuration
+#
+
+config SEC_FAN
+	tristate "Use external thermistor near AP for checking temperature"
+	default n
+	help
+	  Use sec_fan sub-system for providing sec_fan interface with thermal engine
+	  at userspace.
+
+	  Please use the skeleton driver, ic_name-sec_fan.c for writing a new IC driver.
+
+	  Note this is in primitive stage, so multiple device support, etc., are yet to be supported.
+
+config SENSORS_MAX31760_SEC_FAN
+	tristate "Maxim MAX31760 Precision fan controller"
+	depends on I2C
+	help
+	  If you say yes here you get support for the Maxim Integrated
+	  MAX31760 Precision Fan-Speed Controller with non volatile Look-Up
+	  Table with Temperature Sensor.
+
+	  This driver can also be built as a module.  If so, the module
+	  will be called max31760.

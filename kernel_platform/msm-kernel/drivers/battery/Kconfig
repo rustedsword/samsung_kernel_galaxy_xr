@@ -1,0 +1,21 @@
+#
+# battery driver configuration
+#
+
+comment "Battery drivers"
+
+config BATTERY_SAMSUNG
+	tristate "samsung battery driver"
+	help
+	 Say Y to include support for samsung battery driver
+	 This battery driver integrated all battery-related functions
+	 To see battery-related functions,
+	 refer to sec_charging_common.h
+
+source "drivers/battery/charger/max77705_charger/Kconfig"
+source "drivers/battery/charger/sm5451_charger/Kconfig"
+source "drivers/battery/charger/pca9482_charger/Kconfig"
+source "drivers/battery/common/Kconfig"
+source "drivers/battery/fuelgauge/max77705_fuelgauge/Kconfig"
+source "drivers/battery/limiter/s2asl01/Kconfig"
+source "drivers/battery/limiter/max17333/Kconfig"

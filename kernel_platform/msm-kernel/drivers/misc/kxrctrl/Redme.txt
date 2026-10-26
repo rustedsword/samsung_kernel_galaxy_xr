@@ -1,0 +1,25 @@
+1. Copy the files in the current directory to kernel/drivers/misc/kxrctrl and delete all the original files;
+2. This driver will generate four device nodes: /dev/ttyKXR0, /dev/ttyKXR1, /dev/ttyKXR2, /dev/ttyKXR3, INordic service will use these devices to communicate, so requiring the system to authorize read and write permission.
+3. Add an item to the DTS, like this: panel = <&dsi_dual_xrsmrtvwr_jdi_video>;
+
+nordic@0 {
+        compatible = "nordic,spicontroller";
+        reg = <0>;
+        spi-max-frequency = <8000000>;
+        pinctrl-names = "nordic_default", "nordic_sleep";
+        pinctrl-0 = <&nordic_gpio6_active &nordic_ctrl_active>;
+        pinctrl-1 = <&nordic_gpio6_suspend &nordic_ctrl_suspend>;
+
+        /*nordic,lfen-gpio = <&tlmm 37 0>;*/
+        nordic,v1p8en-gpio = <&tlmm 50 0>;
+        nordic,ledl-gpio = <&tlmm 137 0>;
+        nordic,ledr-gpio = <&tlmm 71 0>;
+
+        interrupt-parent = <&tlmm>;
+        interrupt-names = "nordicspi_irq";
+        nordic,irq-gpio = <&tlmm 64 0>;
+        nordic,irq_pin = <&tlmm 64 0x00>;
+        interrupts = <64 1>;
+
+        panel = <&dsi_dual_xrsmrtvwr_jdi_video>;
+};

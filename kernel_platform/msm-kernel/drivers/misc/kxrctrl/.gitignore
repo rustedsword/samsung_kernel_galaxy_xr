@@ -1,0 +1,10 @@
+.*
+!.gitignore
+*.ko
+*.o
+*.a
+*.mod
+*.order
+*.mod.c
+*.symvers
+KERNEL_OBJ

@@ -1,0 +1,23 @@
+
+obj-$(CONFIG_ADSP_FACTORY) += adsp_factory.o ssc_core.o
+obj-$(CONFIG_LSM6DSV_FACTORY) += lsm6dsv_accel.o lsm6dsv_gyro.o lsm6dsv_sub_accel.o lsm6dsv_sub_gyro.o lsm6dsv_sub2_accel.o lsm6dsv_sub2_gyro.o lsm6dsv_sub3_accel.o lsm6dsv_sub3_gyro.o lsm6dsv_sub4_accel.o lsm6dsv_sub4_gyro.o
+obj-$(CONFIG_SUPPORT_DUAL_6AXIS) += lsm6dsv_sub_accel.o lsm6dsv_sub_gyro.o
+obj-$(CONFIG_ICM42605_FACTORY) += icm42605_accel.o icm42605_accel_sub.o icm42605_accel_sub2.o icm42605_gyro.o icm42605_gyro_sub.o icm42605_gyro_sub2.o
+obj-$(CONFIG_LSM6DSL_FACTORY) += lsm6dsl_accel.o lsm6dsl_gyro.o
+obj-$(CONFIG_AK09918_FACTORY) += ak09918_mag.o
+obj-$(CONFIG_SUPPORT_AK09973) += ak09973_digital_hall.o ak09973_sub_digital_hall.o ak09973_sub2_digital_hall.o ak09973_sub3_digital_hall.o ak09973_ipd.o
+obj-$(CONFIG_VEML3328_FACTORY) += veml3328_light.o
+obj-$(CONFIG_LPS22HH_FACTORY) += lps22hh_pressure.o
+obj-$(CONFIG_TMD490X_FACTORY) += tmd490x_light.o tmd490x_prox.o
+obj-$(CONFIG_TCS3701_FACTORY) += tcs3701_light.o
+obj-$(CONFIG_STK33617_FACTORY) += stk33617_prox.o stk33617_light.o
+obj-$(CONFIG_STK3331_FACTORY) += stk3331_prox.o
+obj-$(CONFIG_STK3013_FACTORY) += stk3013_prox.o
+obj-$(CONFIG_STK3A5X_FACTORY) += stk3a5x_prox.o
+obj-$(CONFIG_SUPPORT_MOBEAM) += tmd490x_barcode_emul.o
+obj-$(CONFIG_SUPPORT_HIDDEN_HOLE) += hidden_hole.o
+obj-$(CONFIG_SUPPORT_HIDDEN_HOLE_SUB) += hidden_hole_sub.o
+obj-$(CONFIG_GP2AP110S_FACTORY) += gp2ap110s_prox.o
+obj-$(CONFIG_TMD2636_FACTORY) += tmd2636_prox.o
+obj-$(CONFIG_A96T3XX_FACTORY) += a96t396_grip.o a96t396_sub_grip.o
+obj-$(CONFIG_SUPPORT_REPORT_HUB_INFO) += hub_info_input.o
