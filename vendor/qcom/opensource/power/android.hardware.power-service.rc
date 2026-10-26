@@ -1,8 +1,0 @@
-service vendor.power /vendor/bin/hw/android.hardware.power-service
-    class hal
-    user system
-    group system
-    priority -20
-
-on property:init.svc.zygote=restarting
-    restart vendor.power
