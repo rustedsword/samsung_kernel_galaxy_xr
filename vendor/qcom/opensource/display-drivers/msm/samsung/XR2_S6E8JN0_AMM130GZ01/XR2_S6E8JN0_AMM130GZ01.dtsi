@@ -67,18 +67,18 @@
 		qcom,mdss-dsi-panel-average-brightness = <2000000>;
 		qcom,mdss-dsi-panel-blackness-level = <6134>;
 
-//		qcom,esd-check-enabled;
+		qcom,esd-check-enabled;
 		qcom,mdss-dsi-panel-status-check-mode ="irq_check";
-//		samsung,esd-irq-trigger1 = "falling";
+		samsung,esd-irq-trigger1 = "falling";
 
 		qcom,mdss-dsi-bl-min-level = <1>;
 		qcom,mdss-dsi-bl-max-level = <255>;
 		qcom,mdss-brightness-max-level = <255>;
-		qcom,mdss-brightness-default-level = <255>;
+		qcom,mdss-brightness-default-level = <30>;
 		/* VRR for video mode */
-//		qcom,dsi-supported-dfps-list = <90 72 60>;
-//		qcom,mdss-dsi-pan-enable-dynamic-fps;
-//		qcom,mdss-dsi-pan-fps-update = "dfps_immediate_porch_mode_hfp";
+		qcom,dsi-supported-dfps-list = <90 72 60>;
+		qcom,mdss-dsi-pan-enable-dynamic-fps;
+		qcom,mdss-dsi-pan-fps-update = "dfps_immediate_porch_mode_hfp";
 
 		/* dynamic resolution for video mode */
 		qcom,mdss-dms-vid-type = "dms-vid-seamless";
@@ -90,7 +90,7 @@
 		samsung,manufacture_id0_rx_cmds_revA	= [06 01 00 00 00 00 01 DA 01 00];
 		samsung,manufacture_id1_rx_cmds_revA	= [06 01 00 00 00 00 01 DB 01 00];
 		samsung,manufacture_id2_rx_cmds_revA	= [06 01 00 00 00 00 01 DC 01 00];
-		samsung,module_info_rx_cmds_revA 	= [06 01 00 00 00 00 01 A1 01 00];
+		samsung,module_info_rx_cmds_revA 	= [06 01 00 00 00 00 01 A1 0D 00];
 		samsung,mtp_read_sysfs_rx_cmds_revA	= [06 01 00 00 00 00 01 00 00 00];
 		samsung,mtp_write_sysfs_tx_cmds_revA	= [
 			39 00 00 00 00 00 3D 00
@@ -109,20 +109,21 @@
 		 *	Below  parameters are samsung dependent things
 		 * *******************************************************************
 		 */
-		samsung,panel-vendor = "SONY";
-		samsung,disp-model = "ECX344A";
+		samsung,panel-vendor = "SDC";
+		samsung,disp-model = "AMM130GZ01";
 		samsung,support_gamma_mode2;
 		samsung,support_factory_panel_swap;
 		/* samsung_power_on_pre_lp11_seq : VDD on -> LP11 -> Delay -> reset */
 		samsung,power_on_pre_lp11_seq;
 		samsung,power_on_pre_lp11_seq_delay_us = <3000>;
+		samsung,reset_after_regulator_off;
 		samsung,display_on_tx_cmds_revA = [
-			39 00 00 00 00 00 03 9F A5 A5  // TED pass unlock Lv1
-			39 00 00 00 64 00 01 11 // SLEEP OUT - delay 100ms
-			39 00 00 00 00 00 02 53 20 // WRCTLD
-			39 00 00 00 00 00 03 51 FF FF // BC Control
-			39 00 00 00 00 00 01 29 // DISPLAY ON
-			39 00 00 00 00 00 03 9F 5A 5A  // TED pass lock Lv1
+			39 00 00 00 00 00 03 9F A5 A5
+			39 00 00 00 64 00 01 11 /* SLEEP OUT - delay 100ms */
+			39 00 00 00 00 00 02 53 20 /* WRCTLD */
+			39 00 00 00 00 00 03 51 04 82 /* BC Control */
+			39 00 00 00 00 00 01 29 /* DISPLAY ON */
+			39 00 00 00 00 00 03 9F 5A 5A
 		];
 
 		/* BRIGHTNESS_MAX_PACKET = 100 */
@@ -230,31 +231,19 @@
 		];
 
 		samsung,gamma_mode2_normal_tx_cmds_revA = [
-			39 00 00 00 00 00 02 51 00
-			39 00 00 00 00 00 02 B0 00
-			39 00 00 00 00 00 02 FF 01
-			39 00 00 00 00 00 02 EC 20
-			39 00 00 00 00 00 02 FF 03
-			39 00 00 00 00 00 3D B4
-				28 E2 8E 28 E2 8E 28 E2 8E 28 E2 8E 28 E2 8E
-				28 E2 8E 28 E2 8E 28 E2 8E 28 E2 8E 28 E2 8E
-				28 E2 8E 28 E2 8E 28 E2 8E 28 E2 8E 28 E2 8E
-				28 E2 8E 28 E2 8E 28 E2 8E 28 E2 8E 28 E2 8E
-			39 00 00 00 00 00 02 FF 01
-			39 00 00 00 00 00 02 EC 60
-			39 00 00 00 00 00 02 B0 03
+			39 00 00 00 00 00 03 51 0F 0A
 		];
 
 		samsung,candela_map_table_revA = < /* THIS TABLE USED FOR DIMMING */
 		/* <idx> <from> <till> <gm2_wrdisbv> <cd> */
-			0	0	30	00	300
-			1	31	60	00	400
-			2	61	90	00	500
-			3	91	120	51	600
-			4	121	150	102	700
-			5	151	180	153	800
-			6	181	210	204	900
-			7	211	255	255	1000
+			0	0	30	1154	300
+			1	31	60	1539	400
+			2	61	90	1924	500
+			3	91	120	2309	600
+			4	121	150	2694	700
+			5	151	180	3079	800
+			6	181	210	3464	900
+			7	211	255	3850	1000
 		>;
 
 		/*
@@ -284,11 +273,10 @@
 				qcom,mdss-dsi-v-back-porch = <57>;
 				qcom,mdss-dsi-v-front-porch = <35>;
 				qcom,mdss-dsi-on-command = [
-					/* 4.2 TED _password */
 					39 00 00 00 00 00 03 F0 5A 5A
 					39 00 00 00 00 00 03 FC 5A 5A
 					39 00 00 00 00 00 03 9F A5 A5
-					39 00 00 00 00 00 5F 9E // PPS_SET 
+					39 00 00 00 00 00 5F 9E
 						11 00 00 89 30 80 0F 00
 						0D E0 00 18 03 78 03 78
 						02 00 02 BC 00 20 02 DD
@@ -301,21 +289,24 @@
 						1A 38 1A 78 1A B6 2A F6
 						2B 34 2B 74 3B 74 6B F4
 						00 00 00 00 00 00
-					39 00 00 00 00 00 02 BD 80 // Freq. SETTING
-					39 00 00 00 00 00 02 DD 2F // Panel update
-					39 00 00 00 00 00 02 83 00 // FQ_SEL 
-					39 00 00 00 0A 00 02 DD 2F // Panel update
-					39 00 00 00 00 00 03 9F 5A 5A // TED pass lock Lv1
-					39 00 00 00 00 00 03 FC A5 A5 // TED pass lock Lv2
-					39 00 00 00 00 00 03 F0 A5 A5 // TED pass lock Lv3
+					39 00 00 00 00 00 02 BD 00 /* Freq. SETTING */
+					39 00 00 00 00 00 02 DD 2F /* Panel update */
+					39 00 00 00 00 00 02 83 00 /* FQ_SEL */
+					39 00 00 00 0A 00 02 DD 2F /* Panel update */
+					39 00 00 00 00 00 02 B5 00 /* Temp Read enable */
+					39 00 00 00 00 00 03 9F 5A 5A
+					39 00 00 00 00 00 03 FC A5 A5
+					39 00 00 00 00 00 03 F0 A5 A5
 				];
 
 				qcom,mdss-dsi-on-command-state = "dsi_hs_mode";
-				qcom,mdss-dsi-off-command=[
-					39 01 00 00 00 00 01 28		/* display off */
-					39 01 00 00 64 00 01 10		/* sleep in */
+				qcom,mdss-dsi-pre-off-command=[
+					39 00 00 00 11 00 03 9F A5 A5
+					39 00 00 00 11 00 01 28        /* display off */
+					39 00 00 00 78 00 01 10        /* sleep in + 120ms delay */
+					39 00 00 00 11 00 03 9F 5A 5A
 				];
-				qcom,mdss-dsi-off-command-state = "dsi_hs_mode";
+				qcom,mdss-dsi-pre-off-command-state = "dsi_hs_mode";
 				qcom,compression-mode = "dsc";
 				qcom,mdss-dsc-slice-height = <24>;
 				qcom,mdss-dsc-slice-width = <888>;

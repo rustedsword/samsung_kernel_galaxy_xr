@@ -1756,7 +1756,6 @@ static void __ref cdev_print(struct work_struct *work)
 		cdev_count = 0;
 		is_prev = false;
 	}
-
 	pr_info("thermal: cdev%s\n", buffer);
 
 	schedule_delayed_work(&cdev_print_work, HZ * 5);

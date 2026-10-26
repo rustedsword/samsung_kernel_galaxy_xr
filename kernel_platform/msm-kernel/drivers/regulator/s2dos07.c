@@ -240,7 +240,8 @@ static int s2m_set_voltage_sel_regmap_buck(struct regulator_dev *rdev,
 					 rdev->desc->apply_bit);
 
 	/* special purpose for vst2 */
-	if (pdata->panel_type == SONY) {
+	switch (pdata->panel_type) {
+	case SONY:
 		s2dos07_update_reg(i2c, S2DOS07_REG_0D_AUTHORITY, 0x1, 0x1);
 		s2dos07_update_reg(i2c, S2DOS07_REG_0D_CONTROL, 0x1, 0x1);
 
@@ -256,7 +257,34 @@ static int s2m_set_voltage_sel_regmap_buck(struct regulator_dev *rdev,
 
 		s2dos07_update_reg(i2c, S2DOS07_REG_0D_CONTROL, 0x0, 0x1);
 		s2dos07_update_reg(i2c, S2DOS07_REG_0D_AUTHORITY, 0x0, 0x1);
+		break;
+	case SDC_NEW:
+		s2dos07_update_reg(i2c, S2DOS07_REG_0D_AUTHORITY, 0x1, 0x1);
+		s2dos07_update_reg(i2c, S2DOS07_REG_0D_CONTROL, 0x1, 0x1);
+
+		/* support new SDC panel */
+		ret = s2dos07_write_reg(i2c, S2DOS07_REG_TEST_MODE, 0xE);
+		if (ret < 0)
+			dev_err(&i2c->dev, "%s: Failed to write S2DOS07_REG_TEST_MODE(%d)\n", __func__, ret);
+		ret = s2dos07_write_reg(i2c, S2DOS07_REG_VGX_SCP_MODE, 0x0);
+		if (ret < 0)
+			dev_err(&i2c->dev, "%s: Failed to S2DOS07_REG_VGX_SCP_MODE ELVSS_VOUT(%d)\n", __func__, ret);
+		ret = s2dos07_write_reg(i2c, S2DOS07_REG_TEST_MODE, 0x0);
+		if (ret < 0)
+			dev_err(&i2c->dev, "%s: Failed to write S2DOS07_REG_TEST_MODE(%d)\n", __func__, ret);
+
+		/* VOUT2 -6.3V */
+		ret = s2dos07_write_reg(i2c, S2DOS07_REG_ELVSS_VOUT, 0x4A);
+		if (ret < 0)
+			dev_err(&i2c->dev, "%s: Failed to write ELVSS_VOUT -6.3V(%d)\n", __func__, ret);
+
+		s2dos07_update_reg(i2c, S2DOS07_REG_0D_CONTROL, 0x0, 0x1);
+		s2dos07_update_reg(i2c, S2DOS07_REG_0D_AUTHORITY, 0x0, 0x1);
+		break;
+	default:
+		break;
 	}
+
 
 	return ret;
 out:
@@ -323,9 +351,28 @@ static int s2dos07_elvdd_elvss_enable(struct regulator_dev *rdev)
 		ret = s2dos07_write_reg(i2c, S2DOS07_REG_ELVSS_VOUT, 0x4A);
 		ret = s2dos07_write_reg(i2c, S2DOS07_REG_VGP_VGL_CTRL, 0x11);
 		break;
+	case SDC_NEW:
+		/* support new SDC panel, unfied cmd set with SONY*/
+		ret = s2dos07_write_reg(i2c, S2DOS07_REG_TEST_MODE, 0xE);
+		if (ret < 0)
+			dev_err(&i2c->dev, "%s: Failed to write S2DOS07_REG_TEST_MODE(%d)\n", __func__, ret);
+		ret = s2dos07_write_reg(i2c, S2DOS07_REG_VGX_SCP_MODE, 0x0);
+		if (ret < 0)
+			dev_err(&i2c->dev, "%s: Failed to write S2DOS07_REG_VGX_SCP_MODE(%d)\n", __func__, ret);
+		ret = s2dos07_write_reg(i2c, S2DOS07_REG_TEST_MODE, 0x0);
+		if (ret < 0)
+			dev_err(&i2c->dev, "%s: Failed to write S2DOS07_REG_TEST_MODE(%d)\n", __func__, ret);
+
+		/* VOUT2 -6.3V */
+		ret = s2dos07_write_reg(i2c, S2DOS07_REG_ELVSS_VOUT, 0x4A);
+		if (ret < 0)
+			dev_err(&i2c->dev, "%s: Failed to write S2DOS07_REG_ELVSS_VOUT(%d)\n", __func__, ret);
+		break;
 	default:
 		dev_err(&i2c->dev, "%s: Need panel_type to set elvss voltage\n", __func__);
+		break;
 	}
+
 	if (ret < 0) {
 		dev_err(&i2c->dev, "%s: Failed to write ELVSS_VOUT(%d)\n", __func__, ret);
 		return ret;
@@ -334,11 +381,15 @@ static int s2dos07_elvdd_elvss_enable(struct regulator_dev *rdev)
 	s2dos07_read_reg(i2c, S2DOS07_REG_EN_CTRL, &val);
 	dev_info(&i2c->dev, "%s: before enable VOUT12_EN, REG_EN_CTRL(0x%02X)\n", __func__, val);
 
-	ret = s2dos07_update_reg(i2c, S2DOS07_REG_EN_CTRL, 0x1, 0x1);
-	if (ret < 0) {
-		dev_err(&i2c->dev, "%s: Failed to update VOUT12_EN(%d)\n", __func__, ret);
-		return ret;
+	/* SDC_NEW panel does not require VOUT12 enablement */
+	if (pdata->panel_type != SDC_NEW) {
+		ret = s2dos07_update_reg(i2c, S2DOS07_REG_EN_CTRL, 0x1, 0x1);
+		if (ret < 0) {
+			dev_err(&i2c->dev, "%s: Failed to update VOUT12_EN(%d)\n", __func__, ret);
+			return ret;
+		}
 	}
+
 	s2dos07_read_reg(i2c, S2DOS07_REG_EN_CTRL, &val);
 	dev_info(&i2c->dev, "%s: after enable VOUT12_EN, REG_EN_CTRL(0x%02X)\n", __func__, val);
 
@@ -353,6 +404,7 @@ static int s2dos07_elvdd_elvss_disable(struct regulator_dev *rdev)
 	int ret = 0;
 	struct s2dos07_data *info = rdev_get_drvdata(rdev);
 	struct i2c_client *i2c = info->iodev->i2c;
+	struct s2dos07_platform_data *pdata = i2c->dev.platform_data;
 	u8 val = 0;
 
 	s2dos07_update_reg(i2c, S2DOS07_REG_0D_AUTHORITY, 0x1, 0x1);
@@ -361,11 +413,15 @@ static int s2dos07_elvdd_elvss_disable(struct regulator_dev *rdev)
 	s2dos07_read_reg(i2c, S2DOS07_REG_EN_CTRL, &val);
 	dev_info(&i2c->dev, "%s: before disable VOUT12_EN, REG_EN_CTRL(0x%02X)\n", __func__, val);
 
-	ret = s2dos07_update_reg(i2c, S2DOS07_REG_EN_CTRL, 0x0, 0x1);
-	if (ret < 0) {
-		dev_err(&i2c->dev, "%s: Failed to update VOUT12_EN(%d)\n", __func__, ret);
-		return ret;
+	/* SDC_NEW panel does not require VOUT12 enablement */
+	if (pdata->panel_type != SDC_NEW) {
+		ret = s2dos07_update_reg(i2c, S2DOS07_REG_EN_CTRL, 0x0, 0x1);
+		if (ret < 0) {
+			dev_err(&i2c->dev, "%s: Failed to update VOUT12_EN(%d)\n", __func__, ret);
+			return ret;
+		}
 	}
+
 	s2dos07_read_reg(i2c, S2DOS07_REG_EN_CTRL, &val);
 	dev_info(&i2c->dev, "%s: after disable VOUT12_EN, REG_EN_CTRL(0x%02X)\n", __func__, val);
 
@@ -907,10 +963,12 @@ static int __s2dos07_pmic_probe(struct i2c_client *i2c)
 #endif
 
 #if IS_ENABLED(CONFIG_SEC_PM)
-	ret = sec_set_vout(s2dos07);
-	if (ret < 0) {
-		pr_err("%s: sec_set_vout fail (%d)\n", __func__, ret);
-		goto err_s2dos07_data;
+	if (pdata->panel_type != SDC_NEW) {
+		ret = sec_set_vout(s2dos07);
+		if (ret < 0) {
+			pr_err("%s: sec_set_vout fail (%d)\n", __func__, ret);
+			goto err_s2dos07_data;
+		}
 	}
 
 	ret = s2dos07_sec_pm_init(s2dos07);

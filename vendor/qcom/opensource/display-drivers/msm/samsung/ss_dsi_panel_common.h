@@ -915,6 +915,9 @@ struct samsung_display_dtsi_data {
 	bool samsung_power_on_pre_lp11_seq;
 	int samsung_power_on_pre_lp11_seq_delay_us;
 
+	/* samsung_power_on_pre_lp11_seq : regulator_off -> reset */
+	bool samsung_reset_after_regulator_off;
+
 	/* If display->ctrl_count is 2, it broadcasts.
 	 * To prevent to send mipi cmd thru mipi dsi1, set samsung_cmds_unicast flag.
 	 */

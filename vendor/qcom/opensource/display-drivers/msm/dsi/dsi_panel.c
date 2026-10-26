@@ -716,31 +716,29 @@ static int dsi_panel_power_off(struct dsi_panel *panel)
 			usleep_range(vdd->dtsi_data.samsung_dsi_off_reset_delay,
 				vdd->dtsi_data.samsung_dsi_off_reset_delay);
 	}
-
 	/*
 		AOT disable on factory binary.
 	*/
-	if (!vdd->aot_enable || vdd->is_factory_mode)
-		if (gpio_is_valid(panel->reset_config.reset_gpio) &&
-					!panel->reset_gpio_always_on) {
-			if (vdd->dtsi_data.samsung_dsi_off_reset_delay)
-				usleep_range(vdd->dtsi_data.samsung_dsi_off_reset_delay,
-					vdd->dtsi_data.samsung_dsi_off_reset_delay);
-			gpio_set_value(panel->reset_config.reset_gpio, 0);
+	if (!vdd->dtsi_data.samsung_reset_after_regulator_off) {
+		if (!vdd->aot_enable || vdd->is_factory_mode)
+			if (gpio_is_valid(panel->reset_config.reset_gpio) &&
+						!panel->reset_gpio_always_on) {
+				if (vdd->dtsi_data.samsung_dsi_off_reset_delay)
+					usleep_range(vdd->dtsi_data.samsung_dsi_off_reset_delay,
+						vdd->dtsi_data.samsung_dsi_off_reset_delay);
+				gpio_set_value(panel->reset_config.reset_gpio, 0);
+			}
+		/* Power Off Timing Tuning : SONY_ECX344A DDI Spec : Reset must be turned off before power off. */
+		if (vdd->ndx == PRIMARY_DISPLAY_NDX){
+			if (gpio_is_valid(panel_R->reset_config.reset_gpio) && !panel_R->reset_gpio_always_on) {
+				gpio_set_value(panel_R->reset_config.reset_gpio, 0);
+			}
 		}
+	}
 #else
 	if (gpio_is_valid(panel->reset_config.reset_gpio) &&
 					!panel->reset_gpio_always_on)
 		gpio_set_value(panel->reset_config.reset_gpio, 0);
-#endif
-
-#if IS_ENABLED(CONFIG_DISPLAY_SAMSUNG)
-	/* Power Off Timing Tuning : SONY_ECX344A DDI Spec : Reset must be turned off before power off. */
-	if (vdd->ndx == PRIMARY_DISPLAY_NDX){
-		if (gpio_is_valid(panel_R->reset_config.reset_gpio) && !panel_R->reset_gpio_always_on) {
-			gpio_set_value(panel_R->reset_config.reset_gpio, 0);
-		}
-	}
 #endif
 
 	if (gpio_is_valid(panel->reset_config.lcd_mode_sel_gpio))
@@ -775,6 +773,21 @@ static int dsi_panel_power_off(struct dsi_panel *panel)
 		DSI_ERR("[%s] failed to enable vregs, rc=%d\n",
 				panel->name, rc);
 #endif
+
+	/*
+		AOT disable on factory binary.
+	*/
+	if (vdd->dtsi_data.samsung_reset_after_regulator_off) {
+		if (!vdd->aot_enable || vdd->is_factory_mode) {
+			if (gpio_is_valid(panel->reset_config.reset_gpio) &&
+						!panel->reset_gpio_always_on) {
+				if (vdd->dtsi_data.samsung_dsi_off_reset_delay)
+					usleep_range(vdd->dtsi_data.samsung_dsi_off_reset_delay,
+						vdd->dtsi_data.samsung_dsi_off_reset_delay);
+				gpio_set_value(panel->reset_config.reset_gpio, 0);
+			}
+		}
+	}
 
 	return rc;
 }

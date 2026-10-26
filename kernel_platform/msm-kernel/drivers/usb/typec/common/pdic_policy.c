@@ -1242,6 +1242,7 @@ static void process_policy_dp(struct pdic_policy *pp_data, int msg)
 			1/*dp_is_connect*/, 1/*dp_hs_connect*/, 0);
 		break;
 	case MSG_DP_DISCONN:
+		pp_data->usb_host.detach_done_wait = 1;
 		PDIC_POLICY_SEND_NOTI(pp_data,
 			PDIC_NOTIFY_DEV_USB_DP, PDIC_NOTIFY_ID_USB_DP,
 			0/*dp_is_connect*/, 0/*dp_hs_connect*/, 0);
@@ -1342,6 +1343,7 @@ static void process_policy_cc_detach(struct pdic_policy *pp_data)
 	}
 #endif
 
+	pp_data->usb_host.detach_done_wait = 1;
 	pp_data->cc_on = PP_CCOFF;
 	pp_data->cc_state = PP_TOGGLE;
 	pp_data->cc_direction = PP_CC1;

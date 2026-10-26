@@ -4961,6 +4961,10 @@ static void ss_panel_parse_dt(struct samsung_display_driver_data *vdd)
 	vdd->dtsi_data.samsung_power_on_pre_lp11_seq_delay_us = (!rc ? tmp[0] : 0);
 	LCD_INFO(vdd, "power_on_pre_lp11_seq_delay_us : [%d]\n", vdd->dtsi_data.samsung_power_on_pre_lp11_seq_delay_us);
 
+	/* samsung_power_on_pre_lp11_seq : regulator_off -> reset */
+	vdd->dtsi_data.samsung_reset_after_regulator_off = of_property_read_bool(np, "samsung,reset_after_regulator_off");
+	LCD_INFO(vdd, "reset_after_regulator_off : [%d]\n", vdd->dtsi_data.samsung_reset_after_regulator_off);
+
 	/* Set TFT flag */
 	vdd->mdnie.tuning_enable_tft = of_property_read_bool(np,
 				"samsung,mdnie-tuning-enable-tft");

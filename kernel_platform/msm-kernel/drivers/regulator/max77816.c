@@ -61,15 +61,16 @@ static int max77816_set_mode(struct regulator_dev *rdev, unsigned int mode)
 {
 	struct max77816_chip *pchip = rdev_get_drvdata(rdev);
 	int ret;
-
-	if (mode != REGULATOR_MODE_NORMAL)
-		ret = regmap_update_bits(pchip->regmap,
-				MAX77816_REG_CONFIG1,
-				MAX77816_MASK_FPWM, 0);
-	else
+	dev_info(pchip->dev, "[%s] mode(%u)\n", __func__, mode);
+	
+	if (mode == REGULATOR_MODE_FAST)
 		ret = regmap_update_bits(pchip->regmap,
 				MAX77816_REG_CONFIG1,
 				MAX77816_MASK_FPWM, MAX77816_MASK_FPWM);
+	else
+		ret = regmap_update_bits(pchip->regmap,
+				MAX77816_REG_CONFIG1,
+				MAX77816_MASK_FPWM, 0);
 
 	if (ret < 0) {
 		dev_err(pchip->dev,
@@ -95,6 +96,14 @@ static unsigned int max77816_get_mode(struct regulator_dev *rdev)
 
 	return (rval & MAX77816_MASK_FPWM)
 			? REGULATOR_MODE_FAST : REGULATOR_MODE_NORMAL;
+}
+
+static unsigned int max77816_map_mode(unsigned int mode)
+{
+	if (mode == REGULATOR_MODE_FAST || mode == REGULATOR_MODE_NORMAL)
+		return mode;
+
+	return REGULATOR_MODE_INVALID;
 }
 
 static struct regulator_ops max77816_ops = {
@@ -135,6 +144,7 @@ static struct regulator_desc max77816_reg_vout = {
 	.active_discharge_on = MAX77816_MASK_AD,
 	.active_discharge_mask = MAX77816_MASK_AD,
 	.active_discharge_reg = MAX77816_REG_CONFIG1,
+	.of_map_mode = max77816_map_mode,
 };
 
 static struct regulator_desc max77816_reg_vout_h = {

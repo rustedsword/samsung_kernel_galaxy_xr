@@ -74,40 +74,15 @@ static int ss_ddi_id_read(struct samsung_display_driver_data *vdd)
 	return true;
 }
 
-#define bit_value(value, bit)    ((value & BIT(bit)) ? 1 : 0)
-
 static int ss_module_info_read(struct samsung_display_driver_data *vdd)
 {
 	struct dsi_panel_cmd_set *pcmds;
 	char *buf;
-	enum LU_IDX {
-		LU1000 = 0,
-		LU0900,
-		LU0800,
-		LU0650,
-		LU0500,
-		LU_MAX,
-	};
-	enum ID_IDX {
-		DDB1 = 0,
-		DDB2,
-		DDB3,
-		DDB4,
-		OTP1,
-		OTP2,
-		OTP3,
-		OTP4,
-		OTP5,
-		OTP6,
-		OTP7,
-		ID_MAX,
-	};
-	int id_addr[ID_MAX] = {0xA1, 0xA1, 0xA1, 0xA1, 0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76};
-	int buffer_len = ID_MAX;
-	int lu_tb[LU_MAX];
-	int len = 0;
+	int year, month, day;
+	int hour, min;
+	int ret;
 	char temp[50];
-	int id_idx, lu_idx;
+	int buf_len, len = 0;
 
 	if (IS_ERR_OR_NULL(vdd)) {
 		LCD_ERR(vdd, "Invalid data vdd : 0x%zx", (size_t)vdd);
@@ -117,42 +92,52 @@ static int ss_module_info_read(struct samsung_display_driver_data *vdd)
 	pcmds = ss_get_cmds(vdd, RX_MODULE_INFO);
 
 	if (pcmds->count) {
-		buf = kzalloc(buffer_len, GFP_KERNEL);
+		buf_len = pcmds->cmds[0].msg.rx_len;
 
-		/* read DDB */
-		for (id_idx = DDB1 ; id_idx <= DDB4 ; id_idx++) {
-			pcmds->cmds[0].ss_txbuf[0] = id_addr[id_idx];
-			pcmds->read_startoffset = id_idx;
-			ss_panel_data_read(vdd, RX_MODULE_INFO, &buf[id_idx], LEVEL1_KEY);
+		buf = kzalloc(buf_len, GFP_KERNEL);
+		if (!buf) {
+			LCD_ERR(vdd, "fail to kzalloc for buf\n");
+			return false;
 		}
 
-		/* read OTP0X */
-		for (id_idx = OTP1 ; id_idx <= OTP7 ; id_idx++) {
-			pcmds->cmds[0].ss_txbuf[0] = id_addr[id_idx];
-			pcmds->read_startoffset = 0;
-			ss_panel_data_read(vdd, RX_MODULE_INFO, &buf[id_idx], LEVEL1_KEY);
+		ret = ss_panel_data_read(vdd, RX_MODULE_INFO, buf, LEVEL1_KEY);
+		if (ret) {
+			LCD_ERR(vdd, "fail to read module ID, ret: %d", ret);
+			kfree(buf);
+			return false;
 		}
 
-		/* calculate lu_tbs */
-		for (lu_idx = LU1000 ; lu_idx <= LU0650 ; lu_idx++) {
-			lu_tb[lu_idx] = (((bit_value(buf[OTP2+lu_idx], 7)) << 9) | ((bit_value(buf[OTP2+lu_idx], 6)) << 8) |
-				((bit_value(buf[OTP2+lu_idx], 5)) << 7) | 	((bit_value(buf[OTP2+lu_idx], 4)) << 6) |
-				((bit_value(buf[OTP2+lu_idx], 3)) << 5) | ((bit_value(buf[OTP2+lu_idx], 2)) << 4) |
-				((bit_value(buf[OTP2+lu_idx], 1)) << 3) | ((bit_value(buf[OTP2+lu_idx], 0)) << 2) |
-				((bit_value(buf[OTP1], 7-(lu_idx * 2))) << 1) | (bit_value(buf[OTP1], 6-(lu_idx*2)))) * 2;
-		}
+		/* Manufacture Date */
 
-		lu_tb[LU0500] = (((bit_value(buf[OTP7], 7)) << 9) | ((bit_value(buf[OTP7], 6)) << 8) |
-				((bit_value(buf[OTP7], 5)) << 7) | 	((bit_value(buf[OTP7], 4)) << 6) |
-				((bit_value(buf[OTP7], 3)) << 5) | ((bit_value(buf[OTP7], 2)) << 4) |
-				((bit_value(buf[OTP7], 1)) << 3) | ((bit_value(buf[OTP7], 0)) << 2) |
-				((bit_value(buf[OTP6], 7)) << 1) | ((bit_value(buf[OTP6], 6)))) * 2;
+		year = buf[6] & 0xf0;
+		year >>= 4;
+		year += 2011; // 0 = 2011 year
+		month = buf[6] & 0x0f;
+		day = buf[7] & 0x1f;
+		hour = buf[8] & 0x0f;
+		min = buf[9] & 0x1f;
 
-		len += sprintf(temp + len, "%02x%02x%02x%02x%04d%04d%04d%04d%04d\n",
-			buf[0], buf[1], buf[2], buf[3], lu_tb[LU1000], lu_tb[LU0900], lu_tb[LU0800], lu_tb[LU0650], lu_tb[LU0500]);
+		vdd->manufacture_date_dsi = year * 10000 + month * 100 + day;
+		vdd->manufacture_time_dsi = hour * 100 + min;
+
+		LCD_INFO(vdd, "manufacture_date DSI%d = (%d%04d) - year(%d) month(%d) day(%d) hour(%d) min(%d)\n",
+			vdd->ndx, vdd->manufacture_date_dsi, vdd->manufacture_time_dsi,
+			year, month, day, hour, min);
+
+		/* While Coordinates */
+
+		vdd->mdnie.mdnie_x = buf[0] << 8 | buf[1];	/* X */
+		vdd->mdnie.mdnie_y = buf[2] << 8 | buf[3];	/* Y */
+
+		LCD_INFO(vdd, "X-%d Y-%d \n", vdd->mdnie.mdnie_x, vdd->mdnie.mdnie_y);
+
+		/* CELL ID (manufacture date + white coordinates) */
+		/* Manufacture Date */
+		len += sprintf(temp + len, "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x000000\n",
+			buf[6], buf[7], buf[8], buf[9], buf[10], buf[11], buf[12],
+			buf[0], buf[1], buf[2], buf[3]);
 
 		vdd->cell_id_dsi = kzalloc(len, GFP_KERNEL);
-
 		if (!vdd->cell_id_dsi)
 			LCD_ERR(vdd, "fail to kzalloc for cell_id_dsi\n");
 		else {
@@ -160,52 +145,34 @@ static int ss_module_info_read(struct samsung_display_driver_data *vdd)
 			strlcat(vdd->cell_id_dsi, temp, vdd->cell_id_len);
 			LCD_INFO(vdd, "CELL ID : [%d] %s\n", vdd->cell_id_len, vdd->cell_id_dsi);
 		}
-		kfree(buf);
 	} else {
 		LCD_ERR(vdd, "no module_info_rx_cmds cmds(%d)", vdd->panel_revision);
 		return false;
 	}
 
+	kfree(buf);
+
 	return true;
 }
 
 #define get_bit(value, shift, width)    ((value >> shift) & (GENMASK(width - 1, 0)))
-#define MAX_VR_BL_LEVEL 8
-
-static int br_duty_table[MAX_VR_BL_LEVEL] = {
-	0x1EA1EA,
-	0x28E28E,
-	0x332332,
-	0x332332,
-	0x332332,
-	0x332332,
-	0x332332,
-	0x332332
-};
 
 static struct dsi_panel_cmd_set *ss_brightness_gamma_mode2(struct samsung_display_driver_data *vdd, int *level_key)
 {
 	struct dsi_panel_cmd_set *pcmds;
-	int iter = 0;
-	int upper = get_bit(br_duty_table[vdd->br_info.common_br.cd_idx], 16, 8);
-	int mid = get_bit(br_duty_table[vdd->br_info.common_br.cd_idx], 8, 8);
-	int lower = get_bit(br_duty_table[vdd->br_info.common_br.cd_idx], 0, 8);
+	int upper = get_bit(vdd->br_info.common_br.gm2_wrdisbv, 8, 8);
+	int lower = get_bit(vdd->br_info.common_br.gm2_wrdisbv, 0, 8);
 	int cmd_idx;
 
 	if (IS_ERR_OR_NULL(vdd)) {
-			LCD_ERR(vdd, "vdd is null or error\n");
+		LCD_ERR(vdd, "vdd is null or error\n");
 		return NULL;
 	}
 
 	pcmds = ss_get_cmds(vdd, TX_GAMMA_MODE2_NORMAL);
 	cmd_idx = ss_get_cmd_idx(pcmds, 0x00, 0x51);
-	pcmds->cmds[cmd_idx].ss_txbuf[1] = vdd->br_info.common_br.gm2_wrdisbv;
-	cmd_idx = ss_get_cmd_idx(pcmds, 0x00, 0xB4);
-	for (iter = 0 ; iter < 20 ; iter++) {
-		pcmds->cmds[cmd_idx].ss_txbuf[3*iter+1] = upper;
-		pcmds->cmds[cmd_idx].ss_txbuf[3*iter+2] = mid;
-		pcmds->cmds[cmd_idx].ss_txbuf[3*iter+3] = lower;
-	}
+	pcmds->cmds[cmd_idx].ss_txbuf[1] = upper;
+	pcmds->cmds[cmd_idx].ss_txbuf[2] = lower;
 
 	LCD_INFO(vdd, "bl_level: %d, idx = %d, WRDISBV: %x\n",
 			vdd->br_info.common_br.bl_level, vdd->br_info.common_br.cd_idx,
@@ -247,7 +214,6 @@ void XR2_S6E8JN0_AMM130GZ01_init(struct samsung_display_driver_data *vdd)
 	/* Brightness */
 	vdd->panel_func.make_brightness_packet = make_brightness_packet;
 	vdd->panel_func.br_func[BR_FUNC_GAMMA] = ss_brightness_gamma_mode2;
-	vdd->panel_func.br_func[BR_FUNC_GAMMA] = NULL;
 
 	/* Default Panel Power Status is OFF */
 	vdd->panel_state = PANEL_PWR_OFF;

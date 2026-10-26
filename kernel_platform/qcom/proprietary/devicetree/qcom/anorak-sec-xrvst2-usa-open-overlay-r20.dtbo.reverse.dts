@@ -38,7 +38,7 @@
 				pinctrl-0 = <0x01 0x02>;
 				pinctrl-1 = <0x03>;
 				pinctrl-2 = <0x04>;
-				phandle = <0x12d>;
+				phandle = <0x12b>;
 
 				max31760@50 {
 					status = "okay";
@@ -61,11 +61,11 @@
 			};
 
 			i2c@7 {
-				phandle = <0x12e>;
+				phandle = <0x12c>;
 
 				max77816@18 {
 					status = "disabled";
-					phandle = <0x12f>;
+					phandle = <0x12d>;
 				};
 			};
 		};
@@ -159,7 +159,7 @@
 					#gpio-cells = <0x02>;
 					interrupt-controller;
 					#interrupt-cells = <0x02>;
-					phandle = <0x11f>;
+					phandle = <0x11d>;
 
 					pmxr2230_sd_card_therm {
 
@@ -185,7 +185,7 @@
 							pins = "gpio10";
 							function = "normal";
 							bias-high-impedance;
-							phandle = <0xf9>;
+							phandle = <0xf7>;
 						};
 					};
 
@@ -197,7 +197,7 @@
 							input-enable;
 							bias-pull-up;
 							power-source = <0x00>;
-							phandle = <0x11e>;
+							phandle = <0x11c>;
 						};
 					};
 
@@ -207,7 +207,7 @@
 							pins = "gpio4";
 							function = "normal";
 							bias-high-impedance;
-							phandle = <0x121>;
+							phandle = <0x11f>;
 						};
 					};
 				};
@@ -259,7 +259,7 @@
 					reg-names = "lpg-base";
 					#pwm-cells = <0x02>;
 					qcom,num-lpg-channels = <0x01>;
-					phandle = <0x130>;
+					phandle = <0x12e>;
 				};
 
 				qcom,leds@ef00 {
@@ -267,7 +267,7 @@
 					reg = <0xef00>;
 					sec_svcled;
 					step = <0xff>;
-					phandle = <0x131>;
+					phandle = <0x12f>;
 
 					red {
 						label = "red";
@@ -304,7 +304,7 @@
 					interrupt-names = "led-fault-irq\0all-ramp-down-done-irq\0all-ramp-up-done-irq";
 					qcom,thermal-derate-current = <0xc8 0x1f4>;
 					status = "okay";
-					phandle = <0x132>;
+					phandle = <0x130>;
 
 					qcom,flash_0 {
 						label = "flash";
@@ -314,7 +314,7 @@
 						qcom,id = <0x00>;
 						qcom,duration-ms = <0x500>;
 						qcom,ires-ua = <0x30d4>;
-						phandle = <0x133>;
+						phandle = <0x131>;
 					};
 
 					qcom,flash_1 {
@@ -325,7 +325,7 @@
 						qcom,id = <0x01>;
 						qcom,duration-ms = <0x500>;
 						qcom,ires-ua = <0x30d4>;
-						phandle = <0x134>;
+						phandle = <0x132>;
 					};
 
 					qcom,flash_2 {
@@ -336,7 +336,7 @@
 						qcom,id = <0x02>;
 						qcom,duration-ms = <0x500>;
 						qcom,ires-ua = <0x30d4>;
-						phandle = <0x135>;
+						phandle = <0x133>;
 					};
 
 					qcom,flash_3 {
@@ -347,7 +347,7 @@
 						qcom,id = <0x03>;
 						qcom,duration-ms = <0x500>;
 						qcom,ires-ua = <0x30d4>;
-						phandle = <0x136>;
+						phandle = <0x134>;
 					};
 
 					qcom,torch_0 {
@@ -357,7 +357,7 @@
 						qcom,default-led-trigger = "torch0_trigger";
 						qcom,id = <0x00>;
 						qcom,ires-ua = <0x30d4>;
-						phandle = <0x113>;
+						phandle = <0x111>;
 					};
 
 					qcom,torch_1 {
@@ -367,7 +367,7 @@
 						qcom,default-led-trigger = "torch1_trigger";
 						qcom,id = <0x01>;
 						qcom,ires-ua = <0x30d4>;
-						phandle = <0x115>;
+						phandle = <0x113>;
 					};
 
 					qcom,torch_2 {
@@ -377,7 +377,7 @@
 						qcom,default-led-trigger = "torch2_trigger";
 						qcom,id = <0x02>;
 						qcom,ires-ua = <0x30d4>;
-						phandle = <0x116>;
+						phandle = <0x114>;
 					};
 
 					qcom,torch_3 {
@@ -387,7 +387,7 @@
 						qcom,default-led-trigger = "torch3_trigger";
 						qcom,id = <0x03>;
 						qcom,ires-ua = <0x30d4>;
-						phandle = <0x137>;
+						phandle = <0x135>;
 					};
 
 					qcom,led_switch_0 {
@@ -396,7 +396,7 @@
 						qcom,default-led-trigger = "switch0_trigger";
 						qcom,led-mask = <0x01>;
 						qcom,symmetry-en;
-						phandle = <0x114>;
+						phandle = <0x112>;
 					};
 
 					qcom,led_switch_1 {
@@ -405,7 +405,7 @@
 						qcom,default-led-trigger = "switch1_trigger";
 						qcom,led-mask = <0x06>;
 						qcom,symmetry-en;
-						phandle = <0x117>;
+						phandle = <0x115>;
 					};
 
 					qcom,led_switch_2 {
@@ -414,7 +414,7 @@
 						qcom,default-led-trigger = "switch2_trigger";
 						qcom,led-mask = <0x0f>;
 						qcom,symmetry-en;
-						phandle = <0x138>;
+						phandle = <0x136>;
 					};
 				};
 
@@ -441,7 +441,7 @@
 				polling-delay = <0x00>;
 				thermal-governor = "step_wise";
 				thermal-sensors = <0x0a>;
-				phandle = <0x139>;
+				phandle = <0x137>;
 
 				trips {
 
@@ -449,21 +449,21 @@
 						temperature = <0x17318>;
 						hysteresis = <0x00>;
 						type = "passive";
-						phandle = <0x13a>;
+						phandle = <0x138>;
 					};
 
 					trip1 {
 						temperature = <0x1c138>;
 						hysteresis = <0x00>;
 						type = "passive";
-						phandle = <0x13b>;
+						phandle = <0x139>;
 					};
 
 					trip2 {
 						temperature = <0x23668>;
 						hysteresis = <0x00>;
 						type = "critical";
-						phandle = <0x13c>;
+						phandle = <0x13a>;
 					};
 				};
 			};
@@ -605,7 +605,7 @@
 				polling-delay = <0x00>;
 				thermal-governor = "step_wise";
 				thermal-sensors = <0x0c>;
-				phandle = <0x13d>;
+				phandle = <0x13b>;
 
 				trips {
 
@@ -613,21 +613,21 @@
 						temperature = <0x17318>;
 						hysteresis = <0x00>;
 						type = "passive";
-						phandle = <0x13e>;
+						phandle = <0x13c>;
 					};
 
 					trip1 {
 						temperature = <0x1c138>;
 						hysteresis = <0x00>;
 						type = "passive";
-						phandle = <0x13f>;
+						phandle = <0x13d>;
 					};
 
 					trip2 {
 						temperature = <0x23668>;
 						hysteresis = <0x00>;
 						type = "critical";
-						phandle = <0x140>;
+						phandle = <0x13e>;
 					};
 				};
 			};
@@ -649,7 +649,7 @@
 				#address-cells = <0x01>;
 				#size-cells = <0x00>;
 				status = "ok";
-				phandle = <0x141>;
+				phandle = <0x13f>;
 
 				pm8550vs-c-temp-alarm@a00 {
 					compatible = "qcom,spmi-temp-alarm";
@@ -668,7 +668,7 @@
 					#gpio-cells = <0x02>;
 					interrupt-controller;
 					#interrupt-cells = <0x02>;
-					phandle = <0x142>;
+					phandle = <0x140>;
 				};
 			};
 
@@ -678,7 +678,7 @@
 				#address-cells = <0x01>;
 				#size-cells = <0x00>;
 				status = "ok";
-				phandle = <0x143>;
+				phandle = <0x141>;
 
 				pm8550vs-d-temp-alarm@a00 {
 					compatible = "qcom,spmi-temp-alarm";
@@ -697,7 +697,7 @@
 					#gpio-cells = <0x02>;
 					interrupt-controller;
 					#interrupt-cells = <0x02>;
-					phandle = <0x144>;
+					phandle = <0x142>;
 				};
 			};
 
@@ -707,7 +707,7 @@
 				#address-cells = <0x01>;
 				#size-cells = <0x00>;
 				status = "disabled";
-				phandle = <0x145>;
+				phandle = <0x143>;
 
 				pm8550vs-e-temp-alarm@a00 {
 					compatible = "qcom,spmi-temp-alarm";
@@ -724,7 +724,7 @@
 					#gpio-cells = <0x02>;
 					interrupt-controller;
 					#interrupt-cells = <0x02>;
-					phandle = <0x146>;
+					phandle = <0x144>;
 				};
 			};
 
@@ -734,7 +734,7 @@
 				#address-cells = <0x01>;
 				#size-cells = <0x00>;
 				status = "disabled";
-				phandle = <0x147>;
+				phandle = <0x145>;
 
 				pm8550vs-g-temp-alarm@a00 {
 					compatible = "qcom,spmi-temp-alarm";
@@ -751,7 +751,7 @@
 					#gpio-cells = <0x02>;
 					interrupt-controller;
 					#interrupt-cells = <0x02>;
-					phandle = <0x148>;
+					phandle = <0x146>;
 				};
 			};
 		};
@@ -768,7 +768,7 @@
 				thermal-governor = "step_wise";
 				thermal-sensors = <0x0d>;
 				status = "ok";
-				phandle = <0x149>;
+				phandle = <0x147>;
 
 				trips {
 
@@ -783,14 +783,14 @@
 						temperature = <0x1c138>;
 						hysteresis = <0x00>;
 						type = "passive";
-						phandle = <0x14a>;
+						phandle = <0x148>;
 					};
 
 					trip2 {
 						temperature = <0x23668>;
 						hysteresis = <0x00>;
 						type = "critical";
-						phandle = <0x14b>;
+						phandle = <0x149>;
 					};
 				};
 			};
@@ -801,7 +801,7 @@
 				thermal-governor = "step_wise";
 				thermal-sensors = <0x0e>;
 				status = "ok";
-				phandle = <0x14c>;
+				phandle = <0x14a>;
 
 				trips {
 
@@ -816,14 +816,14 @@
 						temperature = <0x1c138>;
 						hysteresis = <0x00>;
 						type = "passive";
-						phandle = <0x14d>;
+						phandle = <0x14b>;
 					};
 
 					trip2 {
 						temperature = <0x23668>;
 						hysteresis = <0x00>;
 						type = "critical";
-						phandle = <0x14e>;
+						phandle = <0x14c>;
 					};
 				};
 			};
@@ -834,7 +834,7 @@
 				thermal-governor = "step_wise";
 				thermal-sensors = <0x0f>;
 				status = "disabled";
-				phandle = <0x14f>;
+				phandle = <0x14d>;
 
 				trips {
 
@@ -849,14 +849,14 @@
 						temperature = <0x1c138>;
 						hysteresis = <0x00>;
 						type = "passive";
-						phandle = <0x150>;
+						phandle = <0x14e>;
 					};
 
 					trip2 {
 						temperature = <0x23668>;
 						hysteresis = <0x00>;
 						type = "critical";
-						phandle = <0x151>;
+						phandle = <0x14f>;
 					};
 				};
 			};
@@ -867,7 +867,7 @@
 				thermal-governor = "step_wise";
 				thermal-sensors = <0x10>;
 				status = "disabled";
-				phandle = <0x152>;
+				phandle = <0x150>;
 
 				trips {
 
@@ -875,21 +875,21 @@
 						temperature = <0x17318>;
 						hysteresis = <0x00>;
 						type = "passive";
-						phandle = <0x153>;
+						phandle = <0x151>;
 					};
 
 					trip1 {
 						temperature = <0x1c138>;
 						hysteresis = <0x00>;
 						type = "passive";
-						phandle = <0x154>;
+						phandle = <0x152>;
 					};
 
 					trip2 {
 						temperature = <0x23668>;
 						hysteresis = <0x00>;
 						type = "critical";
-						phandle = <0x155>;
+						phandle = <0x153>;
 					};
 				};
 			};
@@ -921,7 +921,7 @@
 						interrupts = <0x00 0x13 0x07 0x03>;
 						linux,code = <0x74>;
 						qcom,log-kpd-event;
-						phandle = <0x156>;
+						phandle = <0x154>;
 					};
 
 					resin {
@@ -936,7 +936,7 @@
 					reg = <0x7000>;
 					#address-cells = <0x01>;
 					#size-cells = <0x01>;
-					phandle = <0x157>;
+					phandle = <0x155>;
 
 					ocp-log@76 {
 						reg = <0x76 0x06>;
@@ -946,7 +946,7 @@
 					ufs_dev@af {
 						reg = <0xaf 0x01>;
 						bits = <0x04 0x04>;
-						phandle = <0x158>;
+						phandle = <0x156>;
 					};
 				};
 
@@ -955,7 +955,7 @@
 					reg = <0x7100>;
 					#address-cells = <0x01>;
 					#size-cells = <0x01>;
-					phandle = <0x159>;
+					phandle = <0x157>;
 
 					restart@48 {
 						reg = <0x48 0x01>;
@@ -965,7 +965,7 @@
 
 					pon_reason@69 {
 						reg = <0x69 0x01>;
-						phandle = <0xf0>;
+						phandle = <0xee>;
 					};
 				};
 
@@ -996,7 +996,7 @@
 				sdam@9d00 {
 					compatible = "qcom,spmi-sdam";
 					reg = <0x9d00>;
-					phandle = <0x15a>;
+					phandle = <0x158>;
 				};
 
 				sdam@a000 {
@@ -1018,7 +1018,7 @@
 					#gpio-cells = <0x02>;
 					interrupt-controller;
 					#interrupt-cells = <0x02>;
-					phandle = <0x15b>;
+					phandle = <0x159>;
 
 					imu_clk {
 
@@ -1029,7 +1029,7 @@
 							output-enable;
 							power-source = <0x00>;
 							qcom,drive-strength = <0x03>;
-							phandle = <0x15c>;
+							phandle = <0x15a>;
 						};
 					};
 				};
@@ -1039,7 +1039,7 @@
 					reg = <0x6100 0x6200>;
 					reg-names = "rtc\0alarm";
 					interrupts = <0x00 0x62 0x01 0x01>;
-					phandle = <0x15d>;
+					phandle = <0x15b>;
 				};
 
 				vadc@9000 {
@@ -1204,7 +1204,7 @@
 					nvmem-names = "epm-config-sdam\0epm-10s-avg-sdam";
 					qcom,reg-ppid-ids = <0x1e4019b 0x19e01a1 0x1a402a1 0x2a402aa 0x3a403a7 0x3aa059e 0x5a405a7>;
 					qcom,reg-ppid-names = "sub_reg\0hv_sub_reg\0mv_sub_reg_ldo\0lv_sub_reg_ldo\0multimedia\0mxa\0apc0\0apc1\0ebi\0vddq\0cx\0mxc\0wlan_cx\0gfx";
-					phandle = <0x15e>;
+					phandle = <0x15c>;
 				};
 			};
 		};
@@ -1259,7 +1259,7 @@
 						temperature = <0x11170>;
 						hysteresis = <0x3e8>;
 						type = "passive";
-						phandle = <0x15f>;
+						phandle = <0x15d>;
 					};
 				};
 			};
@@ -1379,7 +1379,7 @@
 				periph-5c1-supply = <0xffffffff>;
 				periph-5c2-supply = <0xffffffff>;
 				periph-5c3-supply = <0xffffffff>;
-				phandle = <0x160>;
+				phandle = <0x15e>;
 			};
 		};
 	};
@@ -1626,7 +1626,7 @@
 			};
 
 			nordic_gpio10_active {
-				phandle = <0x161>;
+				phandle = <0x15f>;
 
 				mux {
 					pins = "gpio138";
@@ -1642,7 +1642,7 @@
 			};
 
 			nordic_gpio10_suspend {
-				phandle = <0x162>;
+				phandle = <0x160>;
 
 				mux {
 					pins = "gpio138";
@@ -1657,7 +1657,7 @@
 			};
 
 			nordic_gpio11_active {
-				phandle = <0x11c>;
+				phandle = <0x11a>;
 
 				mux {
 					pins = "gpio139";
@@ -1673,7 +1673,7 @@
 			};
 
 			nordic_gpio11_suspend {
-				phandle = <0x11d>;
+				phandle = <0x11b>;
 
 				mux {
 					pins = "gpio139";
@@ -1720,7 +1720,7 @@
 			};
 
 			nordic_int_active {
-				phandle = <0x163>;
+				phandle = <0x161>;
 
 				mux {
 					pins = "gpio97";
@@ -1736,7 +1736,7 @@
 			};
 
 			nordic_int_suspend {
-				phandle = <0x164>;
+				phandle = <0x162>;
 
 				mux {
 					pins = "gpio97";
@@ -1943,7 +1943,7 @@
 				io-channel-ranges;
 				io-channels = <0x06 0x148>;
 				io-channel-names = "ipd";
-				phandle = <0x165>;
+				phandle = <0x163>;
 			};
 		};
 	};
@@ -2170,7 +2170,7 @@
 					qcom,mdss-dsi-panel-status-command-state = "dsi_hs_mode";
 					qcom,mdss-dsi-panel-status-value = <0x9c>;
 					qcom,mdss-dsi-panel-status-read-length = <0x01>;
-					phandle = <0x166>;
+					phandle = <0x164>;
 
 					qcom,mdss-dsi-display-timings {
 
@@ -2236,7 +2236,7 @@
 					qcom,mdss-dsi-panel-status-command-state = "dsi_hs_mode";
 					qcom,mdss-dsi-panel-status-value = <0x9c>;
 					qcom,mdss-dsi-panel-status-read-length = <0x01>;
-					phandle = <0x167>;
+					phandle = <0x165>;
 
 					qcom,mdss-dsi-display-timings {
 
@@ -2301,7 +2301,7 @@
 					qcom,mdss-dsi-panel-status-command-state = "dsi_hs_mode";
 					qcom,mdss-dsi-panel-status-value = <0x9c>;
 					qcom,mdss-dsi-panel-status-read-length = <0x01>;
-					phandle = <0x168>;
+					phandle = <0x166>;
 
 					qcom,mdss-dsi-display-timings {
 
@@ -2370,7 +2370,7 @@
 					qcom,dsi-select-sec-sync-clocks = "pll_byte_mclk\0pll_dsi_mclk";
 					qcom,mdss-dsi-panel-status-check-mode = "esd_sw_sim_success";
 					qcom,esd-check-enabled;
-					phandle = <0x169>;
+					phandle = <0x167>;
 
 					qcom,mdss-dsi-display-timings {
 
@@ -2433,7 +2433,7 @@
 					qcom,mdss-dsi-wr-mem-start = <0x2c>;
 					qcom,mdss-dsi-wr-mem-continue = <0x3c>;
 					qcom,dsi-select-clocks = "pll_byte_clk0\0pll_dsi_clk0";
-					phandle = <0x16a>;
+					phandle = <0x168>;
 
 					qcom,mdss-dsi-display-timings {
 
@@ -2503,7 +2503,7 @@
 					qcom,mdss-dms-vid-type = "dms-vid-non-seamless";
 					qcom,mdss-dsi-panel-status-check-mode = "esd_sw_sim_success";
 					qcom,esd-check-enabled;
-					phandle = <0x16b>;
+					phandle = <0x169>;
 
 					qcom,mdss-dsi-display-timings {
 
@@ -2608,7 +2608,7 @@
 					qcom,dsi-select-sec-sync-clocks = "pll_byte_mclk\0pll_dsi_mclk";
 					qcom,mdss-dsi-panel-status-check-mode = "esd_sw_sim_success";
 					qcom,esd-check-enabled;
-					phandle = <0x16c>;
+					phandle = <0x16a>;
 
 					qcom,mdss-dsi-display-timings {
 
@@ -2678,7 +2678,7 @@
 					qcom,dsi-select-sec-sync-clocks = "pll_byte_mclk\0pll_dsi_mclk";
 					qcom,mdss-dsi-panel-status-check-mode = "esd_sw_sim_success";
 					qcom,esd-check-enabled;
-					phandle = <0x16d>;
+					phandle = <0x16b>;
 
 					qcom,mdss-dsi-display-timings {
 
@@ -2744,7 +2744,7 @@
 					qcom,mdss-dsi-panel-status-command-state = "dsi_lp_mode";
 					qcom,mdss-dsi-panel-status-value = <0x1c>;
 					qcom,mdss-dsi-panel-status-read-length = <0x01>;
-					phandle = <0x16e>;
+					phandle = <0x16c>;
 
 					qcom,mdss-dsi-display-timings {
 
@@ -2806,7 +2806,7 @@
 					qcom,dsi-select-clocks = "pll_byte_clk0\0pll_dsi_clk0";
 					qcom,dsi-select-sec-sync-clocks = "pll_byte_mclk\0pll_dsi_mclk";
 					qcom,mdss-dms-vid-type = "dms-vid-non-seamless";
-					phandle = <0x16f>;
+					phandle = <0x16d>;
 
 					qcom,mdss-dsi-display-timings {
 
@@ -2920,7 +2920,7 @@
 					qcom,dynamic-mode-switch-enabled;
 					qcom,dynamic-mode-switch-type = "dynamic-resolution-switch-immediate";
 					qcom,dms-vid-maintain-const-clk;
-					phandle = <0x170>;
+					phandle = <0x16e>;
 
 					qcom,mdss-dsi-display-timings {
 
@@ -3318,7 +3318,7 @@
 					qcom,dsi-select-sec-sync-clocks = "pll_byte_mclk\0pll_dsi_mclk";
 					qcom,dsi-select-sec-clocks = "pll_byte_clk2\0pll_dsi_clk2";
 					qcom,platform-reset-gpio = <0xffffffff 0x68 0x00>;
-					phandle = <0x171>;
+					phandle = <0x16f>;
 
 					qcom,mdss-dsi-display-timings {
 
@@ -3385,7 +3385,7 @@
 					qcom,dsi-select-sec-sync-clocks = "pll_byte_mclk\0pll_dsi_mclk";
 					qcom,dsi-select-sec-clocks = "pll_byte_clk2\0pll_dsi_clk2";
 					qcom,platform-sec-reset-gpio = <0xffffffff 0x67 0x00>;
-					phandle = <0x172>;
+					phandle = <0x170>;
 
 					qcom,mdss-dsi-display-timings {
 
@@ -3848,13 +3848,13 @@
 
 				qcom,msm-ext-disp-audio-codec-rx {
 					compatible = "qcom,msm-ext-disp-audio-codec-rx";
-					phandle = <0x173>;
+					phandle = <0x171>;
 				};
 			};
 
 			qcom,msm_hdcp {
 				compatible = "qcom,msm-hdcp";
-				phandle = <0x174>;
+				phandle = <0x172>;
 			};
 
 			qcom,edp_pll@aec3000 {
@@ -4218,7 +4218,7 @@
 			};
 
 			pmx_sde {
-				phandle = <0x175>;
+				phandle = <0x173>;
 
 				sde_dsi_active {
 					phandle = <0x4b>;
@@ -4261,7 +4261,7 @@
 			dsi_panel_pwr_supply_sim {
 				#address-cells = <0x01>;
 				#size-cells = <0x00>;
-				phandle = <0x176>;
+				phandle = <0x174>;
 
 				qcom,panel-supply-entry@0 {
 					reg = <0x00>;
@@ -4277,7 +4277,7 @@
 			dsi_panel_pwr_supply_oled {
 				#address-cells = <0x01>;
 				#size-cells = <0x00>;
-				phandle = <0x177>;
+				phandle = <0x175>;
 
 				qcom,panel-supply-entry@0 {
 					reg = <0x00>;
@@ -4403,7 +4403,7 @@
 			disp_rdump_region@bfc00000 {
 				reg = <0xbfc00000 0x1900000>;
 				label = "disp_rdump_region";
-				phandle = <0x178>;
+				phandle = <0x176>;
 			};
 		};
 	};
@@ -4416,7 +4416,7 @@
 			splash_region {
 				reg = <0x00 0xbfc00000 0x00 0x7080000>;
 				label = "cont_splash_region";
-				phandle = <0x179>;
+				phandle = <0x177>;
 			};
 		};
 	};
@@ -4789,7 +4789,7 @@
 			};
 
 			cci_sda6_active {
-				phandle = <0x9a>;
+				phandle = <0x99>;
 
 				mux {
 					pins = "gpio12";
@@ -4804,7 +4804,7 @@
 			};
 
 			cci_sda6_suspend {
-				phandle = <0x9c>;
+				phandle = <0x9b>;
 
 				mux {
 					pins = "gpio12";
@@ -4819,7 +4819,7 @@
 			};
 
 			cci_scl6_active {
-				phandle = <0x9b>;
+				phandle = <0x9a>;
 
 				mux {
 					pins = "gpio13";
@@ -4834,7 +4834,7 @@
 			};
 
 			cci_scl6_suspend {
-				phandle = <0x9d>;
+				phandle = <0x9c>;
 
 				mux {
 					pins = "gpio13";
@@ -4849,7 +4849,7 @@
 			};
 
 			cci_sda7_active {
-				phandle = <0x9e>;
+				phandle = <0x9d>;
 
 				mux {
 					pins = "gpio14";
@@ -4864,7 +4864,7 @@
 			};
 
 			cci_sda7_suspend {
-				phandle = <0xa0>;
+				phandle = <0x9f>;
 
 				mux {
 					pins = "gpio14";
@@ -4880,7 +4880,7 @@
 			};
 
 			cci_scl7_active {
-				phandle = <0x9f>;
+				phandle = <0x9e>;
 
 				mux {
 					pins = "gpio15";
@@ -4895,7 +4895,7 @@
 			};
 
 			cci_scl7_suspend {
-				phandle = <0xa1>;
+				phandle = <0xa0>;
 
 				mux {
 					pins = "gpio15";
@@ -4911,7 +4911,7 @@
 			};
 
 			cci_sda8_active {
-				phandle = <0xb5>;
+				phandle = <0xb3>;
 
 				mux {
 					pins = "gpio16";
@@ -4926,7 +4926,7 @@
 			};
 
 			cci_sda8_suspend {
-				phandle = <0xb7>;
+				phandle = <0xb5>;
 
 				mux {
 					pins = "gpio16";
@@ -4941,7 +4941,7 @@
 			};
 
 			cci_scl8_active {
-				phandle = <0xb6>;
+				phandle = <0xb4>;
 
 				mux {
 					pins = "gpio17";
@@ -4956,7 +4956,7 @@
 			};
 
 			cci_scl8_suspend {
-				phandle = <0xb8>;
+				phandle = <0xb6>;
 
 				mux {
 					pins = "gpio17";
@@ -4971,7 +4971,7 @@
 			};
 
 			cci_sda9_active {
-				phandle = <0xb9>;
+				phandle = <0xb7>;
 
 				mux {
 					pins = "gpio18";
@@ -4986,7 +4986,7 @@
 			};
 
 			cci_sda9_suspend {
-				phandle = <0xbb>;
+				phandle = <0xb9>;
 
 				mux {
 					pins = "gpio18";
@@ -5001,7 +5001,7 @@
 			};
 
 			cci_scl9_active {
-				phandle = <0xba>;
+				phandle = <0xb8>;
 
 				mux {
 					pins = "gpio19";
@@ -5016,7 +5016,7 @@
 			};
 
 			cci_scl9_suspend {
-				phandle = <0xbc>;
+				phandle = <0xba>;
 
 				mux {
 					pins = "gpio19";
@@ -5031,7 +5031,7 @@
 			};
 
 			cci_sda10_active {
-				phandle = <0xc9>;
+				phandle = <0xc7>;
 
 				mux {
 					pins = "gpio49";
@@ -5046,7 +5046,7 @@
 			};
 
 			cci_sda10_suspend {
-				phandle = <0xcb>;
+				phandle = <0xc9>;
 
 				mux {
 					pins = "gpio49";
@@ -5061,7 +5061,7 @@
 			};
 
 			cci_scl10_active {
-				phandle = <0xca>;
+				phandle = <0xc8>;
 
 				mux {
 					pins = "gpio50";
@@ -5076,7 +5076,7 @@
 			};
 
 			cci_scl10_suspend {
-				phandle = <0xcc>;
+				phandle = <0xca>;
 
 				mux {
 					pins = "gpio50";
@@ -5091,7 +5091,7 @@
 			};
 
 			cci_sda11_active {
-				phandle = <0xcd>;
+				phandle = <0xcb>;
 
 				mux {
 					pins = "gpio51";
@@ -5106,7 +5106,7 @@
 			};
 
 			cci_sda11_suspend {
-				phandle = <0xcf>;
+				phandle = <0xcd>;
 
 				mux {
 					pins = "gpio51";
@@ -5121,7 +5121,7 @@
 			};
 
 			cci_scl11_active {
-				phandle = <0xce>;
+				phandle = <0xcc>;
 
 				mux {
 					pins = "gpio52";
@@ -5136,7 +5136,7 @@
 			};
 
 			cci_scl11_suspend {
-				phandle = <0xd0>;
+				phandle = <0xce>;
 
 				mux {
 					pins = "gpio52";
@@ -5271,7 +5271,7 @@
 			};
 
 			cam_sensor_mclk4_active {
-				phandle = <0x17a>;
+				phandle = <0x178>;
 
 				mux {
 					pins = "gpio24";
@@ -5287,7 +5287,7 @@
 			};
 
 			cam_sensor_mclk4_suspend {
-				phandle = <0x17b>;
+				phandle = <0x179>;
 
 				mux {
 					pins = "gpio24";
@@ -5302,7 +5302,7 @@
 			};
 
 			cam_sensor_mclk5_active {
-				phandle = <0x96>;
+				phandle = <0x95>;
 
 				mux {
 					pins = "gpio25";
@@ -5317,7 +5317,7 @@
 			};
 
 			cam_sensor_mclk5_suspend {
-				phandle = <0x98>;
+				phandle = <0x97>;
 
 				mux {
 					pins = "gpio25";
@@ -5332,7 +5332,7 @@
 			};
 
 			cam_sensor_mclk6_active {
-				phandle = <0xa8>;
+				phandle = <0xa6>;
 
 				mux {
 					pins = "gpio26";
@@ -5347,7 +5347,7 @@
 			};
 
 			cam_sensor_mclk6_suspend {
-				phandle = <0xaa>;
+				phandle = <0xa8>;
 
 				mux {
 					pins = "gpio26";
@@ -5362,7 +5362,7 @@
 			};
 
 			cam_sensor_mclk7_active {
-				phandle = <0x10b>;
+				phandle = <0x109>;
 
 				mux {
 					pins = "gpio27";
@@ -5377,7 +5377,7 @@
 			};
 
 			cam_sensor_mclk7_suspend {
-				phandle = <0x10c>;
+				phandle = <0x10a>;
 
 				mux {
 					pins = "gpio27";
@@ -5392,7 +5392,7 @@
 			};
 
 			cam_sensor_mclk8_active {
-				phandle = <0x10f>;
+				phandle = <0x10d>;
 
 				mux {
 					pins = "gpio28";
@@ -5407,7 +5407,7 @@
 			};
 
 			cam_sensor_mclk8_suspend {
-				phandle = <0x110>;
+				phandle = <0x10e>;
 
 				mux {
 					pins = "gpio28";
@@ -5422,7 +5422,7 @@
 			};
 
 			cam_sensor_mclk9_active {
-				phandle = <0xb1>;
+				phandle = <0xaf>;
 
 				mux {
 					pins = "gpio29";
@@ -5437,7 +5437,7 @@
 			};
 
 			cam_sensor_mclk9_suspend {
-				phandle = <0xb3>;
+				phandle = <0xb1>;
 
 				mux {
 					pins = "gpio29";
@@ -5452,7 +5452,7 @@
 			};
 
 			cam_sensor_mclk10_active {
-				phandle = <0xd5>;
+				phandle = <0xd3>;
 
 				mux {
 					pins = "gpio30";
@@ -5467,7 +5467,7 @@
 			};
 
 			cam_sensor_mclk10_suspend {
-				phandle = <0xd7>;
+				phandle = <0xd5>;
 
 				mux {
 					pins = "gpio30";
@@ -5482,7 +5482,7 @@
 			};
 
 			cam_sensor_mclk11_active {
-				phandle = <0xdd>;
+				phandle = <0xdb>;
 
 				mux {
 					pins = "gpio31";
@@ -5497,7 +5497,7 @@
 			};
 
 			cam_sensor_mclk11_suspend {
-				phandle = <0xdf>;
+				phandle = <0xdd>;
 
 				mux {
 					pins = "gpio31";
@@ -5512,7 +5512,7 @@
 			};
 
 			cam_sensor_active_rst0 {
-				phandle = <0x17c>;
+				phandle = <0x17a>;
 
 				mux {
 					pins = "gpio57";
@@ -5527,7 +5527,7 @@
 			};
 
 			cam_sensor_suspend_rst0 {
-				phandle = <0x17d>;
+				phandle = <0x17b>;
 
 				mux {
 					pins = "gpio57";
@@ -5543,7 +5543,7 @@
 			};
 
 			cam_sensor_active_rst1 {
-				phandle = <0x17e>;
+				phandle = <0x17c>;
 
 				mux {
 					pins = "gpio58";
@@ -5558,7 +5558,7 @@
 			};
 
 			cam_sensor_suspend_rst1 {
-				phandle = <0x17f>;
+				phandle = <0x17d>;
 
 				mux {
 					pins = "gpio58";
@@ -5574,7 +5574,7 @@
 			};
 
 			cam_sensor_active_rst2 {
-				phandle = <0x180>;
+				phandle = <0x17e>;
 
 				mux {
 					pins = "gpio59";
@@ -5589,7 +5589,7 @@
 			};
 
 			cam_sensor_suspend_rst2 {
-				phandle = <0x181>;
+				phandle = <0x17f>;
 
 				mux {
 					pins = "gpio59";
@@ -5605,7 +5605,7 @@
 			};
 
 			cam_sensor_active_rst3 {
-				phandle = <0x182>;
+				phandle = <0x180>;
 
 				mux {
 					pins = "gpio63";
@@ -5620,7 +5620,7 @@
 			};
 
 			cam_sensor_suspend_rst3 {
-				phandle = <0x183>;
+				phandle = <0x181>;
 
 				mux {
 					pins = "gpio63";
@@ -5636,7 +5636,7 @@
 			};
 
 			cam_sensor_active_rst4 {
-				phandle = <0x184>;
+				phandle = <0x182>;
 
 				mux {
 					pins = "gpio64";
@@ -5651,7 +5651,7 @@
 			};
 
 			cam_sensor_suspend_rst4 {
-				phandle = <0x185>;
+				phandle = <0x183>;
 
 				mux {
 					pins = "gpio64";
@@ -5667,7 +5667,7 @@
 			};
 
 			cam_sensor_active_rst5 {
-				phandle = <0x186>;
+				phandle = <0x184>;
 
 				mux {
 					pins = "gpio65";
@@ -5682,7 +5682,7 @@
 			};
 
 			cam_sensor_suspend_rst5 {
-				phandle = <0x187>;
+				phandle = <0x185>;
 
 				mux {
 					pins = "gpio65";
@@ -5698,7 +5698,7 @@
 			};
 
 			cam_sensor_active_rst6 {
-				phandle = <0x188>;
+				phandle = <0x186>;
 
 				mux {
 					pins = "gpio66";
@@ -5713,7 +5713,7 @@
 			};
 
 			cam_sensor_suspend_rst6 {
-				phandle = <0x189>;
+				phandle = <0x187>;
 
 				mux {
 					pins = "gpio66";
@@ -5729,7 +5729,7 @@
 			};
 
 			cam_sensor_active_rst7 {
-				phandle = <0x18a>;
+				phandle = <0x188>;
 
 				mux {
 					pins = "gpio69";
@@ -5744,7 +5744,7 @@
 			};
 
 			cam_sensor_suspend_rst7 {
-				phandle = <0x18b>;
+				phandle = <0x189>;
 
 				mux {
 					pins = "gpio69";
@@ -5760,7 +5760,7 @@
 			};
 
 			cam_sensor_active_rst8 {
-				phandle = <0x18c>;
+				phandle = <0x18a>;
 
 				mux {
 					pins = "gpio70";
@@ -5775,7 +5775,7 @@
 			};
 
 			cam_sensor_suspend_rst8 {
-				phandle = <0x18d>;
+				phandle = <0x18b>;
 
 				mux {
 					pins = "gpio70";
@@ -5791,7 +5791,7 @@
 			};
 
 			cam_sensor_active_rst9 {
-				phandle = <0x18e>;
+				phandle = <0x18c>;
 
 				mux {
 					pins = "gpio72";
@@ -5806,7 +5806,7 @@
 			};
 
 			cam_sensor_suspend_rst9 {
-				phandle = <0x18f>;
+				phandle = <0x18d>;
 
 				mux {
 					pins = "gpio72";
@@ -5822,7 +5822,7 @@
 			};
 
 			cam_sensor_active_rst10 {
-				phandle = <0x190>;
+				phandle = <0x18e>;
 
 				mux {
 					pins = "gpio75";
@@ -5837,7 +5837,7 @@
 			};
 
 			cam_sensor_suspend_rst10 {
-				phandle = <0x191>;
+				phandle = <0x18f>;
 
 				mux {
 					pins = "gpio75";
@@ -5853,7 +5853,7 @@
 			};
 
 			cam_sensor_active_rst11 {
-				phandle = <0x192>;
+				phandle = <0x190>;
 
 				mux {
 					pins = "gpio76";
@@ -5868,7 +5868,7 @@
 			};
 
 			cam_sensor_suspend_rst11 {
-				phandle = <0x193>;
+				phandle = <0x191>;
 
 				mux {
 					pins = "gpio76";
@@ -5884,7 +5884,7 @@
 			};
 
 			cam_sensor_active_fsin0 {
-				phandle = <0x194>;
+				phandle = <0x192>;
 
 				mux {
 					pins = "gpio32";
@@ -5899,7 +5899,7 @@
 			};
 
 			cam_sensor_suspend_fsin0 {
-				phandle = <0x195>;
+				phandle = <0x193>;
 
 				mux {
 					pins = "gpio32";
@@ -5915,7 +5915,7 @@
 			};
 
 			cam_sensor_active_fsin1 {
-				phandle = <0x196>;
+				phandle = <0x194>;
 
 				mux {
 					pins = "gpio33";
@@ -5930,7 +5930,7 @@
 			};
 
 			cam_sensor_suspend_fsin1 {
-				phandle = <0x197>;
+				phandle = <0x195>;
 
 				mux {
 					pins = "gpio33";
@@ -5946,7 +5946,7 @@
 			};
 
 			cam_sensor_active_fsin2 {
-				phandle = <0x198>;
+				phandle = <0x196>;
 
 				mux {
 					pins = "gpio34";
@@ -5961,7 +5961,7 @@
 			};
 
 			cam_sensor_suspend_fsin2 {
-				phandle = <0x199>;
+				phandle = <0x197>;
 
 				mux {
 					pins = "gpio34";
@@ -5977,7 +5977,7 @@
 			};
 
 			cam_sensor_active_fsin3 {
-				phandle = <0x19a>;
+				phandle = <0x198>;
 
 				mux {
 					pins = "gpio35";
@@ -5992,7 +5992,7 @@
 			};
 
 			cam_sensor_suspend_fsin3 {
-				phandle = <0x19b>;
+				phandle = <0x199>;
 
 				mux {
 					pins = "gpio35";
@@ -6008,7 +6008,7 @@
 			};
 
 			cam_sensor_active_fsin4 {
-				phandle = <0x19c>;
+				phandle = <0x19a>;
 
 				mux {
 					pins = "gpio37";
@@ -6023,7 +6023,7 @@
 			};
 
 			cam_sensor_suspend_fsin4 {
-				phandle = <0x19d>;
+				phandle = <0x19b>;
 
 				mux {
 					pins = "gpio37";
@@ -6039,7 +6039,7 @@
 			};
 
 			cam_sensor_active_fsin5 {
-				phandle = <0x19e>;
+				phandle = <0x19c>;
 
 				mux {
 					pins = "gpio38";
@@ -6054,7 +6054,7 @@
 			};
 
 			cam_sensor_suspend_fsin5 {
-				phandle = <0x19f>;
+				phandle = <0x19d>;
 
 				mux {
 					pins = "gpio38";
@@ -6070,7 +6070,7 @@
 			};
 
 			cam_sensor_active_fsin6 {
-				phandle = <0x1a0>;
+				phandle = <0x19e>;
 
 				mux {
 					pins = "gpio39";
@@ -6085,7 +6085,7 @@
 			};
 
 			cam_sensor_suspend_fsin6 {
-				phandle = <0x1a1>;
+				phandle = <0x19f>;
 
 				mux {
 					pins = "gpio39";
@@ -6101,7 +6101,7 @@
 			};
 
 			cam_sensor_active_fsin7 {
-				phandle = <0x1a2>;
+				phandle = <0x1a0>;
 
 				mux {
 					pins = "gpio55";
@@ -6116,7 +6116,7 @@
 			};
 
 			cam_sensor_suspend_fsin7 {
-				phandle = <0x1a3>;
+				phandle = <0x1a1>;
 
 				mux {
 					pins = "gpio55";
@@ -6132,7 +6132,7 @@
 			};
 
 			cam_sensor_active_fsin8 {
-				phandle = <0x1a4>;
+				phandle = <0x1a2>;
 
 				mux {
 					pins = "gpio56";
@@ -6147,7 +6147,7 @@
 			};
 
 			cam_sensor_suspend_fsin8 {
-				phandle = <0x1a5>;
+				phandle = <0x1a3>;
 
 				mux {
 					pins = "gpio56";
@@ -6163,7 +6163,7 @@
 			};
 
 			cam_sensor_active_fsin9 {
-				phandle = <0x1a6>;
+				phandle = <0x1a4>;
 
 				mux {
 					pins = "gpio53";
@@ -6178,7 +6178,7 @@
 			};
 
 			cam_sensor_suspend_fsin9 {
-				phandle = <0x1a7>;
+				phandle = <0x1a5>;
 
 				mux {
 					pins = "gpio53";
@@ -6194,7 +6194,7 @@
 			};
 
 			cam_sensor_active_fsin10 {
-				phandle = <0x1a8>;
+				phandle = <0x1a6>;
 
 				mux {
 					pins = "gpio45";
@@ -6209,7 +6209,7 @@
 			};
 
 			cam_sensor_suspend_fsin10 {
-				phandle = <0x1a9>;
+				phandle = <0x1a7>;
 
 				mux {
 					pins = "gpio45";
@@ -6225,7 +6225,7 @@
 			};
 
 			cam_sensor_active_fsin11 {
-				phandle = <0x1aa>;
+				phandle = <0x1a8>;
 
 				mux {
 					pins = "gpio46";
@@ -6240,7 +6240,7 @@
 			};
 
 			cam_sensor_suspend_fsin11 {
-				phandle = <0x1ab>;
+				phandle = <0x1a9>;
 
 				mux {
 					pins = "gpio46";
@@ -6256,7 +6256,7 @@
 			};
 
 			cam_sensor_active_et_ir_led_en {
-				phandle = <0x1ac>;
+				phandle = <0x1aa>;
 
 				mux {
 					pins = "gpio67";
@@ -6271,7 +6271,7 @@
 			};
 
 			cam_sensor_suspend_et_ir_led_en {
-				phandle = <0x1ad>;
+				phandle = <0x1ab>;
 
 				mux {
 					pins = "gpio67";
@@ -6331,7 +6331,7 @@
 				clock-rates = <0x17d78400 0x00 0x17d78400 0x00 0x1c9c3800 0x00 0x17d78400 0x00 0x1c9c3800 0x00 0x17d78400 0x00 0x1c9c3800 0x00 0x17d78400 0x00>;
 				status = "ok";
 				is-phy-protect;
-				phandle = <0x1ae>;
+				phandle = <0x1ac>;
 			};
 
 			qcom,csiphy1@ace6000 {
@@ -6361,7 +6361,7 @@
 				aggregator-rx;
 				is-phy-protect;
 				non_secure_lane_mask = <0x01>;
-				phandle = <0x1af>;
+				phandle = <0x1ad>;
 			};
 
 			qcom,csiphy2@ace8000 {
@@ -6389,7 +6389,7 @@
 				clock-rates = <0x17d78400 0x00 0x17d78400 0x00 0x1c9c3800 0x00 0x17d78400 0x00 0x1c9c3800 0x00 0x17d78400 0x00 0x1c9c3800 0x00 0x17d78400 0x00>;
 				status = "ok";
 				is-phy-protect;
-				phandle = <0x1b0>;
+				phandle = <0x1ae>;
 			};
 
 			qcom,csiphy3@acea000 {
@@ -6418,7 +6418,7 @@
 				status = "ok";
 				is-phy-protect;
 				hw-id-version = <0x13>;
-				phandle = <0x1b1>;
+				phandle = <0x1af>;
 			};
 
 			qcom,csiphy4@acec000 {
@@ -6446,7 +6446,7 @@
 				clock-rates = <0x17d78400 0x00 0x17d78400 0x00 0x1c9c3800 0x00 0x17d78400 0x00 0x1c9c3800 0x00 0x17d78400 0x00 0x1c9c3800 0x00 0x17d78400 0x00>;
 				status = "ok";
 				is-phy-protect;
-				phandle = <0x1b2>;
+				phandle = <0x1b0>;
 			};
 
 			qcom,csiphy5@acee000 {
@@ -6474,7 +6474,7 @@
 				clock-rates = <0x17d78400 0x00 0x17d78400 0x00 0x1c9c3800 0x00 0x17d78400 0x00 0x1c9c3800 0x00 0x17d78400 0x00 0x1c9c3800 0x00 0x17d78400 0x00>;
 				status = "ok";
 				is-phy-protect;
-				phandle = <0x1b3>;
+				phandle = <0x1b1>;
 			};
 
 			qcom,csiphy6@acf0000 {
@@ -6504,7 +6504,7 @@
 				aggregator-rx;
 				is-phy-protect;
 				non_secure_lane_mask = <0x01>;
-				phandle = <0x1b4>;
+				phandle = <0x1b2>;
 			};
 
 			qcom,cci0@ac15000 {
@@ -6530,7 +6530,7 @@
 				pinctrl-2 = <0x56 0x57>;
 				pinctrl-3 = <0x58 0x59>;
 				status = "ok";
-				phandle = <0x1b5>;
+				phandle = <0x1b3>;
 
 				qcom,i2c_standard_mode {
 					hw-thigh = <0xc9>;
@@ -6545,7 +6545,7 @@
 					hw-tsp = <0x03>;
 					cci-clk-src = <0x23c3460>;
 					status = "ok";
-					phandle = <0x1b6>;
+					phandle = <0x1b4>;
 				};
 
 				qcom,i2c_fast_mode {
@@ -6561,7 +6561,7 @@
 					hw-tsp = <0x03>;
 					cci-clk-src = <0x23c3460>;
 					status = "ok";
-					phandle = <0x1b7>;
+					phandle = <0x1b5>;
 				};
 
 				qcom,i2c_custom_mode {
@@ -6577,7 +6577,7 @@
 					hw-tsp = <0x03>;
 					cci-clk-src = <0x23c3460>;
 					status = "ok";
-					phandle = <0x1b8>;
+					phandle = <0x1b6>;
 				};
 
 				qcom,i2c_fast_plus_mode {
@@ -6593,7 +6593,7 @@
 					hw-tsp = <0x03>;
 					cci-clk-src = <0x23c3460>;
 					status = "ok";
-					phandle = <0x1b9>;
+					phandle = <0x1b7>;
 				};
 
 				qcom,cam-sensor6 {
@@ -6633,7 +6633,7 @@
 					clock-names = "cam_clk";
 					clock-cntl-level = "turbo";
 					clock-rates = <0x124f800>;
-					phandle = <0x1ba>;
+					phandle = <0x1b8>;
 				};
 
 				qcom,eeprom6 {
@@ -6709,7 +6709,7 @@
 					clock-names = "cam_clk";
 					clock-cntl-level = "turbo";
 					clock-rates = <0x124f800>;
-					phandle = <0x1bb>;
+					phandle = <0x1b9>;
 				};
 
 				qcom,eeprom7 {
@@ -6772,7 +6772,7 @@
 				pinctrl-2 = <0x72 0x73>;
 				pinctrl-3 = <0x74 0x75>;
 				status = "ok";
-				phandle = <0x1bc>;
+				phandle = <0x1ba>;
 
 				qcom,i2c_standard_mode {
 					hw-thigh = <0xc9>;
@@ -6787,7 +6787,7 @@
 					hw-tsp = <0x03>;
 					cci-clk-src = <0x23c3460>;
 					status = "ok";
-					phandle = <0x1bd>;
+					phandle = <0x1bb>;
 				};
 
 				qcom,i2c_fast_mode {
@@ -6803,7 +6803,7 @@
 					hw-tsp = <0x03>;
 					cci-clk-src = <0x23c3460>;
 					status = "ok";
-					phandle = <0x1be>;
+					phandle = <0x1bc>;
 				};
 
 				qcom,i2c_custom_mode {
@@ -6819,7 +6819,7 @@
 					hw-tsp = <0x03>;
 					cci-clk-src = <0x23c3460>;
 					status = "ok";
-					phandle = <0x1bf>;
+					phandle = <0x1bd>;
 				};
 
 				qcom,i2c_fast_plus_mode {
@@ -6835,7 +6835,7 @@
 					hw-tsp = <0x03>;
 					cci-clk-src = <0x23c3460>;
 					status = "ok";
-					phandle = <0x1c0>;
+					phandle = <0x1be>;
 				};
 
 				qcom,cam-sensor2 {
@@ -6876,7 +6876,7 @@
 					clock-names = "cam_clk";
 					clock-cntl-level = "turbo";
 					clock-rates = <0x124f800>;
-					phandle = <0x1c1>;
+					phandle = <0x1bf>;
 				};
 
 				qcom,eeprom2 {
@@ -6953,7 +6953,7 @@
 					clock-names = "cam_clk";
 					clock-cntl-level = "turbo";
 					clock-rates = <0x124f800>;
-					phandle = <0x1c2>;
+					phandle = <0x1c0>;
 				};
 
 				qcom,eeprom3 {
@@ -7016,7 +7016,7 @@
 				pinctrl-2 = <0x8c 0x8d>;
 				pinctrl-3 = <0x8e 0x8f>;
 				status = "ok";
-				phandle = <0x1c3>;
+				phandle = <0x1c1>;
 
 				qcom,i2c_standard_mode {
 					hw-thigh = <0xc9>;
@@ -7031,7 +7031,7 @@
 					hw-tsp = <0x03>;
 					cci-clk-src = <0x23c3460>;
 					status = "ok";
-					phandle = <0x1c4>;
+					phandle = <0x1c2>;
 				};
 
 				qcom,i2c_fast_mode {
@@ -7047,7 +7047,7 @@
 					hw-tsp = <0x03>;
 					cci-clk-src = <0x23c3460>;
 					status = "ok";
-					phandle = <0x1c5>;
+					phandle = <0x1c3>;
 				};
 
 				qcom,i2c_custom_mode {
@@ -7063,7 +7063,7 @@
 					hw-tsp = <0x03>;
 					cci-clk-src = <0x23c3460>;
 					status = "ok";
-					phandle = <0x1c6>;
+					phandle = <0x1c4>;
 				};
 
 				qcom,i2c_fast_plus_mode {
@@ -7079,7 +7079,7 @@
 					hw-tsp = <0x03>;
 					cci-clk-src = <0x23c3460>;
 					status = "ok";
-					phandle = <0x1c7>;
+					phandle = <0x1c5>;
 				};
 
 				qcom,cam-sensor0 {
@@ -7093,11 +7093,10 @@
 					is_otp_sensor = <0x00>;
 					is_sensor_type = <0x01>;
 					eeprom-src = <0x90>;
-					led-flash-src = <0x91>;
-					cam_vdig-supply = <0x92>;
-					cam_vio-supply = <0x93>;
-					cam_vana-supply = <0x94>;
-					cam_v_custom1-supply = <0x95>;
+					cam_vdig-supply = <0x91>;
+					cam_vio-supply = <0x92>;
+					cam_vana-supply = <0x93>;
+					cam_v_custom1-supply = <0x94>;
 					cam_v_custom2-supply = <0x5e>;
 					cam_v_custom3-supply = <0x5f>;
 					cam_clk-supply = <0xffffffff>;
@@ -7108,8 +7107,8 @@
 					rgltr-load-current = <0x30d40 0x30d40 0x1388 0x1388 0x1388 0x1388 0x00>;
 					gpio-no-mux = <0x00>;
 					pinctrl-names = "cam_default\0cam_suspend";
-					pinctrl-0 = <0x96 0x97>;
-					pinctrl-1 = <0x98 0x99>;
+					pinctrl-0 = <0x95 0x96>;
+					pinctrl-1 = <0x97 0x98>;
 					gpios = <0xffffffff 0x19 0x00 0xffffffff 0x42 0x00>;
 					gpio-reset = <0x01>;
 					gpio-req-tbl-num = <0x00 0x01>;
@@ -7122,7 +7121,7 @@
 					clock-names = "cam_clk";
 					clock-cntl-level = "turbo";
 					clock-rates = <0x124f800>;
-					phandle = <0x1c8>;
+					phandle = <0x1c6>;
 				};
 
 				qcom,eeprom0 {
@@ -7130,10 +7129,10 @@
 					compatible = "qcom,eeprom";
 					is_otp_sensor = <0x00>;
 					is_sensor_type = <0x01>;
-					cam_vdig-supply = <0x92>;
-					cam_vio-supply = <0x93>;
-					cam_vana-supply = <0x94>;
-					cam_v_custom1-supply = <0x95>;
+					cam_vdig-supply = <0x91>;
+					cam_vio-supply = <0x92>;
+					cam_vana-supply = <0x93>;
+					cam_v_custom1-supply = <0x94>;
 					cam_v_custom2-supply = <0x5e>;
 					cam_v_custom3-supply = <0x5f>;
 					cam_clk-supply = <0xffffffff>;
@@ -7144,8 +7143,8 @@
 					rgltr-load-current = <0x30d40 0x30d40 0x1388 0x1388 0x1388 0x1388 0x00>;
 					gpio-no-mux = <0x00>;
 					pinctrl-names = "cam_default\0cam_suspend";
-					pinctrl-0 = <0x96 0x97>;
-					pinctrl-1 = <0x98 0x99>;
+					pinctrl-0 = <0x95 0x96>;
+					pinctrl-1 = <0x97 0x98>;
 					gpios = <0xffffffff 0x19 0x00 0xffffffff 0x42 0x00>;
 					gpio-reset = <0x01>;
 					gpio-req-tbl-num = <0x00 0x01>;
@@ -7181,12 +7180,12 @@
 				pctrl-idx-mapping = <0x00 0x01>;
 				pctrl-map-names = "m0\0m1";
 				pinctrl-names = "m0_active\0m0_suspend\0m1_active\0m1_suspend";
-				pinctrl-0 = <0x9a 0x9b>;
-				pinctrl-1 = <0x9c 0x9d>;
-				pinctrl-2 = <0x9e 0x9f>;
-				pinctrl-3 = <0xa0 0xa1>;
+				pinctrl-0 = <0x99 0x9a>;
+				pinctrl-1 = <0x9b 0x9c>;
+				pinctrl-2 = <0x9d 0x9e>;
+				pinctrl-3 = <0x9f 0xa0>;
 				status = "ok";
-				phandle = <0x1c9>;
+				phandle = <0x1c7>;
 
 				qcom,i2c_standard_mode {
 					hw-thigh = <0xc9>;
@@ -7201,7 +7200,7 @@
 					hw-tsp = <0x03>;
 					cci-clk-src = <0x23c3460>;
 					status = "ok";
-					phandle = <0x1ca>;
+					phandle = <0x1c8>;
 				};
 
 				qcom,i2c_fast_mode {
@@ -7217,7 +7216,7 @@
 					hw-tsp = <0x03>;
 					cci-clk-src = <0x23c3460>;
 					status = "ok";
-					phandle = <0x1cb>;
+					phandle = <0x1c9>;
 				};
 
 				qcom,i2c_custom_mode {
@@ -7233,7 +7232,7 @@
 					hw-tsp = <0x03>;
 					cci-clk-src = <0x23c3460>;
 					status = "ok";
-					phandle = <0x1cc>;
+					phandle = <0x1ca>;
 				};
 
 				qcom,i2c_fast_plus_mode {
@@ -7249,7 +7248,7 @@
 					hw-tsp = <0x03>;
 					cci-clk-src = <0x23c3460>;
 					status = "ok";
-					phandle = <0x1cd>;
+					phandle = <0x1cb>;
 				};
 
 				qcom,cam-sensor1 {
@@ -7261,12 +7260,11 @@
 					sensor-position-yaw = <0xb4>;
 					is_otp_sensor = <0x00>;
 					is_sensor_type = <0x01>;
-					eeprom-src = <0xa2>;
-					led-flash-src = <0xa3>;
-					cam_vdig-supply = <0xa4>;
-					cam_vio-supply = <0xa5>;
-					cam_vana-supply = <0xa6>;
-					cam_v_custom1-supply = <0xa7>;
+					eeprom-src = <0xa1>;
+					cam_vdig-supply = <0xa2>;
+					cam_vio-supply = <0xa3>;
+					cam_vana-supply = <0xa4>;
+					cam_v_custom1-supply = <0xa5>;
 					cam_v_custom2-supply = <0x68>;
 					cam_v_custom3-supply = <0x69>;
 					cam_clk-supply = <0xffffffff>;
@@ -7277,8 +7275,8 @@
 					rgltr-load-current = <0x30d40 0x30d40 0x1388 0x1388 0x1388 0x1388 0x00>;
 					gpio-no-mux = <0x00>;
 					pinctrl-names = "cam_default\0cam_suspend";
-					pinctrl-0 = <0xa8 0xa9>;
-					pinctrl-1 = <0xaa 0xab>;
+					pinctrl-0 = <0xa6 0xa7>;
+					pinctrl-1 = <0xa8 0xa9>;
 					gpios = <0xffffffff 0x1a 0x00 0xffffffff 0x41 0x00>;
 					gpio-reset = <0x01>;
 					gpio-req-tbl-num = <0x00 0x01>;
@@ -7291,7 +7289,7 @@
 					clock-names = "cam_clk";
 					clock-cntl-level = "turbo";
 					clock-rates = <0x124f800>;
-					phandle = <0x1ce>;
+					phandle = <0x1cc>;
 				};
 
 				qcom,eeprom1 {
@@ -7299,10 +7297,10 @@
 					compatible = "qcom,eeprom";
 					is_otp_sensor = <0x00>;
 					is_sensor_type = <0x01>;
-					cam_vdig-supply = <0xa4>;
-					cam_vio-supply = <0xa5>;
-					cam_vana-supply = <0xa6>;
-					cam_v_custom1-supply = <0xa7>;
+					cam_vdig-supply = <0xa2>;
+					cam_vio-supply = <0xa3>;
+					cam_vana-supply = <0xa4>;
+					cam_v_custom1-supply = <0xa5>;
 					cam_v_custom2-supply = <0x68>;
 					cam_v_custom3-supply = <0x69>;
 					cam_clk-supply = <0xffffffff>;
@@ -7313,8 +7311,8 @@
 					rgltr-load-current = <0x30d40 0x30d40 0x1388 0x1388 0x1388 0x1388 0x00>;
 					gpio-no-mux = <0x00>;
 					pinctrl-names = "cam_default\0cam_suspend";
-					pinctrl-0 = <0xa8 0xa9>;
-					pinctrl-1 = <0xaa 0xab>;
+					pinctrl-0 = <0xa6 0xa7>;
+					pinctrl-1 = <0xa8 0xa9>;
 					gpios = <0xffffffff 0x1a 0x00 0xffffffff 0x41 0x00>;
 					gpio-reset = <0x01>;
 					gpio-req-tbl-num = <0x00 0x01>;
@@ -7328,7 +7326,7 @@
 					clock-names = "cam_clk";
 					clock-cntl-level = "turbo";
 					clock-rates = <0x124f800>;
-					phandle = <0xa2>;
+					phandle = <0xa1>;
 				};
 
 				qcom,cam-sensor12 {
@@ -7341,13 +7339,13 @@
 					sensor-position-yaw = <0xb4>;
 					is_otp_sensor = <0x00>;
 					is_sensor_type = <0x06>;
-					eeprom-src = <0xac>;
-					cam_vdig-supply = <0xad>;
-					cam_vio-supply = <0xae>;
-					cam_vana-supply = <0xaf>;
+					eeprom-src = <0xaa>;
+					cam_vdig-supply = <0xab>;
+					cam_vio-supply = <0xac>;
+					cam_vana-supply = <0xad>;
 					cam_v_custom1-supply = <0x68>;
 					cam_v_custom2-supply = <0x69>;
-					cam_v_custom3-supply = <0xb0>;
+					cam_v_custom3-supply = <0xae>;
 					cam_v_custom4-supply = <0xffffffff>;
 					cam_v_custom5-supply = <0xffffffff>;
 					cam_clk-supply = <0xffffffff>;
@@ -7358,8 +7356,8 @@
 					rgltr-load-current = <0x30d40 0x30d40 0x1388 0x1388 0x1388 0x30d40 0x30d40 0x30d40 0x00>;
 					gpio-no-mux = <0x00>;
 					pinctrl-names = "cam_default\0cam_suspend";
-					pinctrl-0 = <0xb1 0xb2>;
-					pinctrl-1 = <0xb3 0xb4>;
+					pinctrl-0 = <0xaf 0xb0>;
+					pinctrl-1 = <0xb1 0xb2>;
 					gpios = <0xffffffff 0x1d 0x00 0xffffffff 0x38 0x00 0xffffffff 0xb2 0x00>;
 					gpio-reset = <0x01>;
 					gpio-custom1 = <0x02>;
@@ -7372,7 +7370,7 @@
 					clock-names = "cam_clk";
 					clock-cntl-level = "turbo";
 					clock-rates = <0x124f800>;
-					phandle = <0x1cf>;
+					phandle = <0x1cd>;
 				};
 
 				qcom,eeprom12 {
@@ -7380,12 +7378,12 @@
 					compatible = "qcom,eeprom";
 					is_otp_sensor = <0x00>;
 					is_sensor_type = <0x06>;
-					cam_vdig-supply = <0xad>;
-					cam_vio-supply = <0xae>;
-					cam_vana-supply = <0xaf>;
+					cam_vdig-supply = <0xab>;
+					cam_vio-supply = <0xac>;
+					cam_vana-supply = <0xad>;
 					cam_v_custom1-supply = <0x68>;
 					cam_v_custom2-supply = <0x69>;
-					cam_v_custom3-supply = <0xb0>;
+					cam_v_custom3-supply = <0xae>;
 					cam_v_custom4-supply = <0xffffffff>;
 					cam_v_custom5-supply = <0xffffffff>;
 					cam_clk-supply = <0xffffffff>;
@@ -7396,8 +7394,8 @@
 					rgltr-load-current = <0x30d40 0x30d40 0x1388 0x1388 0x1388 0x30d40 0x30d40 0x30d40 0x00>;
 					gpio-no-mux = <0x00>;
 					pinctrl-names = "cam_default\0cam_suspend";
-					pinctrl-0 = <0xb1 0xb2>;
-					pinctrl-1 = <0xb3 0xb4>;
+					pinctrl-0 = <0xaf 0xb0>;
+					pinctrl-1 = <0xb1 0xb2>;
 					gpios = <0xffffffff 0x1d 0x00 0xffffffff 0x38 0x00 0xffffffff 0xb2 0x00>;
 					gpio-reset = <0x01>;
 					gpio-custom1 = <0x02>;
@@ -7412,7 +7410,7 @@
 					clock-names = "cam_clk";
 					clock-cntl-level = "turbo";
 					clock-rates = <0x124f800>;
-					phandle = <0xac>;
+					phandle = <0xaa>;
 				};
 			};
 
@@ -7434,12 +7432,12 @@
 				pctrl-idx-mapping = <0x00 0x01>;
 				pctrl-map-names = "m0\0m1";
 				pinctrl-names = "m0_active\0m0_suspend\0m1_active\0m1_suspend";
-				pinctrl-0 = <0xb5 0xb6>;
-				pinctrl-1 = <0xb7 0xb8>;
-				pinctrl-2 = <0xb9 0xba>;
-				pinctrl-3 = <0xbb 0xbc>;
+				pinctrl-0 = <0xb3 0xb4>;
+				pinctrl-1 = <0xb5 0xb6>;
+				pinctrl-2 = <0xb7 0xb8>;
+				pinctrl-3 = <0xb9 0xba>;
 				status = "ok";
-				phandle = <0x1d0>;
+				phandle = <0x1ce>;
 
 				qcom,i2c_standard_mode {
 					hw-thigh = <0xc9>;
@@ -7454,7 +7452,7 @@
 					hw-tsp = <0x03>;
 					cci-clk-src = <0x23c3460>;
 					status = "ok";
-					phandle = <0x1d1>;
+					phandle = <0x1cf>;
 				};
 
 				qcom,i2c_fast_mode {
@@ -7470,7 +7468,7 @@
 					hw-tsp = <0x03>;
 					cci-clk-src = <0x23c3460>;
 					status = "ok";
-					phandle = <0x1d2>;
+					phandle = <0x1d0>;
 				};
 
 				qcom,i2c_custom_mode {
@@ -7486,7 +7484,7 @@
 					hw-tsp = <0x03>;
 					cci-clk-src = <0x23c3460>;
 					status = "ok";
-					phandle = <0x1d3>;
+					phandle = <0x1d1>;
 				};
 
 				qcom,i2c_fast_plus_mode {
@@ -7502,7 +7500,7 @@
 					hw-tsp = <0x03>;
 					cci-clk-src = <0x23c3460>;
 					status = "ok";
-					phandle = <0x1d4>;
+					phandle = <0x1d2>;
 				};
 
 				qcom,cam-sensor8 {
@@ -7515,9 +7513,9 @@
 					sensor-position-yaw = <0x00>;
 					is_otp_sensor = <0x01>;
 					is_sensor_type = <0x03>;
-					cam_vdig-supply = <0xbd>;
-					cam_vio-supply = <0xbe>;
-					cam_vana-supply = <0xbf>;
+					cam_vdig-supply = <0xbb>;
+					cam_vio-supply = <0xbc>;
+					cam_vana-supply = <0xbd>;
 					cam_v_custom1-supply = <0x5e>;
 					cam_v_custom2-supply = <0x5f>;
 					cam_clk-supply = <0xffffffff>;
@@ -7539,7 +7537,7 @@
 					clock-names = "cam_clk";
 					clock-cntl-level = "turbo";
 					clock-rates = <0x124f800>;
-					phandle = <0x1d5>;
+					phandle = <0x1d3>;
 				};
 
 				qcom,eeprom8 {
@@ -7548,9 +7546,9 @@
 					is_otp_sensor = <0x01>;
 					is_sensor_type = <0x03>;
 					boot_revision = <0x07>;
-					cam_vdig-supply = <0xbd>;
-					cam_vio-supply = <0xbe>;
-					cam_vana-supply = <0xbf>;
+					cam_vdig-supply = <0xbb>;
+					cam_vio-supply = <0xbc>;
+					cam_vana-supply = <0xbd>;
 					cam_v_custom1-supply = <0x5e>;
 					cam_v_custom2-supply = <0x5f>;
 					cam_clk-supply = <0xffffffff>;
@@ -7572,7 +7570,7 @@
 					clock-names = "cam_clk";
 					clock-cntl-level = "turbo";
 					clock-rates = <0x124f800>;
-					phandle = <0x1d6>;
+					phandle = <0x1d4>;
 				};
 
 				qcom,cam-sensor9 {
@@ -7585,9 +7583,9 @@
 					sensor-position-yaw = <0x00>;
 					is_otp_sensor = <0x01>;
 					is_sensor_type = <0x03>;
-					cam_vdig-supply = <0xc0>;
-					cam_vio-supply = <0xc1>;
-					cam_vana-supply = <0xc2>;
+					cam_vdig-supply = <0xbe>;
+					cam_vio-supply = <0xbf>;
+					cam_vana-supply = <0xc0>;
 					cam_v_custom1-supply = <0x68>;
 					cam_v_custom2-supply = <0x69>;
 					cam_clk-supply = <0xffffffff>;
@@ -7609,7 +7607,7 @@
 					clock-names = "cam_clk";
 					clock-cntl-level = "turbo";
 					clock-rates = <0x124f800>;
-					phandle = <0x1d7>;
+					phandle = <0x1d5>;
 				};
 
 				qcom,eeprom9 {
@@ -7618,9 +7616,9 @@
 					is_otp_sensor = <0x01>;
 					is_sensor_type = <0x03>;
 					boot_revision = <0x07>;
-					cam_vdig-supply = <0xc0>;
-					cam_vio-supply = <0xc1>;
-					cam_vana-supply = <0xc2>;
+					cam_vdig-supply = <0xbe>;
+					cam_vio-supply = <0xbf>;
+					cam_vana-supply = <0xc0>;
 					cam_v_custom1-supply = <0x68>;
 					cam_v_custom2-supply = <0x69>;
 					cam_clk-supply = <0xffffffff>;
@@ -7642,7 +7640,7 @@
 					clock-names = "cam_clk";
 					clock-cntl-level = "turbo";
 					clock-rates = <0x124f800>;
-					phandle = <0x1d8>;
+					phandle = <0x1d6>;
 				};
 
 				qcom,cam-sensor10 {
@@ -7656,10 +7654,10 @@
 					sensor-position-yaw = <0x00>;
 					is_otp_sensor = <0x01>;
 					is_sensor_type = <0x03>;
-					led-flash-src = <0xc3>;
-					cam_vdig-supply = <0xbd>;
-					cam_vio-supply = <0xbe>;
-					cam_vana-supply = <0xbf>;
+					led-flash-src = <0xc1>;
+					cam_vdig-supply = <0xbb>;
+					cam_vio-supply = <0xbc>;
+					cam_vana-supply = <0xbd>;
 					cam_v_custom1-supply = <0x5e>;
 					cam_v_custom2-supply = <0x5f>;
 					cam_clk-supply = <0xffffffff>;
@@ -7681,7 +7679,7 @@
 					clock-names = "cam_clk";
 					clock-cntl-level = "turbo";
 					clock-rates = <0x124f800>;
-					phandle = <0x1d9>;
+					phandle = <0x1d7>;
 				};
 
 				qcom,eeprom10 {
@@ -7690,9 +7688,9 @@
 					is_otp_sensor = <0x01>;
 					is_sensor_type = <0x03>;
 					boot_revision = <0x07>;
-					cam_vdig-supply = <0xbd>;
-					cam_vio-supply = <0xbe>;
-					cam_vana-supply = <0xbf>;
+					cam_vdig-supply = <0xbb>;
+					cam_vio-supply = <0xbc>;
+					cam_vana-supply = <0xbd>;
 					cam_v_custom1-supply = <0x5e>;
 					cam_v_custom2-supply = <0x5f>;
 					cam_clk-supply = <0xffffffff>;
@@ -7714,7 +7712,7 @@
 					clock-names = "cam_clk";
 					clock-cntl-level = "turbo";
 					clock-rates = <0x124f800>;
-					phandle = <0x1da>;
+					phandle = <0x1d8>;
 				};
 
 				qcom,cam-sensor11 {
@@ -7728,10 +7726,10 @@
 					sensor-position-yaw = <0x00>;
 					is_otp_sensor = <0x01>;
 					is_sensor_type = <0x03>;
-					led-flash-src = <0xc4>;
-					cam_vdig-supply = <0xc0>;
-					cam_vio-supply = <0xc1>;
-					cam_vana-supply = <0xc2>;
+					led-flash-src = <0xc2>;
+					cam_vdig-supply = <0xbe>;
+					cam_vio-supply = <0xbf>;
+					cam_vana-supply = <0xc0>;
 					cam_v_custom1-supply = <0x68>;
 					cam_v_custom2-supply = <0x69>;
 					cam_clk-supply = <0xffffffff>;
@@ -7753,7 +7751,7 @@
 					clock-names = "cam_clk";
 					clock-cntl-level = "turbo";
 					clock-rates = <0x124f800>;
-					phandle = <0x1db>;
+					phandle = <0x1d9>;
 				};
 
 				qcom,eeprom11 {
@@ -7762,9 +7760,116 @@
 					is_otp_sensor = <0x01>;
 					is_sensor_type = <0x03>;
 					boot_revision = <0x07>;
-					cam_vdig-supply = <0xc0>;
-					cam_vio-supply = <0xc1>;
-					cam_vana-supply = <0xc2>;
+					cam_vdig-supply = <0xbe>;
+					cam_vio-supply = <0xbf>;
+					cam_vana-supply = <0xc0>;
+					cam_v_custom1-supply = <0x68>;
+					cam_v_custom2-supply = <0x69>;
+					cam_clk-supply = <0xffffffff>;
+					regulator-names = "cam_vdig\0cam_vio\0cam_vana\0cam_v_custom1\0cam_v_custom2\0cam_clk";
+					rgltr-cntrl-support;
+					rgltr-min-voltage = <0x100590 0x1b7740 0x2191c0 0x2f4d60 0x13d620 0x00>;
+					rgltr-max-voltage = <0x100590 0x1b7740 0x2191c0 0x2f4d60 0x13d620 0x00>;
+					rgltr-load-current = <0x30d40 0x30d40 0x1388 0x1388 0x1388 0x00>;
+					gpio-no-mux = <0x00>;
+					gpios = <0xffffffff 0x1c 0x00 0xffffffff 0x44 0x00>;
+					gpio-reset = <0x01>;
+					gpio-req-tbl-num = <0x00 0x01>;
+					gpio-req-tbl-flags = <0x01 0x00>;
+					gpio-req-tbl-label = "CAMIF_MCLK8\0CAM_RESET8";
+					sensor-mode = <0x00>;
+					cci-master = <0x01>;
+					status = "ok";
+					clocks = <0xffffffff 0x7a>;
+					clock-names = "cam_clk";
+					clock-cntl-level = "turbo";
+					clock-rates = <0x124f800>;
+					phandle = <0x1da>;
+				};
+
+				qcom,cam-sensor14 {
+					cell-index = <0x0e>;
+					compatible = "qcom,cam-sensor";
+					csiphy-sd-index = <0x06>;
+					sensor-position-roll = <0x00>;
+					sensor-position-pitch = <0x00>;
+					sensor-position-yaw = <0x00>;
+					is_otp_sensor = <0x01>;
+					is_sensor_type = <0x03>;
+					eeprom-src = <0xc3>;
+					cam_vdig-supply = <0xbb>;
+					cam_vio-supply = <0xbc>;
+					cam_vana-supply = <0xbd>;
+					cam_v_custom1-supply = <0x5e>;
+					cam_v_custom2-supply = <0x5f>;
+					cam_clk-supply = <0xffffffff>;
+					regulator-names = "cam_vdig\0cam_vio\0cam_vana\0cam_v_custom1\0cam_v_custom2\0cam_clk";
+					rgltr-cntrl-support;
+					rgltr-min-voltage = <0x100590 0x1b7740 0x2191c0 0x2dc6c0 0x13d620 0x00>;
+					rgltr-max-voltage = <0x100590 0x1b7740 0x2191c0 0x2dc6c0 0x13d620 0x00>;
+					rgltr-load-current = <0x30d40 0x30d40 0x1388 0x1388 0x1388 0x00>;
+					gpio-no-mux = <0x00>;
+					gpios = <0xffffffff 0x1b 0x00 0xffffffff 0x43 0x00>;
+					gpio-reset = <0x01>;
+					gpio-req-tbl-num = <0x00 0x01>;
+					gpio-req-tbl-flags = <0x01 0x00>;
+					gpio-req-tbl-label = "CAMIF_MCLK7\0CAM_RESET7";
+					sensor-mode = <0x00>;
+					cci-master = <0x00>;
+					status = "ok";
+					clocks = <0xffffffff 0x78>;
+					clock-names = "cam_clk";
+					clock-cntl-level = "turbo";
+					clock-rates = <0x124f800>;
+					phandle = <0x1db>;
+				};
+
+				qcom,eeprom14 {
+					cell-index = <0x0e>;
+					compatible = "qcom,eeprom";
+					is_otp_sensor = <0x01>;
+					is_sensor_type = <0x03>;
+					boot_revision = <0x07>;
+					cam_vdig-supply = <0xbb>;
+					cam_vio-supply = <0xbc>;
+					cam_vana-supply = <0xbd>;
+					cam_v_custom1-supply = <0x5e>;
+					cam_v_custom2-supply = <0x5f>;
+					cam_clk-supply = <0xffffffff>;
+					regulator-names = "cam_vdig\0cam_vio\0cam_vana\0cam_v_custom1\0cam_v_custom2\0cam_clk";
+					rgltr-cntrl-support;
+					rgltr-min-voltage = <0x100590 0x1b7740 0x2191c0 0x2dc6c0 0x13d620 0x00>;
+					rgltr-max-voltage = <0x100590 0x1b7740 0x2191c0 0x2dc6c0 0x13d620 0x00>;
+					rgltr-load-current = <0x30d40 0x30d40 0x1388 0x1388 0x1388 0x00>;
+					gpio-no-mux = <0x00>;
+					gpios = <0xffffffff 0x1b 0x00 0xffffffff 0x43 0x00>;
+					gpio-reset = <0x01>;
+					gpio-req-tbl-num = <0x00 0x01>;
+					gpio-req-tbl-flags = <0x01 0x00>;
+					gpio-req-tbl-label = "CAMIF_MCLK7\0CAM_RESET7";
+					sensor-mode = <0x00>;
+					cci-master = <0x00>;
+					status = "ok";
+					clocks = <0xffffffff 0x78>;
+					clock-names = "cam_clk";
+					clock-cntl-level = "turbo";
+					clock-rates = <0x124f800>;
+					phandle = <0xc3>;
+				};
+
+				qcom,cam-sensor15 {
+					cell-index = <0x0f>;
+					compatible = "qcom,cam-sensor";
+					csiphy-sd-index = <0x01>;
+					sensor-position-roll = <0x00>;
+					sensor-position-pitch = <0x00>;
+					sensor-position-yaw = <0x00>;
+					is_otp_sensor = <0x01>;
+					is_sensor_type = <0x03>;
+					eeprom-src = <0xc4>;
+					cam_vdig-supply = <0xbe>;
+					cam_vio-supply = <0xbf>;
+					cam_vana-supply = <0xc0>;
 					cam_v_custom1-supply = <0x68>;
 					cam_v_custom2-supply = <0x69>;
 					cam_clk-supply = <0xffffffff>;
@@ -7789,8 +7894,41 @@
 					phandle = <0x1dc>;
 				};
 
-				qcom,cam-sensor14 {
-					cell-index = <0x0e>;
+				qcom,eeprom15 {
+					cell-index = <0x0f>;
+					compatible = "qcom,eeprom";
+					is_otp_sensor = <0x01>;
+					is_sensor_type = <0x03>;
+					boot_revision = <0x07>;
+					cam_vdig-supply = <0xbe>;
+					cam_vio-supply = <0xbf>;
+					cam_vana-supply = <0xc0>;
+					cam_v_custom1-supply = <0x68>;
+					cam_v_custom2-supply = <0x69>;
+					cam_clk-supply = <0xffffffff>;
+					regulator-names = "cam_vdig\0cam_vio\0cam_vana\0cam_v_custom1\0cam_v_custom2\0cam_clk";
+					rgltr-cntrl-support;
+					rgltr-min-voltage = <0x100590 0x1b7740 0x2191c0 0x2f4d60 0x13d620 0x00>;
+					rgltr-max-voltage = <0x100590 0x1b7740 0x2191c0 0x2f4d60 0x13d620 0x00>;
+					rgltr-load-current = <0x30d40 0x30d40 0x1388 0x1388 0x1388 0x00>;
+					gpio-no-mux = <0x00>;
+					gpios = <0xffffffff 0x1c 0x00 0xffffffff 0x44 0x00>;
+					gpio-reset = <0x01>;
+					gpio-req-tbl-num = <0x00 0x01>;
+					gpio-req-tbl-flags = <0x01 0x00>;
+					gpio-req-tbl-label = "CAMIF_MCLK8\0CAM_RESET8";
+					sensor-mode = <0x00>;
+					cci-master = <0x01>;
+					status = "ok";
+					clocks = <0xffffffff 0x7a>;
+					clock-names = "cam_clk";
+					clock-cntl-level = "turbo";
+					clock-rates = <0x124f800>;
+					phandle = <0xc4>;
+				};
+
+				qcom,cam-sensor16 {
+					cell-index = <0x10>;
 					compatible = "qcom,cam-sensor";
 					csiphy-sd-index = <0x06>;
 					sensor-position-roll = <0x00>;
@@ -7799,9 +7937,10 @@
 					is_otp_sensor = <0x01>;
 					is_sensor_type = <0x03>;
 					eeprom-src = <0xc5>;
-					cam_vdig-supply = <0xbd>;
-					cam_vio-supply = <0xbe>;
-					cam_vana-supply = <0xbf>;
+					led-flash-src = <0xc1>;
+					cam_vdig-supply = <0xbb>;
+					cam_vio-supply = <0xbc>;
+					cam_vana-supply = <0xbd>;
 					cam_v_custom1-supply = <0x5e>;
 					cam_v_custom2-supply = <0x5f>;
 					cam_clk-supply = <0xffffffff>;
@@ -7826,15 +7965,15 @@
 					phandle = <0x1dd>;
 				};
 
-				qcom,eeprom14 {
-					cell-index = <0x0e>;
+				qcom,eeprom16 {
+					cell-index = <0x10>;
 					compatible = "qcom,eeprom";
 					is_otp_sensor = <0x01>;
 					is_sensor_type = <0x03>;
 					boot_revision = <0x07>;
-					cam_vdig-supply = <0xbd>;
-					cam_vio-supply = <0xbe>;
-					cam_vana-supply = <0xbf>;
+					cam_vdig-supply = <0xbb>;
+					cam_vio-supply = <0xbc>;
+					cam_vana-supply = <0xbd>;
 					cam_v_custom1-supply = <0x5e>;
 					cam_v_custom2-supply = <0x5f>;
 					cam_clk-supply = <0xffffffff>;
@@ -7859,8 +7998,8 @@
 					phandle = <0xc5>;
 				};
 
-				qcom,cam-sensor15 {
-					cell-index = <0x0f>;
+				qcom,cam-sensor17 {
+					cell-index = <0x11>;
 					compatible = "qcom,cam-sensor";
 					csiphy-sd-index = <0x01>;
 					sensor-position-roll = <0x00>;
@@ -7869,9 +8008,10 @@
 					is_otp_sensor = <0x01>;
 					is_sensor_type = <0x03>;
 					eeprom-src = <0xc6>;
-					cam_vdig-supply = <0xc0>;
-					cam_vio-supply = <0xc1>;
-					cam_vana-supply = <0xc2>;
+					led-flash-src = <0xc2>;
+					cam_vdig-supply = <0xbe>;
+					cam_vio-supply = <0xbf>;
+					cam_vana-supply = <0xc0>;
 					cam_v_custom1-supply = <0x68>;
 					cam_v_custom2-supply = <0x69>;
 					cam_clk-supply = <0xffffffff>;
@@ -7896,15 +8036,15 @@
 					phandle = <0x1de>;
 				};
 
-				qcom,eeprom15 {
-					cell-index = <0x0f>;
+				qcom,eeprom17 {
+					cell-index = <0x11>;
 					compatible = "qcom,eeprom";
 					is_otp_sensor = <0x01>;
 					is_sensor_type = <0x03>;
 					boot_revision = <0x07>;
-					cam_vdig-supply = <0xc0>;
-					cam_vio-supply = <0xc1>;
-					cam_vana-supply = <0xc2>;
+					cam_vdig-supply = <0xbe>;
+					cam_vio-supply = <0xbf>;
+					cam_vana-supply = <0xc0>;
 					cam_v_custom1-supply = <0x68>;
 					cam_v_custom2-supply = <0x69>;
 					cam_clk-supply = <0xffffffff>;
@@ -7928,148 +8068,6 @@
 					clock-rates = <0x124f800>;
 					phandle = <0xc6>;
 				};
-
-				qcom,cam-sensor16 {
-					cell-index = <0x10>;
-					compatible = "qcom,cam-sensor";
-					csiphy-sd-index = <0x06>;
-					sensor-position-roll = <0x00>;
-					sensor-position-pitch = <0x00>;
-					sensor-position-yaw = <0x00>;
-					is_otp_sensor = <0x01>;
-					is_sensor_type = <0x03>;
-					eeprom-src = <0xc7>;
-					led-flash-src = <0xc3>;
-					cam_vdig-supply = <0xbd>;
-					cam_vio-supply = <0xbe>;
-					cam_vana-supply = <0xbf>;
-					cam_v_custom1-supply = <0x5e>;
-					cam_v_custom2-supply = <0x5f>;
-					cam_clk-supply = <0xffffffff>;
-					regulator-names = "cam_vdig\0cam_vio\0cam_vana\0cam_v_custom1\0cam_v_custom2\0cam_clk";
-					rgltr-cntrl-support;
-					rgltr-min-voltage = <0x100590 0x1b7740 0x2191c0 0x2dc6c0 0x13d620 0x00>;
-					rgltr-max-voltage = <0x100590 0x1b7740 0x2191c0 0x2dc6c0 0x13d620 0x00>;
-					rgltr-load-current = <0x30d40 0x30d40 0x1388 0x1388 0x1388 0x00>;
-					gpio-no-mux = <0x00>;
-					gpios = <0xffffffff 0x1b 0x00 0xffffffff 0x43 0x00>;
-					gpio-reset = <0x01>;
-					gpio-req-tbl-num = <0x00 0x01>;
-					gpio-req-tbl-flags = <0x01 0x00>;
-					gpio-req-tbl-label = "CAMIF_MCLK7\0CAM_RESET7";
-					sensor-mode = <0x00>;
-					cci-master = <0x00>;
-					status = "ok";
-					clocks = <0xffffffff 0x78>;
-					clock-names = "cam_clk";
-					clock-cntl-level = "turbo";
-					clock-rates = <0x124f800>;
-					phandle = <0x1df>;
-				};
-
-				qcom,eeprom16 {
-					cell-index = <0x10>;
-					compatible = "qcom,eeprom";
-					is_otp_sensor = <0x01>;
-					is_sensor_type = <0x03>;
-					boot_revision = <0x07>;
-					cam_vdig-supply = <0xbd>;
-					cam_vio-supply = <0xbe>;
-					cam_vana-supply = <0xbf>;
-					cam_v_custom1-supply = <0x5e>;
-					cam_v_custom2-supply = <0x5f>;
-					cam_clk-supply = <0xffffffff>;
-					regulator-names = "cam_vdig\0cam_vio\0cam_vana\0cam_v_custom1\0cam_v_custom2\0cam_clk";
-					rgltr-cntrl-support;
-					rgltr-min-voltage = <0x100590 0x1b7740 0x2191c0 0x2dc6c0 0x13d620 0x00>;
-					rgltr-max-voltage = <0x100590 0x1b7740 0x2191c0 0x2dc6c0 0x13d620 0x00>;
-					rgltr-load-current = <0x30d40 0x30d40 0x1388 0x1388 0x1388 0x00>;
-					gpio-no-mux = <0x00>;
-					gpios = <0xffffffff 0x1b 0x00 0xffffffff 0x43 0x00>;
-					gpio-reset = <0x01>;
-					gpio-req-tbl-num = <0x00 0x01>;
-					gpio-req-tbl-flags = <0x01 0x00>;
-					gpio-req-tbl-label = "CAMIF_MCLK7\0CAM_RESET7";
-					sensor-mode = <0x00>;
-					cci-master = <0x00>;
-					status = "ok";
-					clocks = <0xffffffff 0x78>;
-					clock-names = "cam_clk";
-					clock-cntl-level = "turbo";
-					clock-rates = <0x124f800>;
-					phandle = <0xc7>;
-				};
-
-				qcom,cam-sensor17 {
-					cell-index = <0x11>;
-					compatible = "qcom,cam-sensor";
-					csiphy-sd-index = <0x01>;
-					sensor-position-roll = <0x00>;
-					sensor-position-pitch = <0x00>;
-					sensor-position-yaw = <0x00>;
-					is_otp_sensor = <0x01>;
-					is_sensor_type = <0x03>;
-					eeprom-src = <0xc8>;
-					led-flash-src = <0xc4>;
-					cam_vdig-supply = <0xc0>;
-					cam_vio-supply = <0xc1>;
-					cam_vana-supply = <0xc2>;
-					cam_v_custom1-supply = <0x68>;
-					cam_v_custom2-supply = <0x69>;
-					cam_clk-supply = <0xffffffff>;
-					regulator-names = "cam_vdig\0cam_vio\0cam_vana\0cam_v_custom1\0cam_v_custom2\0cam_clk";
-					rgltr-cntrl-support;
-					rgltr-min-voltage = <0x100590 0x1b7740 0x2191c0 0x2f4d60 0x13d620 0x00>;
-					rgltr-max-voltage = <0x100590 0x1b7740 0x2191c0 0x2f4d60 0x13d620 0x00>;
-					rgltr-load-current = <0x30d40 0x30d40 0x1388 0x1388 0x1388 0x00>;
-					gpio-no-mux = <0x00>;
-					gpios = <0xffffffff 0x1c 0x00 0xffffffff 0x44 0x00>;
-					gpio-reset = <0x01>;
-					gpio-req-tbl-num = <0x00 0x01>;
-					gpio-req-tbl-flags = <0x01 0x00>;
-					gpio-req-tbl-label = "CAMIF_MCLK8\0CAM_RESET8";
-					sensor-mode = <0x00>;
-					cci-master = <0x01>;
-					status = "ok";
-					clocks = <0xffffffff 0x7a>;
-					clock-names = "cam_clk";
-					clock-cntl-level = "turbo";
-					clock-rates = <0x124f800>;
-					phandle = <0x1e0>;
-				};
-
-				qcom,eeprom17 {
-					cell-index = <0x11>;
-					compatible = "qcom,eeprom";
-					is_otp_sensor = <0x01>;
-					is_sensor_type = <0x03>;
-					boot_revision = <0x07>;
-					cam_vdig-supply = <0xc0>;
-					cam_vio-supply = <0xc1>;
-					cam_vana-supply = <0xc2>;
-					cam_v_custom1-supply = <0x68>;
-					cam_v_custom2-supply = <0x69>;
-					cam_clk-supply = <0xffffffff>;
-					regulator-names = "cam_vdig\0cam_vio\0cam_vana\0cam_v_custom1\0cam_v_custom2\0cam_clk";
-					rgltr-cntrl-support;
-					rgltr-min-voltage = <0x100590 0x1b7740 0x2191c0 0x2f4d60 0x13d620 0x00>;
-					rgltr-max-voltage = <0x100590 0x1b7740 0x2191c0 0x2f4d60 0x13d620 0x00>;
-					rgltr-load-current = <0x30d40 0x30d40 0x1388 0x1388 0x1388 0x00>;
-					gpio-no-mux = <0x00>;
-					gpios = <0xffffffff 0x1c 0x00 0xffffffff 0x44 0x00>;
-					gpio-reset = <0x01>;
-					gpio-req-tbl-num = <0x00 0x01>;
-					gpio-req-tbl-flags = <0x01 0x00>;
-					gpio-req-tbl-label = "CAMIF_MCLK8\0CAM_RESET8";
-					sensor-mode = <0x00>;
-					cci-master = <0x01>;
-					status = "ok";
-					clocks = <0xffffffff 0x7a>;
-					clock-names = "cam_clk";
-					clock-cntl-level = "turbo";
-					clock-rates = <0x124f800>;
-					phandle = <0xc8>;
-				};
 			};
 
 			qcom,cci5@ac1a000 {
@@ -8090,12 +8088,12 @@
 				pctrl-idx-mapping = <0x00 0x01>;
 				pctrl-map-names = "m0\0m1";
 				pinctrl-names = "m0_active\0m0_suspend\0m1_active\0m1_suspend";
-				pinctrl-0 = <0xc9 0xca>;
-				pinctrl-1 = <0xcb 0xcc>;
-				pinctrl-2 = <0xcd 0xce>;
-				pinctrl-3 = <0xcf 0xd0>;
+				pinctrl-0 = <0xc7 0xc8>;
+				pinctrl-1 = <0xc9 0xca>;
+				pinctrl-2 = <0xcb 0xcc>;
+				pinctrl-3 = <0xcd 0xce>;
 				status = "ok";
-				phandle = <0x1e1>;
+				phandle = <0x1df>;
 
 				qcom,i2c_standard_mode {
 					hw-thigh = <0xc9>;
@@ -8110,7 +8108,7 @@
 					hw-tsp = <0x03>;
 					cci-clk-src = <0x23c3460>;
 					status = "ok";
-					phandle = <0x1e2>;
+					phandle = <0x1e0>;
 				};
 
 				qcom,i2c_fast_mode {
@@ -8126,7 +8124,7 @@
 					hw-tsp = <0x03>;
 					cci-clk-src = <0x23c3460>;
 					status = "ok";
-					phandle = <0x1e3>;
+					phandle = <0x1e1>;
 				};
 
 				qcom,i2c_custom_mode {
@@ -8142,7 +8140,7 @@
 					hw-tsp = <0x03>;
 					cci-clk-src = <0x23c3460>;
 					status = "ok";
-					phandle = <0x1e4>;
+					phandle = <0x1e2>;
 				};
 
 				qcom,i2c_fast_plus_mode {
@@ -8158,7 +8156,7 @@
 					hw-tsp = <0x03>;
 					cci-clk-src = <0x23c3460>;
 					status = "ok";
-					phandle = <0x1e5>;
+					phandle = <0x1e3>;
 				};
 
 				qcom,cam-sensor4 {
@@ -8170,10 +8168,10 @@
 					sensor-position-yaw = <0xb4>;
 					is_otp_sensor = <0x01>;
 					is_sensor_type = <0x02>;
-					eeprom-src = <0xd1>;
-					cam_vdig-supply = <0xd2>;
-					cam_vio-supply = <0xd3>;
-					cam_vana-supply = <0xd4>;
+					eeprom-src = <0xcf>;
+					cam_vdig-supply = <0xd0>;
+					cam_vio-supply = <0xd1>;
+					cam_vana-supply = <0xd2>;
 					cam_v_custom1-supply = <0x5e>;
 					cam_v_custom2-supply = <0x5f>;
 					cam_clk-supply = <0xffffffff>;
@@ -8184,8 +8182,8 @@
 					rgltr-load-current = <0x30d40 0x30d40 0x1388 0x1388 0x1388 0x00>;
 					gpio-no-mux = <0x00>;
 					pinctrl-names = "cam_default\0cam_suspend";
-					pinctrl-0 = <0xd5 0xd6>;
-					pinctrl-1 = <0xd7 0xd8>;
+					pinctrl-0 = <0xd3 0xd4>;
+					pinctrl-1 = <0xd5 0xd6>;
 					gpios = <0xffffffff 0x1e 0x00 0xffffffff 0xb7 0x00>;
 					gpio-reset = <0x01>;
 					gpio-req-tbl-num = <0x00 0x01>;
@@ -8198,7 +8196,7 @@
 					clock-names = "cam_clk";
 					clock-cntl-level = "turbo";
 					clock-rates = <0x124f800>;
-					phandle = <0x1e6>;
+					phandle = <0x1e4>;
 				};
 
 				qcom,eeprom4 {
@@ -8207,9 +8205,9 @@
 					is_otp_sensor = <0x01>;
 					is_sensor_type = <0x02>;
 					boot_revision = <0x07>;
-					cam_vdig-supply = <0xd2>;
-					cam_vio-supply = <0xd3>;
-					cam_vana-supply = <0xd4>;
+					cam_vdig-supply = <0xd0>;
+					cam_vio-supply = <0xd1>;
+					cam_vana-supply = <0xd2>;
 					cam_v_custom1-supply = <0x5e>;
 					cam_v_custom2-supply = <0x5f>;
 					cam_clk-supply = <0xffffffff>;
@@ -8220,8 +8218,8 @@
 					rgltr-load-current = <0x30d40 0x30d40 0x1388 0x1388 0x1388 0x00>;
 					gpio-no-mux = <0x00>;
 					pinctrl-names = "cam_default\0cam_suspend";
-					pinctrl-0 = <0xd5 0xd6>;
-					pinctrl-1 = <0xd7 0xd8>;
+					pinctrl-0 = <0xd3 0xd4>;
+					pinctrl-1 = <0xd5 0xd6>;
 					gpios = <0xffffffff 0x1e 0x00 0xffffffff 0xb7 0x00>;
 					gpio-reset = <0x01>;
 					gpio-req-tbl-num = <0x00 0x01>;
@@ -8234,7 +8232,7 @@
 					clock-names = "cam_clk";
 					clock-cntl-level = "turbo";
 					clock-rates = <0x124f800>;
-					phandle = <0xd1>;
+					phandle = <0xcf>;
 				};
 
 				qcom,cam-sensor5 {
@@ -8246,10 +8244,10 @@
 					sensor-position-yaw = <0xb4>;
 					is_otp_sensor = <0x01>;
 					is_sensor_type = <0x02>;
-					eeprom-src = <0xd9>;
-					cam_vdig-supply = <0xda>;
-					cam_vio-supply = <0xdb>;
-					cam_vana-supply = <0xdc>;
+					eeprom-src = <0xd7>;
+					cam_vdig-supply = <0xd8>;
+					cam_vio-supply = <0xd9>;
+					cam_vana-supply = <0xda>;
 					cam_v_custom1-supply = <0x68>;
 					cam_v_custom2-supply = <0x69>;
 					cam_clk-supply = <0xffffffff>;
@@ -8260,8 +8258,8 @@
 					rgltr-load-current = <0x30d40 0x30d40 0x1388 0x1388 0x1388 0x00>;
 					gpio-no-mux = <0x00>;
 					pinctrl-names = "cam_default\0cam_suspend";
-					pinctrl-0 = <0xdd 0xde>;
-					pinctrl-1 = <0xdf 0xe0>;
+					pinctrl-0 = <0xdb 0xdc>;
+					pinctrl-1 = <0xdd 0xde>;
 					gpios = <0xffffffff 0x1f 0x00 0xffffffff 0xb8 0x00>;
 					gpio-reset = <0x01>;
 					gpio-req-tbl-num = <0x00 0x01>;
@@ -8274,7 +8272,7 @@
 					clock-names = "cam_clk";
 					clock-cntl-level = "turbo";
 					clock-rates = <0x124f800>;
-					phandle = <0x1e7>;
+					phandle = <0x1e5>;
 				};
 
 				qcom,eeprom5 {
@@ -8283,9 +8281,9 @@
 					is_otp_sensor = <0x01>;
 					is_sensor_type = <0x02>;
 					boot_revision = <0x07>;
-					cam_vdig-supply = <0xda>;
-					cam_vio-supply = <0xdb>;
-					cam_vana-supply = <0xdc>;
+					cam_vdig-supply = <0xd8>;
+					cam_vio-supply = <0xd9>;
+					cam_vana-supply = <0xda>;
 					cam_v_custom1-supply = <0x68>;
 					cam_v_custom2-supply = <0x69>;
 					cam_clk-supply = <0xffffffff>;
@@ -8296,8 +8294,8 @@
 					rgltr-load-current = <0x30d40 0x30d40 0x1388 0x1388 0x1388 0x00>;
 					gpio-no-mux = <0x00>;
 					pinctrl-names = "cam_default\0cam_suspend";
-					pinctrl-0 = <0xdd 0xde>;
-					pinctrl-1 = <0xdf 0xe0>;
+					pinctrl-0 = <0xdb 0xdc>;
+					pinctrl-1 = <0xdd 0xde>;
 					gpios = <0xffffffff 0x1f 0x00 0xffffffff 0xb8 0x00>;
 					gpio-reset = <0x01>;
 					gpio-req-tbl-num = <0x00 0x01>;
@@ -8310,7 +8308,7 @@
 					clock-names = "cam_clk";
 					clock-cntl-level = "turbo";
 					clock-rates = <0x124f800>;
-					phandle = <0xd9>;
+					phandle = <0xd7>;
 				};
 			};
 
@@ -8329,7 +8327,7 @@
 					multiple-client-devices;
 
 					iova-mem-map {
-						phandle = <0x1e8>;
+						phandle = <0x1e6>;
 
 						iova-mem-region-io {
 							iova-region-name = "io";
@@ -8350,7 +8348,7 @@
 					multiple-client-devices;
 
 					iova-mem-map {
-						phandle = <0x1e9>;
+						phandle = <0x1e7>;
 
 						iova-mem-region-io {
 							iova-region-name = "io";
@@ -8377,7 +8375,7 @@
 					dma-coherent;
 
 					iova-mem-map {
-						phandle = <0x1ea>;
+						phandle = <0x1e8>;
 
 						iova-mem-region-firmware {
 							iova-region-name = "firmware";
@@ -8477,7 +8475,7 @@
 							node-name = "level2-rt0";
 							traffic-merge-type = <0x00>;
 							ib-bw-voting-needed;
-							phandle = <0xe1>;
+							phandle = <0xdf>;
 
 							qcom,axi-port-mnoc {
 								interconnect-names = "cam_hf_0\0cam_hf_0_virt";
@@ -8489,7 +8487,7 @@
 							cell-index = <0x01>;
 							node-name = "level2-nrt0";
 							traffic-merge-type = <0x00>;
-							phandle = <0xe2>;
+							phandle = <0xe0>;
 
 							qcom,axi-port-mnoc {
 								interconnect-names = "cam_sf_0";
@@ -8501,7 +8499,7 @@
 							cell-index = <0x02>;
 							node-name = "level2-nrt1";
 							traffic-merge-type = <0x00>;
-							phandle = <0xec>;
+							phandle = <0xea>;
 
 							qcom,axi-port-mnoc {
 								interconnect-names = "cam_sf_icp";
@@ -8517,81 +8515,81 @@
 						level1-rt0-wr0 {
 							cell-index = <0x03>;
 							node-name = "level1-ife0-ubwc-wr";
-							parent-node = <0xe1>;
+							parent-node = <0xdf>;
 							traffic-merge-type = <0x00>;
-							phandle = <0xe3>;
+							phandle = <0xe1>;
 						};
 
 						level1-rt0-wr1 {
 							cell-index = <0x04>;
 							node-name = "level1-ife0-ubwc-wr";
-							parent-node = <0xe1>;
+							parent-node = <0xdf>;
 							traffic-merge-type = <0x00>;
-							phandle = <0xe4>;
+							phandle = <0xe2>;
 						};
 
 						level1-rt0-wr2 {
 							cell-index = <0x05>;
 							node-name = "level1-ife0-ubwc-wr";
-							parent-node = <0xe1>;
+							parent-node = <0xdf>;
 							traffic-merge-type = <0x00>;
-							phandle = <0xe5>;
+							phandle = <0xe3>;
 						};
 
 						level1-rt0-wr3 {
 							cell-index = <0x06>;
 							node-name = "level1-ife0-ubwc-wr";
-							parent-node = <0xe1>;
+							parent-node = <0xdf>;
 							traffic-merge-type = <0x00>;
-							phandle = <0xe6>;
+							phandle = <0xe4>;
 						};
 
 						level1-nrt0-wr0 {
 							cell-index = <0x07>;
 							node-name = "level1-nrt0-wr0";
-							parent-node = <0xe2>;
+							parent-node = <0xe0>;
 							traffic-merge-type = <0x00>;
-							phandle = <0x1eb>;
+							phandle = <0x1e9>;
 						};
 
 						level1-nrt0-rd0 {
 							cell-index = <0x08>;
 							node-name = "level1-nrt0-rd0";
-							parent-node = <0xe2>;
+							parent-node = <0xe0>;
 							traffic-merge-type = <0x00>;
-							phandle = <0xea>;
+							phandle = <0xe8>;
 						};
 
 						level1-nrt0-rd1 {
 							cell-index = <0x09>;
 							node-name = "level1-nrt0-rd1";
-							parent-node = <0xe2>;
+							parent-node = <0xe0>;
 							traffic-merge-type = <0x00>;
-							phandle = <0xe7>;
+							phandle = <0xe5>;
 						};
 
 						level1-nrt0-wr1 {
 							cell-index = <0x0a>;
 							node-name = "level1-nrt0-wr1";
-							parent-node = <0xe2>;
+							parent-node = <0xe0>;
 							traffic-merge-type = <0x00>;
-							phandle = <0xe9>;
+							phandle = <0xe7>;
 						};
 
 						level1-nrt0-rd2 {
 							cell-index = <0x0b>;
 							node-name = "level1-nrt0-rd2";
-							parent-node = <0xe2>;
+							parent-node = <0xe0>;
 							traffic-merge-type = <0x00>;
-							phandle = <0xeb>;
+							phandle = <0xe9>;
 						};
 
 						level1-nrt0-rd3 {
 							cell-index = <0x0c>;
 							node-name = "level1-nrt0-rd3";
-							parent-node = <0xe2>;
+							parent-node = <0xe0>;
 							traffic-merge-type = <0x00>;
-							phandle = <0xe8>;
+							phandle = <0xe6>;
 						};
 					};
 
@@ -8605,8 +8603,8 @@
 							traffic-data = <0x106>;
 							traffic-transaction-type = <0x01>;
 							constituent-paths = <0x01 0x02>;
-							parent-node = <0xe3>;
-							phandle = <0x1ec>;
+							parent-node = <0xe1>;
+							phandle = <0x1ea>;
 						};
 
 						ife1-ubwc-wr {
@@ -8616,8 +8614,8 @@
 							traffic-data = <0x106>;
 							traffic-transaction-type = <0x01>;
 							constituent-paths = <0x01 0x02>;
-							parent-node = <0xe4>;
-							phandle = <0x1ed>;
+							parent-node = <0xe2>;
+							phandle = <0x1eb>;
 						};
 
 						ife0-rdi-pixel-raw-wr {
@@ -8627,8 +8625,8 @@
 							traffic-data = <0x104>;
 							traffic-transaction-type = <0x01>;
 							constituent-paths = <0x04 0x05 0x06 0x09>;
-							parent-node = <0xe3>;
-							phandle = <0x1ee>;
+							parent-node = <0xe1>;
+							phandle = <0x1ec>;
 						};
 
 						ife1-rdi-pixel-raw-wr {
@@ -8638,8 +8636,8 @@
 							traffic-data = <0x104>;
 							traffic-transaction-type = <0x01>;
 							constituent-paths = <0x04 0x05 0x06 0x09>;
-							parent-node = <0xe4>;
-							phandle = <0x1ef>;
+							parent-node = <0xe2>;
+							phandle = <0x1ed>;
 						};
 
 						ife0-pdaf-wr {
@@ -8648,8 +8646,8 @@
 							client-name = "ife0";
 							traffic-data = <0x08>;
 							traffic-transaction-type = <0x01>;
-							parent-node = <0xe3>;
-							phandle = <0x1f0>;
+							parent-node = <0xe1>;
+							phandle = <0x1ee>;
 						};
 
 						ife1-pdaf-wr {
@@ -8658,8 +8656,8 @@
 							client-name = "ife1";
 							traffic-data = <0x08>;
 							traffic-transaction-type = <0x01>;
-							parent-node = <0xe4>;
-							phandle = <0x1f1>;
+							parent-node = <0xe2>;
+							phandle = <0x1ef>;
 						};
 
 						ife0-linear-stats-wr {
@@ -8669,8 +8667,8 @@
 							traffic-data = <0x107>;
 							traffic-transaction-type = <0x01>;
 							constituent-paths = <0x00 0x03>;
-							parent-node = <0xe3>;
-							phandle = <0x1f2>;
+							parent-node = <0xe1>;
+							phandle = <0x1f0>;
 						};
 
 						ife1-linear-stats-wr {
@@ -8680,8 +8678,8 @@
 							traffic-data = <0x107>;
 							traffic-transaction-type = <0x01>;
 							constituent-paths = <0x00 0x03>;
-							parent-node = <0xe4>;
-							phandle = <0x1f3>;
+							parent-node = <0xe2>;
+							phandle = <0x1f1>;
 						};
 
 						ife11-rdi-stats-pixel-raw-wr {
@@ -8691,8 +8689,8 @@
 							traffic-data = <0x100>;
 							traffic-transaction-type = <0x01>;
 							constituent-paths = <0x04 0x05 0x06 0x07 0x09 0x03>;
-							parent-node = <0xe5>;
-							phandle = <0x1f4>;
+							parent-node = <0xe3>;
+							phandle = <0x1f2>;
 						};
 
 						ife10-rdi-stats-pixel-raw-wr {
@@ -8702,8 +8700,8 @@
 							traffic-data = <0x100>;
 							traffic-transaction-type = <0x01>;
 							constituent-paths = <0x04 0x05 0x06 0x07 0x09 0x03>;
-							parent-node = <0xe5>;
-							phandle = <0x1f5>;
+							parent-node = <0xe3>;
+							phandle = <0x1f3>;
 						};
 
 						ife9-rdi-stats-pixel-raw-wr {
@@ -8713,8 +8711,8 @@
 							traffic-data = <0x100>;
 							traffic-transaction-type = <0x01>;
 							constituent-paths = <0x04 0x05 0x06 0x07 0x09 0x03>;
-							parent-node = <0xe5>;
-							phandle = <0x1f6>;
+							parent-node = <0xe3>;
+							phandle = <0x1f4>;
 						};
 
 						ife8-rdi-stats-pixel-raw-wr {
@@ -8724,8 +8722,8 @@
 							traffic-data = <0x100>;
 							traffic-transaction-type = <0x01>;
 							constituent-paths = <0x04 0x05 0x06 0x07 0x09 0x03>;
-							parent-node = <0xe5>;
-							phandle = <0x1f7>;
+							parent-node = <0xe3>;
+							phandle = <0x1f5>;
 						};
 
 						ife7-rdi-stats-pixel-raw-wr {
@@ -8735,8 +8733,8 @@
 							traffic-data = <0x100>;
 							traffic-transaction-type = <0x01>;
 							constituent-paths = <0x04 0x05 0x06 0x07 0x09 0x03>;
-							parent-node = <0xe5>;
-							phandle = <0x1f8>;
+							parent-node = <0xe3>;
+							phandle = <0x1f6>;
 						};
 
 						ife6-rdi-stats-pixel-raw-wr {
@@ -8746,8 +8744,8 @@
 							traffic-data = <0x100>;
 							traffic-transaction-type = <0x01>;
 							constituent-paths = <0x04 0x05 0x06 0x07 0x09 0x03>;
-							parent-node = <0xe6>;
-							phandle = <0x1f9>;
+							parent-node = <0xe4>;
+							phandle = <0x1f7>;
 						};
 
 						ife5-rdi-stats-pixel-raw-wr {
@@ -8757,8 +8755,8 @@
 							traffic-data = <0x100>;
 							traffic-transaction-type = <0x01>;
 							constituent-paths = <0x04 0x05 0x06 0x07 0x09 0x03>;
-							parent-node = <0xe6>;
-							phandle = <0x1fa>;
+							parent-node = <0xe4>;
+							phandle = <0x1f8>;
 						};
 
 						ife4-rdi-stats-pixel-raw-wr {
@@ -8768,8 +8766,8 @@
 							traffic-data = <0x100>;
 							traffic-transaction-type = <0x01>;
 							constituent-paths = <0x04 0x05 0x06 0x07 0x09 0x03>;
-							parent-node = <0xe6>;
-							phandle = <0x1fb>;
+							parent-node = <0xe4>;
+							phandle = <0x1f9>;
 						};
 
 						ife3-rdi-stats-pixel-raw-wr {
@@ -8779,8 +8777,8 @@
 							traffic-data = <0x100>;
 							traffic-transaction-type = <0x01>;
 							constituent-paths = <0x04 0x05 0x06 0x07 0x09 0x03>;
-							parent-node = <0xe6>;
-							phandle = <0x1fc>;
+							parent-node = <0xe4>;
+							phandle = <0x1fa>;
 						};
 
 						ife2-rdi-stats-pixel-raw-wr {
@@ -8790,8 +8788,8 @@
 							traffic-data = <0x100>;
 							traffic-transaction-type = <0x01>;
 							constituent-paths = <0x04 0x05 0x06 0x07 0x09 0x03>;
-							parent-node = <0xe6>;
-							phandle = <0x1fd>;
+							parent-node = <0xe4>;
+							phandle = <0x1fb>;
 						};
 
 						ipe0-all-wr {
@@ -8801,8 +8799,8 @@
 							traffic-data = <0x100>;
 							traffic-transaction-type = <0x01>;
 							constituent-paths = <0x22 0x23 0x24>;
-							parent-node = <0xe2>;
-							phandle = <0x1fe>;
+							parent-node = <0xe0>;
+							phandle = <0x1fc>;
 						};
 
 						bps0-all-wr {
@@ -8811,8 +8809,8 @@
 							client-name = "bps0";
 							traffic-data = <0x100>;
 							traffic-transaction-type = <0x01>;
-							parent-node = <0xe2>;
-							phandle = <0x1ff>;
+							parent-node = <0xe0>;
+							phandle = <0x1fd>;
 						};
 
 						bps0-all-rd {
@@ -8821,8 +8819,8 @@
 							client-name = "bps0";
 							traffic-data = <0x100>;
 							traffic-transaction-type = <0x00>;
-							parent-node = <0xe7>;
-							phandle = <0x200>;
+							parent-node = <0xe5>;
+							phandle = <0x1fe>;
 						};
 
 						bps0-cdm0-all-rd {
@@ -8831,8 +8829,8 @@
 							client-name = "nrt-cdm0";
 							traffic-data = <0x100>;
 							traffic-transaction-type = <0x00>;
-							parent-node = <0xe7>;
-							phandle = <0x201>;
+							parent-node = <0xe5>;
+							phandle = <0x1ff>;
 						};
 
 						jpeg-enc0-all-rd {
@@ -8841,8 +8839,8 @@
 							client-name = "jpeg-enc0";
 							traffic-data = <0x100>;
 							traffic-transaction-type = <0x00>;
-							parent-node = <0xe8>;
-							phandle = <0x202>;
+							parent-node = <0xe6>;
+							phandle = <0x200>;
 						};
 
 						jpeg-dma0-all-rd {
@@ -8851,8 +8849,8 @@
 							client-name = "jpeg-dma0";
 							traffic-data = <0x100>;
 							traffic-transaction-type = <0x00>;
-							parent-node = <0xe8>;
-							phandle = <0x203>;
+							parent-node = <0xe6>;
+							phandle = <0x201>;
 						};
 
 						jpeg-enc0-all-wr {
@@ -8861,8 +8859,8 @@
 							client-name = "jpeg-enc0";
 							traffic-data = <0x100>;
 							traffic-transaction-type = <0x01>;
-							parent-node = <0xe9>;
-							phandle = <0x204>;
+							parent-node = <0xe7>;
+							phandle = <0x202>;
 						};
 
 						jpeg-dma0-all-wr {
@@ -8871,8 +8869,8 @@
 							client-name = "jpeg-dma0";
 							traffic-data = <0x100>;
 							traffic-transaction-type = <0x01>;
-							parent-node = <0xe9>;
-							phandle = <0x205>;
+							parent-node = <0xe7>;
+							phandle = <0x203>;
 						};
 
 						ipe0-ref-rd {
@@ -8881,8 +8879,8 @@
 							client-name = "ipe0";
 							traffic-data = <0x21>;
 							traffic-transaction-type = <0x00>;
-							parent-node = <0xea>;
-							phandle = <0x206>;
+							parent-node = <0xe8>;
+							phandle = <0x204>;
 						};
 
 						ipe0-in-rd {
@@ -8891,8 +8889,8 @@
 							client-name = "ipe0";
 							traffic-data = <0x20>;
 							traffic-transaction-type = <0x00>;
-							parent-node = <0xea>;
-							phandle = <0x207>;
+							parent-node = <0xe8>;
+							phandle = <0x205>;
 						};
 
 						rt-cdm0-all-rd {
@@ -8901,8 +8899,8 @@
 							client-name = "rt-cdm0";
 							traffic-data = <0x100>;
 							traffic-transaction-type = <0x00>;
-							parent-node = <0xeb>;
-							phandle = <0x208>;
+							parent-node = <0xe9>;
+							phandle = <0x206>;
 						};
 
 						rt-cdm1-all-rd {
@@ -8911,8 +8909,8 @@
 							client-name = "rt-cdm1";
 							traffic-data = <0x100>;
 							traffic-transaction-type = <0x00>;
-							parent-node = <0xeb>;
-							phandle = <0x209>;
+							parent-node = <0xe9>;
+							phandle = <0x207>;
 						};
 
 						rt-cdm2-all-rd {
@@ -8921,8 +8919,8 @@
 							client-name = "rt-cdm2";
 							traffic-data = <0x100>;
 							traffic-transaction-type = <0x00>;
-							parent-node = <0xeb>;
-							phandle = <0x20a>;
+							parent-node = <0xe9>;
+							phandle = <0x208>;
 						};
 
 						rt-cdm3-all-rd {
@@ -8931,8 +8929,8 @@
 							client-name = "rt-cdm3";
 							traffic-data = <0x100>;
 							traffic-transaction-type = <0x00>;
-							parent-node = <0xeb>;
-							phandle = <0x20b>;
+							parent-node = <0xe9>;
+							phandle = <0x209>;
 						};
 
 						rt-cdm5-all-rd {
@@ -8941,8 +8939,8 @@
 							client-name = "rt-cdm4";
 							traffic-data = <0x100>;
 							traffic-transaction-type = <0x00>;
-							parent-node = <0xeb>;
-							phandle = <0x20c>;
+							parent-node = <0xe9>;
+							phandle = <0x20a>;
 						};
 
 						icp0-all-rd {
@@ -8951,8 +8949,8 @@
 							client-name = "icp0";
 							traffic-data = <0x100>;
 							traffic-transaction-type = <0x00>;
-							parent-node = <0xec>;
-							phandle = <0x20d>;
+							parent-node = <0xea>;
+							phandle = <0x20b>;
 						};
 					};
 				};
@@ -8976,7 +8974,7 @@
 				clock-cntl-level = "lowsvs\0nominal";
 				src-clock-name = "cam_cc_cphy_rx_clk_src";
 				status = "ok";
-				phandle = <0x20e>;
+				phandle = <0x20c>;
 			};
 
 			qcom,tpg14@acf7000 {
@@ -8997,7 +8995,7 @@
 				clock-cntl-level = "lowsvs\0nominal";
 				src-clock-name = "cam_cc_cphy_rx_clk_src";
 				status = "ok";
-				phandle = <0x20f>;
+				phandle = <0x20d>;
 			};
 
 			qcom,tpg15@acf8000 {
@@ -9018,7 +9016,7 @@
 				clock-cntl-level = "lowsvs\0nominal";
 				src-clock-name = "cam_cc_cphy_rx_clk_src";
 				status = "ok";
-				phandle = <0x210>;
+				phandle = <0x20e>;
 			};
 
 			qcom,cam-cdm-intf {
@@ -9155,7 +9153,7 @@
 				src-clock-name = "cam_cc_csid_clk_src";
 				clock-control-debugfs = "true";
 				status = "ok";
-				phandle = <0x211>;
+				phandle = <0x20f>;
 			};
 
 			qcom,ife0@ac62000 {
@@ -9179,7 +9177,7 @@
 				ubwc-static-cfg = <0x1026 0x1036>;
 				cam_hw_pid = <0x11 0x12 0x14 0x17>;
 				status = "ok";
-				phandle = <0x212>;
+				phandle = <0x210>;
 			};
 
 			qcom,csid1@acb9000 {
@@ -9201,7 +9199,7 @@
 				src-clock-name = "cam_cc_csid_clk_src";
 				clock-control-debugfs = "true";
 				status = "ok";
-				phandle = <0x213>;
+				phandle = <0x211>;
 			};
 
 			qcom,ife1@ac71000 {
@@ -9225,7 +9223,7 @@
 				ubwc-static-cfg = <0x1026 0x1036>;
 				cam_hw_pid = <0x13 0x15 0x16 0x17>;
 				status = "ok";
-				phandle = <0x214>;
+				phandle = <0x212>;
 			};
 
 			qcom,csid-lite0@ad00000 {
@@ -9247,7 +9245,7 @@
 				src-clock-name = "cam_cc_ife_lite_csid_clk_src";
 				clock-control-debugfs = "true";
 				status = "ok";
-				phandle = <0x215>;
+				phandle = <0x213>;
 			};
 
 			qcom,ife-lite0@ad00000 {
@@ -9270,7 +9268,7 @@
 				clock-control-debugfs = "true";
 				cam_hw_pid = <0x18>;
 				status = "ok";
-				phandle = <0x216>;
+				phandle = <0x214>;
 			};
 
 			qcom,csid-lite1@ad04000 {
@@ -9292,7 +9290,7 @@
 				src-clock-name = "cam_cc_ife_lite_csid_clk_src";
 				clock-control-debugfs = "true";
 				status = "ok";
-				phandle = <0x217>;
+				phandle = <0x215>;
 			};
 
 			qcom,ife-lite1@ad04000 {
@@ -9315,7 +9313,7 @@
 				clock-control-debugfs = "true";
 				cam_hw_pid = <0x19>;
 				status = "ok";
-				phandle = <0x218>;
+				phandle = <0x216>;
 			};
 
 			qcom,csid-lite2@ad08000 {
@@ -9337,7 +9335,7 @@
 				src-clock-name = "cam_cc_ife_lite_csid_clk_src";
 				clock-control-debugfs = "true";
 				status = "ok";
-				phandle = <0x219>;
+				phandle = <0x217>;
 			};
 
 			qcom,ife-lite2@ad08000 {
@@ -9360,7 +9358,7 @@
 				clock-control-debugfs = "true";
 				cam_hw_pid = <0x1a>;
 				status = "ok";
-				phandle = <0x21a>;
+				phandle = <0x218>;
 			};
 
 			qcom,csid-lite3@ad0c000 {
@@ -9382,7 +9380,7 @@
 				src-clock-name = "cam_cc_ife_lite_csid_clk_src";
 				clock-control-debugfs = "true";
 				status = "ok";
-				phandle = <0x21b>;
+				phandle = <0x219>;
 			};
 
 			qcom,ife-lite3@ad0c000 {
@@ -9405,7 +9403,7 @@
 				clock-control-debugfs = "true";
 				cam_hw_pid = <0x1b>;
 				status = "ok";
-				phandle = <0x21c>;
+				phandle = <0x21a>;
 			};
 
 			qcom,csid-lite4@ad10000 {
@@ -9427,7 +9425,7 @@
 				src-clock-name = "cam_cc_ife_lite_csid_clk_src";
 				clock-control-debugfs = "true";
 				status = "ok";
-				phandle = <0x21d>;
+				phandle = <0x21b>;
 			};
 
 			qcom,ife-lite4@ad10000 {
@@ -9450,7 +9448,7 @@
 				clock-control-debugfs = "true";
 				cam_hw_pid = <0x1c>;
 				status = "ok";
-				phandle = <0x21e>;
+				phandle = <0x21c>;
 			};
 
 			qcom,csid-lite5@ad14000 {
@@ -9472,7 +9470,7 @@
 				src-clock-name = "cam_cc_ife_lite_csid_clk_src";
 				clock-control-debugfs = "true";
 				status = "ok";
-				phandle = <0x21f>;
+				phandle = <0x21d>;
 			};
 
 			qcom,ife-lite5@ad14000 {
@@ -9495,7 +9493,7 @@
 				clock-control-debugfs = "true";
 				cam_hw_pid = <0x08>;
 				status = "ok";
-				phandle = <0x220>;
+				phandle = <0x21e>;
 			};
 
 			qcom,csid-lite6@ad18000 {
@@ -9517,7 +9515,7 @@
 				src-clock-name = "cam_cc_ife_lite_csid_clk_src";
 				clock-control-debugfs = "true";
 				status = "ok";
-				phandle = <0x221>;
+				phandle = <0x21f>;
 			};
 
 			qcom,ife-lite6@ad18000 {
@@ -9540,7 +9538,7 @@
 				clock-control-debugfs = "true";
 				cam_hw_pid = <0x09>;
 				status = "ok";
-				phandle = <0x222>;
+				phandle = <0x220>;
 			};
 
 			qcom,csid-lite7@ad1c000 {
@@ -9562,7 +9560,7 @@
 				src-clock-name = "cam_cc_ife_lite_csid_clk_src";
 				clock-control-debugfs = "true";
 				status = "ok";
-				phandle = <0x223>;
+				phandle = <0x221>;
 			};
 
 			qcom,ife-lite7@ad1c000 {
@@ -9585,7 +9583,7 @@
 				clock-control-debugfs = "true";
 				cam_hw_pid = <0x0a>;
 				status = "ok";
-				phandle = <0x224>;
+				phandle = <0x222>;
 			};
 
 			qcom,csid-lite8@ad20000 {
@@ -9607,7 +9605,7 @@
 				src-clock-name = "cam_cc_ife_lite_csid_clk_src";
 				clock-control-debugfs = "true";
 				status = "ok";
-				phandle = <0x225>;
+				phandle = <0x223>;
 			};
 
 			qcom,ife-lite8@ad20000 {
@@ -9630,7 +9628,7 @@
 				clock-control-debugfs = "true";
 				cam_hw_pid = <0x0b>;
 				status = "ok";
-				phandle = <0x226>;
+				phandle = <0x224>;
 			};
 
 			qcom,csid-lite8@ad24000 {
@@ -9652,7 +9650,7 @@
 				src-clock-name = "cam_cc_ife_lite_csid_clk_src";
 				clock-control-debugfs = "true";
 				status = "ok";
-				phandle = <0x227>;
+				phandle = <0x225>;
 			};
 
 			qcom,ife-lite8@ad24000 {
@@ -9675,7 +9673,7 @@
 				clock-control-debugfs = "true";
 				cam_hw_pid = <0x0c>;
 				status = "ok";
-				phandle = <0x228>;
+				phandle = <0x226>;
 			};
 
 			qcom,cam-icp {
@@ -9716,7 +9714,7 @@
 				qos-val = <0xa0a>;
 				cam_hw_pid = <0x09>;
 				status = "ok";
-				phandle = <0x229>;
+				phandle = <0x227>;
 			};
 
 			qcom,ipe0@ac42000 {
@@ -9736,7 +9734,7 @@
 				clock-control-debugfs = "true";
 				cam_hw_pid = <0x16 0x17 0x0e>;
 				status = "ok";
-				phandle = <0x22a>;
+				phandle = <0x228>;
 			};
 
 			qcom,bps@ac2c000 {
@@ -9756,7 +9754,7 @@
 				clock-control-debugfs = "true";
 				cam_hw_pid = <0x0f 0x06>;
 				status = "ok";
-				phandle = <0x22b>;
+				phandle = <0x229>;
 			};
 
 			qcom,cam-jpeg {
@@ -9788,7 +9786,7 @@
 				cam_hw_rd_mid = <0x00>;
 				cam_hw_wr_mid = <0x01>;
 				status = "ok";
-				phandle = <0x22c>;
+				phandle = <0x22a>;
 			};
 
 			qcom,jpegdma@ac2b000 {
@@ -9812,7 +9810,7 @@
 				cam_hw_rd_mid = <0x00>;
 				cam_hw_wr_mid = <0x01>;
 				status = "ok";
-				phandle = <0x22d>;
+				phandle = <0x22b>;
 			};
 		};
 	};
@@ -9825,7 +9823,7 @@
 			samsung,param {
 				compatible = "samsung,param";
 				status = "okay";
-				phandle = <0x22e>;
+				phandle = <0x22c>;
 			};
 
 			samsung,qcom-param {
@@ -9833,7 +9831,7 @@
 				status = "okay";
 				sec,bdev_path = "PARTUUID=2da26441-884e-456c-afbb-721626d69933";
 				sec,negative_offset = <0x100000>;
-				phandle = <0x22f>;
+				phandle = <0x22d>;
 			};
 
 			samsung,reloc_gpio {
@@ -9841,7 +9839,7 @@
 				status = "okay";
 				sec,gpio-label = "f000000.pinctrl";
 				sec,reloc-base = <0x00>;
-				phandle = <0x230>;
+				phandle = <0x22e>;
 			};
 		};
 	};
@@ -9857,32 +9855,32 @@
 			sec_debug_region_pool@800100000 {
 				compatible = "samsung,carve-out";
 				reg = <0x08 0x100000 0x00 0xff000>;
-				phandle = <0xee>;
+				phandle = <0xec>;
 			};
 
 			sec_debug_region_log@8001FF000 {
 				compatible = "samsung,carve-out";
 				reg = <0x08 0x1ff000 0x00 0x901000>;
-				phandle = <0xef>;
+				phandle = <0xed>;
 			};
 
 			google_debug_kinfo_region@880B00000 {
 				compatible = "samsung,carve-out";
 				no-map;
 				reg = <0x08 0x80b00000 0x00 0x1000>;
-				phandle = <0xed>;
+				phandle = <0xeb>;
 			};
 
 			sec_qcom_rdx_bootdev_region@880C00000 {
 				compatible = "samsung,carve-out";
 				reg = <0x08 0x80c00000 0x00 0xe400000>;
-				phandle = <0xf1>;
+				phandle = <0xef>;
 			};
 
 			sec_xbl_ramdump@A7D00000 {
 				no-map;
 				reg = <0x00 0xa7d00000 0x00 0x300000>;
-				phandle = <0x231>;
+				phandle = <0x22f>;
 			};
 		};
 	};
@@ -9908,8 +9906,8 @@
 			google,debug-kinfo {
 				compatible = "google,debug-kinfo";
 				status = "okay";
-				memory-region = <0xed>;
-				phandle = <0x232>;
+				memory-region = <0xeb>;
+				phandle = <0x230>;
 			};
 		};
 	};
@@ -9931,14 +9929,14 @@
 				compatible = "samsung,sec_debug";
 				status = "okay";
 				sec,panic_notifier-priority = <0x7f>;
-				phandle = <0x233>;
+				phandle = <0x231>;
 			};
 
 			samsung,debug_region {
 				compatible = "samsung,debug_region";
 				status = "okay";
-				memory-region = <0xee>;
-				phandle = <0x234>;
+				memory-region = <0xec>;
+				phandle = <0x232>;
 			};
 
 			samsung,ap_context-sec_vh_ipi_stop {
@@ -9946,7 +9944,7 @@
 				status = "okay";
 				sec,name = "ap_context-sec_vh_ipi_stop";
 				sec,unique_id = <0x86655958>;
-				phandle = <0x235>;
+				phandle = <0x233>;
 			};
 
 			samsung,qcom-sched_log {
@@ -9954,7 +9952,7 @@
 				status = "okay";
 				sec,name = "qcom-sched_log";
 				sec,unique_id = <0x705e7c9e>;
-				phandle = <0x236>;
+				phandle = <0x234>;
 			};
 
 			samsung,qcom-irq_log {
@@ -9962,7 +9960,7 @@
 				status = "okay";
 				sec,name = "qcom-irq_log";
 				sec,unique_id = <0x811e64d7>;
-				phandle = <0x237>;
+				phandle = <0x235>;
 			};
 
 			samsung,qcom-irq_exit_log {
@@ -9970,7 +9968,7 @@
 				status = "okay";
 				sec,name = "qcom-irq_exit_log";
 				sec,unique_id = <0xcd0bd0e1>;
-				phandle = <0x238>;
+				phandle = <0x236>;
 			};
 
 			samsung,qcom-msg_log {
@@ -9978,14 +9976,14 @@
 				status = "disabled";
 				sec,name = "qcom-msg_log";
 				sec,unique_id = <0x9c414ca6>;
-				phandle = <0x239>;
+				phandle = <0x237>;
 			};
 
 			samsung,fsimd_debug {
 				compatible = "samsung,fsimd_debug";
 				status = "okay";
 				sec,debug_level = <0x494d 0x4948>;
-				phandle = <0x23a>;
+				phandle = <0x238>;
 			};
 
 			samsung,reboot_cmd {
@@ -9993,33 +9991,33 @@
 				status = "okay";
 				sec,reboot_notifier-priority = <0xfa>;
 				sec,restart_handler-priority = <0xdc>;
-				phandle = <0x23b>;
+				phandle = <0x239>;
 			};
 
 			samsung,qcom-reboot_cmd {
 				compatible = "samsung,qcom-reboot_cmd";
 				status = "okay";
 				sec,use-on_reboot;
-				phandle = <0x23c>;
+				phandle = <0x23a>;
 			};
 
 			samsung,upload_cause {
 				compatible = "samsung,upload_cause";
 				status = "okay";
 				sec,panic_notifier-priority = <0xff>;
-				phandle = <0x23d>;
+				phandle = <0x23b>;
 			};
 
 			samsung,qcom-upload_cause {
 				compatible = "samsung,qcom-upload_cause";
 				status = "okay";
-				phandle = <0x23e>;
+				phandle = <0x23c>;
 			};
 
 			samsung,kernel_log_buf {
 				compatible = "samsung,kernel_log_buf";
 				status = "okay";
-				memory-region = <0xef>;
+				memory-region = <0xed>;
 				sec,use-partial_reserved_mem;
 				reg = <0x08 0x200000 0x00 0x200000>;
 				#address-cells = <0x02>;
@@ -10027,7 +10025,7 @@
 				sec,strategy = <0x03>;
 				sec,use-last_kmsg_compression;
 				sec,last_kmsg_compressor = "zstd";
-				phandle = <0x23f>;
+				phandle = <0x23d>;
 			};
 
 			samsung,crashkey {
@@ -10038,7 +10036,7 @@
 				sec,debug_level = <0x494d 0x4948>;
 				sec,desired_pattern = <0x72 0x01 0x74 0x01 0x74 0x00 0x74 0x01 0x74 0x00>;
 				sec,interval = <0x01>;
-				phandle = <0x240>;
+				phandle = <0x23e>;
 			};
 
 			samsung,crashkey-user {
@@ -10049,7 +10047,7 @@
 				sec,debug_level = <0x4f4c>;
 				sec,desired_pattern = <0x72 0x01 0x74 0x01 0x74 0x00 0x74 0x01 0x74 0x00 0x74 0x01 0x74 0x00 0x74 0x01 0x74 0x00 0x74 0x01 0x74 0x00 0x74 0x01 0x74 0x00 0x74 0x01 0x74 0x00 0x74 0x01 0x74 0x00 0x74 0x01 0x74 0x00 0x73 0x01 0x73 0x00 0x73 0x01 0x73 0x00 0x73 0x01 0x73 0x00 0x73 0x01 0x73 0x00 0x73 0x01 0x73 0x00 0x74 0x01 0x74 0x00 0x74 0x01 0x74 0x00 0x74 0x01 0x74 0x00>;
 				sec,interval = <0x13>;
-				phandle = <0x241>;
+				phandle = <0x23f>;
 			};
 
 			samsung,crashkey-long {
@@ -10058,25 +10056,25 @@
 				sec,expire_msec = <0x19c8>;
 				sec,panic_msg = "Long Key Press";
 				sec,used_key = <0x72 0x74>;
-				phandle = <0x242>;
+				phandle = <0x240>;
 			};
 
 			samsung,boot_stat {
 				compatible = "samsung,boot_stat";
 				status = "okay";
-				phandle = <0x243>;
+				phandle = <0x241>;
 			};
 
 			samsung,pstore_pmsg {
 				compatible = "samsung,pstore_pmsg";
 				status = "okay";
 				sec,debug_level = <0x494d 0x4948>;
-				memory-region = <0xef>;
+				memory-region = <0xed>;
 				sec,use-partial_reserved_mem;
 				reg = <0x08 0x900000 0x00 0x200000>;
 				#address-cells = <0x02>;
 				#size-cells = <0x02>;
-				phandle = <0x244>;
+				phandle = <0x242>;
 			};
 
 			samsung,qcom-wdt_core {
@@ -10084,16 +10082,16 @@
 				status = "okay";
 				sec,qcom_wdt_core_dev_name = "hypervisor:qcom,gh-watchdog";
 				sec,panic_notifier-priority = <0xffff>;
-				phandle = <0x245>;
+				phandle = <0x243>;
 			};
 
 			samsung,qcom-qcom_reboot_reason {
 				compatible = "samsung,qcom-qcom_reboot_reason";
 				status = "okay";
 				sec,reboot_notifier-priority = <0xdc>;
-				nvmem-cells = <0x15 0xf0>;
+				nvmem-cells = <0x15 0xee>;
 				nvmem-cell-names = "restart_reason\0pon_reason";
-				phandle = <0x246>;
+				phandle = <0x244>;
 			};
 
 			samsung,qcom-debug_partition {
@@ -10101,7 +10099,7 @@
 				status = "okay";
 				sec,bdev_path = "PARTUUID=a17d0ddb-cec4-4a80-9e22-7d43fec26358";
 				sec,part_table = <0x00 0x1000 0x1000 0x1000 0x2000 0x1000 0x3000 0x1000 0x4000 0xa000 0xe000 0x1000 0xf000 0x80000 0x8f000 0x1000 0x90000 0x3000 0x93000 0x1000 0x94000 0x1000 0x95000 0x1000 0xfd000 0x3000 0x100000 0x200000 0x300000 0x200000 0x500000 0x300000>;
-				phandle = <0x247>;
+				phandle = <0x245>;
 			};
 
 			samsung,qcom-summary {
@@ -10109,9 +10107,9 @@
 				status = "okay";
 				sec,die_notifier-priority = <0xfa>;
 				sec,panic_notifier-priority = <0xfa>;
-				memory-region = <0xed>;
+				memory-region = <0xeb>;
 				memory-region-names = "google,debug_kinfo";
-				phandle = <0x248>;
+				phandle = <0x246>;
 			};
 
 			samsung,qcom-debug {
@@ -10121,13 +10119,13 @@
 				sec,use-cp_dump_encrypt;
 				sec,use-store_last_kmsg;
 				sec,use-store_lpm_kmsg;
-				phandle = <0x249>;
+				phandle = <0x247>;
 			};
 
 			samsung,qcom-user_reset {
 				compatible = "samsung,qcom-user_reset";
 				status = "okay";
-				phandle = <0x24a>;
+				phandle = <0x248>;
 			};
 
 			samsung,qcom-smem {
@@ -10135,13 +10133,13 @@
 				status = "okay";
 				sec,vendor0_ver = <0x02>;
 				sec,vendor1_ver = <0x07>;
-				phandle = <0x24b>;
+				phandle = <0x249>;
 			};
 
 			samsung,qcom-hw_param {
 				compatible = "samsung,qcom-hw_param";
 				status = "okay";
-				phandle = <0x24c>;
+				phandle = <0x24a>;
 			};
 
 			samsung,qcom-rst_exinfo {
@@ -10149,12 +10147,12 @@
 				status = "okay";
 				sec,die_notifier-priority = <0xf5>;
 				sec,panic_notifier-priority = <0xf5>;
-				memory-region = <0xef>;
+				memory-region = <0xed>;
 				sec,use-partial_reserved_mem;
 				reg = <0x08 0x1ff000 0x00 0x1000>;
 				#address-cells = <0x02>;
 				#size-cells = <0x02>;
-				phandle = <0x24d>;
+				phandle = <0x24b>;
 			};
 
 			samsung,qcom-soc_id {
@@ -10164,14 +10162,14 @@
 				sec,qfprom_jtag-addr = <0x221c2098>;
 				sec,use-jtag_id;
 				sec,jtag_id-addr = <0x221c8744>;
-				phandle = <0x24e>;
+				phandle = <0x24c>;
 			};
 
 			samsung,qcom-rdx_bootdev {
 				compatible = "samsung,qcom-rdx_bootdev";
 				status = "okay";
-				memory-region = <0xf1>;
-				phandle = <0x24f>;
+				memory-region = <0xef>;
+				phandle = <0x24d>;
 			};
 		};
 	};
@@ -10233,7 +10231,7 @@
 		__overlay__ {
 
 			cnss_host_sol_default {
-				phandle = <0xf2>;
+				phandle = <0xf0>;
 
 				mux {
 					pins = "gpio124";
@@ -10248,7 +10246,7 @@
 			};
 
 			cnss_dev_sol_default {
-				phandle = <0xf3>;
+				phandle = <0xf1>;
 
 				mux {
 					pins = "gpio123";
@@ -10279,7 +10277,7 @@
 				pinctrl-names = "wlan_en_active\0wlan_en_sleep\0sol_default";
 				pinctrl-0 = <0xffffffff>;
 				pinctrl-1 = <0xffffffff>;
-				pinctrl-2 = <0xf2 0xf3>;
+				pinctrl-2 = <0xf0 0xf1>;
 				qcom,wlan;
 				qcom,wlan-rc-num = <0x00>;
 				qcom,wlan-ramdump-dynamic = <0x780000>;
@@ -10305,7 +10303,7 @@
 				qcom,pdc_init_table = " {class: wlan_pdc, ss: bb, res: s4f.v, upval: 940}\0 {class: wlan_pdc, ss: bb, res: s4f.v, dwnval: 420}\0 {class: wlan_pdc, ss: bb, res: pdc, enable: 1}";
 				qcom,bt-en-gpio = <0xffffffff 0x7a 0x00>;
 				qcom,bdf-postfix-name = ".u20";
-				phandle = <0x250>;
+				phandle = <0x24e>;
 			};
 		};
 	};
@@ -10414,8 +10412,8 @@
 				clock-names = "se-clk\0m-ahb\0s-ahb";
 				clocks = <0xffffffff 0x7e 0xffffffff 0x92 0xffffffff 0x93>;
 				pinctrl-names = "default\0sleep";
-				pinctrl-0 = <0xf4 0xf5>;
-				pinctrl-1 = <0xf6 0xf7>;
+				pinctrl-0 = <0xf2 0xf3>;
+				pinctrl-1 = <0xf4 0xf5>;
 				qcom,wrapper-core = <0xffffffff>;
 				always-on-clock;
 				status = "ok";
@@ -10429,7 +10427,7 @@
 		__overlay__ {
 
 			qupv3_se6_2uart_tx_active {
-				phandle = <0xf4>;
+				phandle = <0xf2>;
 
 				mux {
 					pins = "gpio156";
@@ -10444,7 +10442,7 @@
 			};
 
 			qupv3_se6_2uart_rx_active {
-				phandle = <0xf5>;
+				phandle = <0xf3>;
 
 				mux {
 					pins = "gpio157";
@@ -10459,7 +10457,7 @@
 			};
 
 			qupv3_se6_2uart_tx_sleep {
-				phandle = <0xf6>;
+				phandle = <0xf4>;
 
 				mux {
 					pins = "gpio156";
@@ -10475,7 +10473,7 @@
 			};
 
 			qupv3_se6_2uart_rx_sleep {
-				phandle = <0xf7>;
+				phandle = <0xf5>;
 
 				mux {
 					pins = "gpio157";
@@ -10507,17 +10505,17 @@
 				prox_vdd-supply = <0xffffffff>;
 				prox_vdd-uV-uA = <0x325aa0 0x2710>;
 				reg-names = "cx\0mx\0sensor_vdd\0prox_vdd";
-				phandle = <0xf8>;
+				phandle = <0xf6>;
 			};
 
 			qcom,msm-adsp-loader {
-				qcom,rproc-handle = <0xf8>;
-				phandle = <0x251>;
+				qcom,rproc-handle = <0xf6>;
+				phandle = <0x24f>;
 			};
 
 			qcom,msm-adsp-notify {
-				qcom,rproc-handle = <0xf8>;
-				phandle = <0x252>;
+				qcom,rproc-handle = <0xf6>;
+				phandle = <0x250>;
 			};
 		};
 	};
@@ -10562,7 +10560,7 @@
 		__overlay__ {
 
 			cam_sensor_active_reset_vst_leftcam {
-				phandle = <0x97>;
+				phandle = <0x96>;
 
 				mux {
 					pins = "gpio66";
@@ -10577,7 +10575,7 @@
 			};
 
 			cam_sensor_suspend_reset_vst_leftcam {
-				phandle = <0x99>;
+				phandle = <0x98>;
 
 				mux {
 					pins = "gpio66";
@@ -10593,7 +10591,7 @@
 			};
 
 			cam_sensor_active_reset_vst_rightcam {
-				phandle = <0xa9>;
+				phandle = <0xa7>;
 
 				mux {
 					pins = "gpio65";
@@ -10608,7 +10606,7 @@
 			};
 
 			cam_sensor_suspend_reset_vst_rightcam {
-				phandle = <0xab>;
+				phandle = <0xa9>;
 
 				mux {
 					pins = "gpio65";
@@ -10686,7 +10684,7 @@
 			};
 
 			cam_sensor_active_reset_hat_lu_cam {
-				phandle = <0xd6>;
+				phandle = <0xd4>;
 
 				mux {
 					pins = "gpio183";
@@ -10701,7 +10699,7 @@
 			};
 
 			cam_sensor_suspend_reset_hat_lu_cam {
-				phandle = <0xd8>;
+				phandle = <0xd6>;
 
 				mux {
 					pins = "gpio183";
@@ -10717,7 +10715,7 @@
 			};
 
 			cam_sensor_active_reset_hat_ru_cam {
-				phandle = <0xde>;
+				phandle = <0xdc>;
 
 				mux {
 					pins = "gpio184";
@@ -10732,7 +10730,7 @@
 			};
 
 			cam_sensor_suspend_reset_hat_ru_cam {
-				phandle = <0xe0>;
+				phandle = <0xde>;
 
 				mux {
 					pins = "gpio184";
@@ -10810,7 +10808,7 @@
 			};
 
 			et_right_cam_reset_active {
-				phandle = <0x111>;
+				phandle = <0x10f>;
 
 				mux {
 					pins = "gpio68";
@@ -10825,7 +10823,7 @@
 			};
 
 			et_right_cam_reset_suspend {
-				phandle = <0x112>;
+				phandle = <0x110>;
 
 				mux {
 					pins = "gpio68";
@@ -10841,7 +10839,7 @@
 			};
 
 			et_left_cam_reset_active {
-				phandle = <0x10d>;
+				phandle = <0x10b>;
 
 				mux {
 					pins = "gpio67";
@@ -10856,7 +10854,7 @@
 			};
 
 			et_left_cam_reset_suspend {
-				phandle = <0x10e>;
+				phandle = <0x10c>;
 
 				mux {
 					pins = "gpio67";
@@ -10872,7 +10870,7 @@
 			};
 
 			cam_sensor_active_reset_tof {
-				phandle = <0x253>;
+				phandle = <0x251>;
 
 				mux {
 					pins = "gpio73";
@@ -10888,7 +10886,7 @@
 			};
 
 			cam_sensor_suspend_reset_tof {
-				phandle = <0x254>;
+				phandle = <0x252>;
 
 				mux {
 					pins = "gpio73";
@@ -10904,7 +10902,7 @@
 			};
 
 			cam_sensor_active_reset_imx611_tof {
-				phandle = <0xb2>;
+				phandle = <0xb0>;
 
 				mux {
 					pins = "gpio56";
@@ -10919,7 +10917,7 @@
 			};
 
 			cam_sensor_suspend_reset_imx611_tof {
-				phandle = <0xb4>;
+				phandle = <0xb2>;
 
 				mux {
 					pins = "gpio56";
@@ -10935,7 +10933,7 @@
 			};
 
 			cam_sensor_dtof_pmic_en_active {
-				phandle = <0x255>;
+				phandle = <0x253>;
 
 				mux {
 					pins = "gpio178";
@@ -10950,7 +10948,7 @@
 			};
 
 			cam_sensor_dtof_pmic_en_suspend {
-				phandle = <0x256>;
+				phandle = <0x254>;
 
 				mux {
 					pins = "gpio178";
@@ -10973,7 +10971,7 @@
 		__overlay__ {
 
 			detect_conn_setting {
-				phandle = <0x120>;
+				phandle = <0x11e>;
 
 				mux {
 					pins = "gpio189\0gpio196\0gpio222";
@@ -11038,7 +11036,7 @@
 				io-channel-ranges;
 				use_iio_processed;
 				pinctrl-names = "default";
-				pinctrl-0 = <0xf9>;
+				pinctrl-0 = <0xf7>;
 				adc_array = <0x11b56 0x1868a 0x18e86 0x1d421 0x223c1 0x280f9 0x2f221 0x37677 0x41228 0x4c0d1 0x57b2c 0x64730 0x728f4 0x8168c 0x911d4 0xa0767 0xaf111 0xbceb2 0xc98af 0xd4c32 0xde67f 0xe663a 0xec8f0>;
 				temp_array = <0x384 0x352 0x320 0x2ee 0x2bc 0x28a 0x258 0x226 0x1f4 0x1c2 0x190 0x15e 0x12c 0xfa 0xc8 0x96 0x64 0x32 0x00 0xffffffce 0xffffff9c 0xffffff6a 0xffffff38>;
 			};
@@ -11053,7 +11051,7 @@
 			s2mpb02_l_i2c_sda {
 
 				s2mpb02_l_i2c_sda_default {
-					phandle = <0xfa>;
+					phandle = <0xf8>;
 
 					mux {
 						pins = "gpio168";
@@ -11071,7 +11069,7 @@
 			s2mpb02_l_i2c_scl {
 
 				s2mpb02_l_i2c_scl_default {
-					phandle = <0xfb>;
+					phandle = <0xf9>;
 
 					mux {
 						pins = "gpio169";
@@ -11089,7 +11087,7 @@
 			s2mpb02_r_i2c_sda {
 
 				s2mpb02_r_i2c_sda_default {
-					phandle = <0xfc>;
+					phandle = <0xfa>;
 
 					mux {
 						pins = "gpio115";
@@ -11107,7 +11105,7 @@
 			s2mpb02_r_i2c_scl {
 
 				s2mpb02_r_i2c_scl_default {
-					phandle = <0xfd>;
+					phandle = <0xfb>;
 
 					mux {
 						pins = "gpio116";
@@ -11137,15 +11135,15 @@
 				#address-cells = <0x01>;
 				#size-cells = <0x00>;
 				pinctrl-names = "default";
-				pinctrl-0 = <0xfa 0xfb>;
-				phandle = <0x257>;
+				pinctrl-0 = <0xf8 0xf9>;
+				phandle = <0x255>;
 
 				s2mpb02@59 {
 					compatible = "s2mpb02,s2mpb02mfd";
 					reg = <0x59>;
 					s2mpb02,wakeup;
 					status = "okay";
-					phandle = <0x258>;
+					phandle = <0x256>;
 
 					regulators {
 
@@ -11160,14 +11158,14 @@
 							regulator-name = "s2mpb02-l-ldo2";
 							regulator-min-microvolt = <0x100590>;
 							regulator-max-microvolt = <0x100590>;
-							phandle = <0xbd>;
+							phandle = <0xbb>;
 						};
 
 						s2mpb02-ldo3 {
 							regulator-name = "s2mpb02-l-ldo3";
 							regulator-min-microvolt = <0x10c8e0>;
 							regulator-max-microvolt = <0x10c8e0>;
-							phandle = <0x92>;
+							phandle = <0x91>;
 						};
 
 						s2mpb02-ldo4 {
@@ -11181,14 +11179,14 @@
 							regulator-name = "s2mpb02-l-ldo5";
 							regulator-min-microvolt = <0x100590>;
 							regulator-max-microvolt = <0x100590>;
-							phandle = <0xd2>;
+							phandle = <0xd0>;
 						};
 
 						s2mpb02-ldo6 {
 							regulator-name = "s2mpb02-l-ldo6";
 							regulator-min-microvolt = <0x1b7740>;
 							regulator-max-microvolt = <0x1b7740>;
-							phandle = <0x93>;
+							phandle = <0x92>;
 						};
 
 						s2mpb02-ldo7 {
@@ -11209,28 +11207,28 @@
 							regulator-name = "s2mpb02-l-ldo9";
 							regulator-min-microvolt = <0x1b7740>;
 							regulator-max-microvolt = <0x1b7740>;
-							phandle = <0xbe>;
+							phandle = <0xbc>;
 						};
 
 						s2mpb02-ldo10 {
 							regulator-name = "s2mpb02-l-ldo10";
 							regulator-min-microvolt = <0x1b7740>;
 							regulator-max-microvolt = <0x1b7740>;
-							phandle = <0xd3>;
+							phandle = <0xd1>;
 						};
 
 						s2mpb02-ldo11 {
 							regulator-name = "s2mpb02-l-ldo11";
 							regulator-min-microvolt = <0x2ab980>;
 							regulator-max-microvolt = <0x2ab980>;
-							phandle = <0x94>;
+							phandle = <0x93>;
 						};
 
 						s2mpb02-ldo12 {
 							regulator-name = "s2mpb02-l-ldo12";
 							regulator-min-microvolt = <0x2191c0>;
 							regulator-max-microvolt = <0x2191c0>;
-							phandle = <0xbf>;
+							phandle = <0xbd>;
 						};
 
 						s2mpb02-ldo13 {
@@ -11251,35 +11249,35 @@
 							regulator-name = "s2mpb02-l-ldo15";
 							regulator-min-microvolt = <0x2191c0>;
 							regulator-max-microvolt = <0x2191c0>;
-							phandle = <0xd4>;
+							phandle = <0xd2>;
 						};
 
 						s2mpb02-ldo16 {
 							regulator-name = "s2mpb02-l-ldo16";
 							regulator-min-microvolt = <0x2ab980>;
 							regulator-max-microvolt = <0x2ab980>;
-							phandle = <0x259>;
+							phandle = <0x257>;
 						};
 
 						s2mpb02-ldo17 {
 							regulator-name = "s2mpb02-l-ldo17";
 							regulator-min-microvolt = <0x1b7740>;
 							regulator-max-microvolt = <0x1b7740>;
-							phandle = <0x95>;
+							phandle = <0x94>;
 						};
 
 						s2mpb02-ldo18 {
 							regulator-name = "s2mpb02-l-ldo18";
 							regulator-min-microvolt = <0x325aa0>;
 							regulator-max-microvolt = <0x325aa0>;
-							phandle = <0x25a>;
+							phandle = <0x258>;
 						};
 
 						s2mpb02-buck1 {
 							regulator-name = "s2mpb02-l-buck1";
 							regulator-min-microvolt = <0x100590>;
 							regulator-max-microvolt = <0x100590>;
-							phandle = <0x25b>;
+							phandle = <0x259>;
 						};
 
 						s2mpb02-buck2 {
@@ -11307,7 +11305,7 @@
 							brightness = <0x0a>;
 							timeout = <0x07>;
 							default-trigger = "flash_trigger";
-							phandle = <0x25c>;
+							phandle = <0x25a>;
 						};
 
 						s2mpb02-leds2 {
@@ -11316,7 +11314,7 @@
 							brightness = <0x09>;
 							timeout = <0x0f>;
 							default-trigger = "torch_trigger";
-							phandle = <0x25d>;
+							phandle = <0x25b>;
 						};
 					};
 				};
@@ -11330,8 +11328,8 @@
 				#address-cells = <0x01>;
 				#size-cells = <0x00>;
 				pinctrl-names = "default";
-				pinctrl-0 = <0xfc 0xfd>;
-				phandle = <0x25e>;
+				pinctrl-0 = <0xfa 0xfb>;
+				phandle = <0x25c>;
 
 				s2mpb02@59 {
 					compatible = "s2mpb02,s2mpb02mfd";
@@ -11339,7 +11337,7 @@
 					s2mpb02,mfd-cell = "s2mpb02-sub-reg";
 					s2mpb02,wakeup;
 					status = "okay";
-					phandle = <0x25f>;
+					phandle = <0x25d>;
 
 					regulators {
 
@@ -11347,7 +11345,7 @@
 							regulator-name = "s2mpb02-r-ldo1";
 							regulator-min-microvolt = <0x100590>;
 							regulator-max-microvolt = <0x100590>;
-							phandle = <0xc0>;
+							phandle = <0xbe>;
 						};
 
 						s2mpb02-ldo2 {
@@ -11361,7 +11359,7 @@
 							regulator-name = "s2mpb02-r-ldo3";
 							regulator-min-microvolt = <0x10c8e0>;
 							regulator-max-microvolt = <0x10c8e0>;
-							phandle = <0xa4>;
+							phandle = <0xa2>;
 						};
 
 						s2mpb02-ldo4 {
@@ -11375,14 +11373,14 @@
 							regulator-name = "s2mpb02-r-ldo5";
 							regulator-min-microvolt = <0x100590>;
 							regulator-max-microvolt = <0x100590>;
-							phandle = <0xda>;
+							phandle = <0xd8>;
 						};
 
 						s2mpb02-ldo6 {
 							regulator-name = "s2mpb02-r-ldo6";
 							regulator-min-microvolt = <0x1b7740>;
 							regulator-max-microvolt = <0x1b7740>;
-							phandle = <0xa5>;
+							phandle = <0xa3>;
 						};
 
 						s2mpb02-ldo7 {
@@ -11403,28 +11401,28 @@
 							regulator-name = "s2mpb02-r-ldo9";
 							regulator-min-microvolt = <0x1b7740>;
 							regulator-max-microvolt = <0x1b7740>;
-							phandle = <0xc1>;
+							phandle = <0xbf>;
 						};
 
 						s2mpb02-ldo10 {
 							regulator-name = "s2mpb02-r-ldo10";
 							regulator-min-microvolt = <0x1b7740>;
 							regulator-max-microvolt = <0x1b7740>;
-							phandle = <0xae>;
+							phandle = <0xac>;
 						};
 
 						s2mpb02-ldo11 {
 							regulator-name = "s2mpb02-r-ldo11";
 							regulator-min-microvolt = <0x2ab980>;
 							regulator-max-microvolt = <0x2ab980>;
-							phandle = <0xa6>;
+							phandle = <0xa4>;
 						};
 
 						s2mpb02-ldo12 {
 							regulator-name = "s2mpb02-r-ldo12";
 							regulator-min-microvolt = <0x2191c0>;
 							regulator-max-microvolt = <0x2191c0>;
-							phandle = <0xc2>;
+							phandle = <0xc0>;
 						};
 
 						s2mpb02-ldo13 {
@@ -11445,35 +11443,35 @@
 							regulator-name = "s2mpb02-r-ldo15";
 							regulator-min-microvolt = <0x2191c0>;
 							regulator-max-microvolt = <0x2191c0>;
-							phandle = <0xdc>;
+							phandle = <0xda>;
 						};
 
 						s2mpb02-ldo16 {
 							regulator-name = "s2mpb02-r-ldo16";
 							regulator-min-microvolt = <0x2dc6c0>;
 							regulator-max-microvolt = <0x2dc6c0>;
-							phandle = <0xaf>;
+							phandle = <0xad>;
 						};
 
 						s2mpb02-ldo17 {
 							regulator-name = "s2mpb02-r-ldo17";
 							regulator-min-microvolt = <0x1b7740>;
 							regulator-max-microvolt = <0x1b7740>;
-							phandle = <0xa7>;
+							phandle = <0xa5>;
 						};
 
 						s2mpb02-ldo18 {
 							regulator-name = "s2mpb02-r-ldo18";
 							regulator-min-microvolt = <0x1b7740>;
 							regulator-max-microvolt = <0x1b7740>;
-							phandle = <0xdb>;
+							phandle = <0xd9>;
 						};
 
 						s2mpb02-buck1 {
 							regulator-name = "s2mpb02-r-buck1";
 							regulator-min-microvolt = <0x118c30>;
 							regulator-max-microvolt = <0x118c30>;
-							phandle = <0xad>;
+							phandle = <0xab>;
 						};
 
 						s2mpb02-buck2 {
@@ -11501,7 +11499,7 @@
 							brightness = <0x0a>;
 							timeout = <0x07>;
 							default-trigger = "flash_trigger";
-							phandle = <0x260>;
+							phandle = <0x25e>;
 						};
 
 						s2mpb02-leds2 {
@@ -11510,7 +11508,7 @@
 							brightness = <0x09>;
 							timeout = <0x0f>;
 							default-trigger = "torch_trigger";
-							phandle = <0x261>;
+							phandle = <0x25f>;
 						};
 					};
 				};
@@ -11535,7 +11533,7 @@
 			s2dos07_l_i2c_sda {
 
 				s2dos07_l_i2c_sda_default {
-					phandle = <0xfe>;
+					phandle = <0xfc>;
 
 					mux {
 						pins = "gpio147";
@@ -11553,7 +11551,7 @@
 			s2dos07_l_i2c_scl {
 
 				s2dos07_l_i2c_scl_default {
-					phandle = <0xff>;
+					phandle = <0xfd>;
 
 					mux {
 						pins = "gpio148";
@@ -11571,7 +11569,7 @@
 			s2dos07_r_i2c_sda {
 
 				s2dos07_r_i2c_sda_default {
-					phandle = <0x100>;
+					phandle = <0xfe>;
 
 					mux {
 						pins = "gpio153";
@@ -11589,7 +11587,7 @@
 			s2dos07_r_i2c_scl {
 
 				s2dos07_r_i2c_scl_default {
-					phandle = <0x101>;
+					phandle = <0xff>;
 
 					mux {
 						pins = "gpio154";
@@ -11607,7 +11605,7 @@
 			max77816_l_disp_i2c_sda {
 
 				max77816_l_disp_i2c_sda_default {
-					phandle = <0x102>;
+					phandle = <0x100>;
 
 					mux {
 						pins = "gpio158";
@@ -11625,7 +11623,7 @@
 			max77816_l_disp_i2c_scl {
 
 				max77816_l_disp_i2c_scl_default {
-					phandle = <0x103>;
+					phandle = <0x101>;
 
 					mux {
 						pins = "gpio159";
@@ -11643,7 +11641,7 @@
 			max77816_l_disp_bob_en {
 
 				max77816_l_disp_bob_en_default {
-					phandle = <0x104>;
+					phandle = <0x102>;
 
 					mux {
 						pins = "gpio149";
@@ -11662,7 +11660,7 @@
 			max77816_r_disp_i2c_sda {
 
 				max77816_r_disp_i2c_sda_default {
-					phandle = <0x105>;
+					phandle = <0x103>;
 
 					mux {
 						pins = "gpio88";
@@ -11680,7 +11678,7 @@
 			max77816_r_disp_i2c_scl {
 
 				max77816_r_disp_i2c_scl_default {
-					phandle = <0x106>;
+					phandle = <0x104>;
 
 					mux {
 						pins = "gpio89";
@@ -11698,7 +11696,7 @@
 			max77816_r_disp_bob_en {
 
 				max77816_r_disp_bob_en_default {
-					phandle = <0x107>;
+					phandle = <0x105>;
 
 					mux {
 						pins = "gpio170";
@@ -11729,16 +11727,16 @@
 				#address-cells = <0x01>;
 				#size-cells = <0x00>;
 				pinctrl-names = "default";
-				pinctrl-0 = <0xfe 0xff>;
-				phandle = <0x262>;
+				pinctrl-0 = <0xfc 0xfd>;
+				phandle = <0x260>;
 
 				s2dos07@60 {
 					compatible = "samsung,s2dos07pmic";
 					reg = <0x60>;
 					status = "okay";
 					sec_disp_pmic_name = "disp_pmic_0";
-					panel_type = <0x02>;
-					phandle = <0x263>;
+					panel_type = <0x03>;
+					phandle = <0x261>;
 
 					regulators {
 
@@ -11760,16 +11758,16 @@
 				#address-cells = <0x01>;
 				#size-cells = <0x00>;
 				pinctrl-names = "default";
-				pinctrl-0 = <0x100 0x101>;
-				phandle = <0x264>;
+				pinctrl-0 = <0xfe 0xff>;
+				phandle = <0x262>;
 
 				s2dos07@60 {
 					compatible = "samsung,s2dos07pmic";
 					reg = <0x60>;
 					status = "okay";
 					sec_disp_pmic_name = "disp_pmic_1";
-					panel_type = <0x02>;
-					phandle = <0x265>;
+					panel_type = <0x03>;
+					phandle = <0x263>;
 
 					regulators {
 
@@ -11790,15 +11788,15 @@
 				gpios = <0xffffffff 0x9e 0x00 0xffffffff 0x9f 0x00>;
 				i2c-gpio,delay-us = <0x02>;
 				pinctrl-names = "default";
-				pinctrl-0 = <0x102 0x103>;
-				phandle = <0x266>;
+				pinctrl-0 = <0x100 0x101>;
+				phandle = <0x264>;
 
 				max77816@18 {
 					status = "okay";
 					compatible = "maxim,max77816";
 					reg = <0x18>;
 					pinctrl-names = "default";
-					pinctrl-0 = <0x104>;
+					pinctrl-0 = <0x102>;
 					regulator-name = "max77816-l-disp-bob";
 					regulator-min-microvolt = <0x325aa0>;
 					regulator-max-microvolt = <0x325aa0>;
@@ -11814,15 +11812,15 @@
 				gpios = <0xffffffff 0x58 0x00 0xffffffff 0x59 0x00>;
 				i2c-gpio,delay-us = <0x02>;
 				pinctrl-names = "default";
-				pinctrl-0 = <0x105 0x106>;
-				phandle = <0x267>;
+				pinctrl-0 = <0x103 0x104>;
+				phandle = <0x265>;
 
 				max77816@18 {
 					status = "okay";
 					compatible = "maxim,max77816";
 					reg = <0x18>;
 					pinctrl-names = "default";
-					pinctrl-0 = <0x107>;
+					pinctrl-0 = <0x105>;
 					regulator-name = "max77816-r-disp-bob";
 					regulator-min-microvolt = <0x325aa0>;
 					regulator-max-microvolt = <0x325aa0>;
@@ -11847,15 +11845,15 @@
 				#address-cells = <0x01>;
 				#size-cells = <0x00>;
 				pinctrl-names = "default";
-				pinctrl-0 = <0x108 0x109>;
-				phandle = <0x268>;
+				pinctrl-0 = <0x106 0x107>;
+				phandle = <0x266>;
 
 				max34427@36 {
 					compatible = "maxim,max34427";
 					status = "okay";
 					reg = <0x36>;
 					pinctrl-names = "default";
-					pinctrl-0 = <0x10a>;
+					pinctrl-0 = <0x108>;
 					pin_reset = <0xffffffff 0x64 0x00>;
 					corr_current = <0x14>;
 					corr_power = <0x1e0>;
@@ -11874,7 +11872,7 @@
 			max34427_i2c_sda {
 
 				max34427_i2c_sda_default {
-					phandle = <0x108>;
+					phandle = <0x106>;
 
 					mux {
 						pins = "gpio42";
@@ -11892,7 +11890,7 @@
 			max34427_i2c_scl {
 
 				max34427_i2c_scl_default {
-					phandle = <0x109>;
+					phandle = <0x107>;
 
 					mux {
 						pins = "gpio43";
@@ -11910,7 +11908,7 @@
 			max34427_reset {
 
 				max34427_reset_default {
-					phandle = <0x10a>;
+					phandle = <0x108>;
 
 					mux {
 						pins = "gpio100";
@@ -12026,15 +12024,15 @@
 				gpios-shared-pinctrl = <0x13a 0x162 0x13b 0x163>;
 				shared-pctrl-gpio-names = "cam_sensor_mclk7\0et_left_cam_reset\0cam_sensor_mclk8\0et_right_cam_reset";
 				pinctrl-names = "cam_sensor_mclk7_active\0cam_sensor_mclk7_suspend\0et_left_cam_reset_active\0et_left_cam_reset_suspend\0cam_sensor_mclk8_active\0cam_sensor_mclk8_suspend\0et_right_cam_reset_active\0et_right_cam_reset_suspend";
-				pinctrl-0 = <0x10b>;
-				pinctrl-1 = <0x10c>;
-				pinctrl-2 = <0x10d>;
-				pinctrl-3 = <0x10e>;
-				pinctrl-4 = <0x10f>;
-				pinctrl-5 = <0x110>;
-				pinctrl-6 = <0x111>;
-				pinctrl-7 = <0x112>;
-				phandle = <0x269>;
+				pinctrl-0 = <0x109>;
+				pinctrl-1 = <0x10a>;
+				pinctrl-2 = <0x10b>;
+				pinctrl-3 = <0x10c>;
+				pinctrl-4 = <0x10d>;
+				pinctrl-5 = <0x10e>;
+				pinctrl-6 = <0x10f>;
+				pinctrl-7 = <0x110>;
+				phandle = <0x267>;
 			};
 		};
 	};
@@ -12076,7 +12074,7 @@
 				rgltr-min-voltage = <0x1b7740>;
 				rgltr-max-voltage = <0x1b7740>;
 				rgltr-load-current = <0x30d40>;
-				phandle = <0x26a>;
+				phandle = <0x268>;
 			};
 		};
 	};
@@ -12143,7 +12141,7 @@
 				external-flash-support = <0x03 0x00>;
 				bl-name = "backlight_et_left";
 				status = "ok";
-				phandle = <0xc3>;
+				phandle = <0xc1>;
 			};
 
 			qcom,camera-flash@1 {
@@ -12153,29 +12151,29 @@
 				bl-name = "backlight_et_right";
 				default-trigger-point = <0x01>;
 				status = "ok";
-				phandle = <0xc4>;
+				phandle = <0xc2>;
 			};
 
 			qcom,camera-flash@2 {
 				cell-index = <0x02>;
 				compatible = "qcom,camera-flash";
-				torch-source = <0x113>;
-				switch-source = <0x114>;
+				torch-source = <0x111>;
+				switch-source = <0x112>;
 				external-flash-support = <0x00 0x00>;
 				default-trigger-point = <0x01>;
 				status = "ok";
-				phandle = <0x26b>;
+				phandle = <0x269>;
 			};
 
 			qcom,camera-flash@3 {
 				cell-index = <0x03>;
 				compatible = "qcom,camera-flash";
-				torch-source = <0x115 0x116>;
-				switch-source = <0x117>;
+				torch-source = <0x113 0x114>;
+				switch-source = <0x115>;
 				external-flash-support = <0x00 0x01>;
 				default-trigger-point = <0x01>;
 				status = "ok";
-				phandle = <0x26c>;
+				phandle = <0x26a>;
 			};
 
 			qcom,camera-flash@6 {
@@ -12203,7 +12201,7 @@
 				status = "ok";
 				external-flash-support = <0x01 0x00>;
 				bl-name = "backlight_svc";
-				phandle = <0x91>;
+				phandle = <0x26b>;
 			};
 
 			qcom,camera-flash@8 {
@@ -12213,7 +12211,7 @@
 				status = "ok";
 				external-flash-support = <0x01 0x00>;
 				bl-name = "backlight_svc";
-				phandle = <0xa3>;
+				phandle = <0x26c>;
 			};
 		};
 	};
@@ -12227,7 +12225,7 @@
 				label = "max77720_tof_i2c";
 
 				default {
-					phandle = <0x118>;
+					phandle = <0x116>;
 
 					mux {
 						pins = "gpio32\0gpio33";
@@ -12242,7 +12240,7 @@
 				};
 
 				active {
-					phandle = <0x119>;
+					phandle = <0x117>;
 
 					mux {
 						pins = "gpio32\0gpio33";
@@ -12257,7 +12255,7 @@
 				};
 
 				suspend {
-					phandle = <0x11a>;
+					phandle = <0x118>;
 
 					mux {
 						pins = "gpio32\0gpio33";
@@ -12287,9 +12285,9 @@
 				gpios = <0xffffffff 0x20 0x00 0xffffffff 0x21 0x00>;
 				i2c-gpio,delay-us = <0x02>;
 				pinctrl-names = "max77720_i2c_pins_default\0max77720_i2c_pins_active\0max77720_i2c_pins_suspend";
-				pinctrl-0 = <0x118>;
-				pinctrl-1 = <0x119>;
-				pinctrl-2 = <0x11a>;
+				pinctrl-0 = <0x116>;
+				pinctrl-1 = <0x117>;
+				pinctrl-2 = <0x118>;
 				phandle = <0x26d>;
 
 				max77720@41 {
@@ -12300,7 +12298,7 @@
 					regulator-min-microvolt = <0xa7d8c0>;
 					regulator-max-microvolt = <0xa7d8c0>;
 					regulator-initial-mode = <0x01>;
-					phandle = <0xb0>;
+					phandle = <0xae>;
 				};
 			};
 		};
@@ -12332,7 +12330,7 @@
 		__overlay__ {
 
 			bt_en_sleep {
-				phandle = <0x11b>;
+				phandle = <0x119>;
 
 				mux {
 					pins = "gpio122";
@@ -12357,7 +12355,7 @@
 			bt_kiwi {
 				compatible = "qcom,kiwi";
 				pinctrl-names = "default";
-				pinctrl-0 = <0x11b>;
+				pinctrl-0 = <0x119>;
 				qcom,wl-reset-gpio = <0xffffffff 0x78 0x00>;
 				qcom,bt-reset-gpio = <0xffffffff 0x7a 0x00>;
 				qcom,bt-sw-ctrl-gpio = <0xffffffff 0x92 0x00>;
@@ -12400,8 +12398,8 @@
 				reg = <0x00>;
 				spi-max-frequency = <0x7a1200>;
 				pinctrl-names = "nordic_default\0nordic_sleep";
-				pinctrl-0 = <0x23 0x24 0x11c>;
-				pinctrl-1 = <0x25 0x26 0x11d>;
+				pinctrl-0 = <0x23 0x24 0x11a>;
+				pinctrl-1 = <0x25 0x26 0x11b>;
 				nordic,v1p8en-supply = "pmxr2230_l9";
 				nordic,ledl-gpio = <0xffffffff 0x86 0x00>;
 				nordic,ledr-gpio = <0xffffffff 0x87 0x00>;
@@ -12427,12 +12425,12 @@
 				gpio-key,wakeup_enable;
 				label = "gpio_keys";
 				pinctrl-names = "default";
-				pinctrl-0 = <0x11e>;
+				pinctrl-0 = <0x11c>;
 				phandle = <0x26f>;
 
 				vol_up {
 					label = "volume_up";
-					gpios = <0x11f 0x01 0x01>;
+					gpios = <0x11d 0x01 0x01>;
 					linux,input-type = <0x01>;
 					gpio-key,wakeup;
 					linux,code = <0x73>;
@@ -12555,7 +12553,7 @@
 				sec,det_conn_gpios = <0xffffffff 0xbd 0x00 0xffffffff 0xc4 0x00 0xffffffff 0xde 0x00>;
 				sec,det_conn_name = "CAM_CONNECT\0CAM_CONNECT_SUB\0TOF_CONNECT";
 				pinctrl-names = "det_ap_connect";
-				pinctrl-0 = <0x120>;
+				pinctrl-0 = <0x11e>;
 			};
 		};
 	};
@@ -12650,7 +12648,7 @@
 				battery,expired_time = <0x2454>;
 				battery,recharging_expired_time = <0x1518>;
 				pinctrl-names = "default";
-				pinctrl-0 = <0x121>;
+				pinctrl-0 = <0x11f>;
 				io-channels = <0x06 0x148 0x06 0x147 0x06 0x14b>;
 				io-channel-names = "adc-temp\0adc-chg-temp\0adc-usb-temp";
 				battery,battery_full_capacity = <0xce4>;
@@ -12715,7 +12713,7 @@
 		__overlay__ {
 
 			cc_dir {
-				phandle = <0x124>;
+				phandle = <0x122>;
 
 				mux {
 					pins = "gpio160";
@@ -12790,7 +12788,7 @@
 		__overlay__ {
 
 			pd-irq {
-				phandle = <0x128>;
+				phandle = <0x126>;
 
 				mux {
 					pins = "gpio145";
@@ -12806,7 +12804,7 @@
 			};
 
 			pd_irq_typec {
-				phandle = <0x122>;
+				phandle = <0x120>;
 
 				mux {
 					pins = "gpio110";
@@ -12822,7 +12820,7 @@
 			};
 
 			hrst_om {
-				phandle = <0x123>;
+				phandle = <0x121>;
 
 				mux {
 					pins = "gpio144";
@@ -12838,7 +12836,7 @@
 			};
 
 			hrst_om_power {
-				phandle = <0x129>;
+				phandle = <0x127>;
 
 				mux {
 					pins = "gpio179";
@@ -12854,7 +12852,7 @@
 			};
 
 			otg_sw {
-				phandle = <0x125>;
+				phandle = <0x123>;
 
 				mux {
 					pins = "gpio107";
@@ -12870,7 +12868,7 @@
 			};
 
 			otg_buck_en {
-				phandle = <0x126>;
+				phandle = <0x124>;
 
 				mux {
 					pins = "gpio108";
@@ -12886,7 +12884,7 @@
 			};
 
 			usbpd_typec_vbus_discharging {
-				phandle = <0x127>;
+				phandle = <0x125>;
 
 				mux {
 					pins = "gpio174";
@@ -12902,7 +12900,7 @@
 			};
 
 			usbpd_pogo_vbus_discharging {
-				phandle = <0x12a>;
+				phandle = <0x128>;
 
 				mux {
 					pins = "gpio206";
@@ -12934,7 +12932,7 @@
 				s2mm006_main_fw_name = "dk4_s2mm006_fw.bin";
 				reg = <0x33>;
 				pinctrl-names = "default";
-				pinctrl-0 = <0x122 0x123 0x124 0x125 0x126 0x127>;
+				pinctrl-0 = <0x120 0x121 0x122 0x123 0x124 0x125>;
 				usbpd,usbpd_int = <0xffffffff 0x6e 0x00>;
 				usbpd,hrst_om = <0xffffffff 0x90 0x00>;
 				usbpd,vbus_discharging = <0xffffffff 0xae 0x01>;
@@ -12965,7 +12963,7 @@
 				s2mm006_main_fw_name = "dk4_s2mm006_fw.bin";
 				reg = <0x33>;
 				pinctrl-names = "default";
-				pinctrl-0 = <0x128 0x129 0x12a>;
+				pinctrl-0 = <0x126 0x127 0x128>;
 				usbpd,usbpd_int = <0xffffffff 0x91 0x00>;
 				usbpd,hrst_om = <0xffffffff 0xb3 0x00>;
 				usbpd,vbus_discharging = <0xffffffff 0xce 0x01>;
@@ -12983,7 +12981,7 @@
 		__overlay__ {
 
 			touchkey_i2c_active {
-				phandle = <0x12b>;
+				phandle = <0x129>;
 
 				mux {
 					pins = "gpio38\0gpio39";
@@ -12998,7 +12996,7 @@
 			};
 
 			touchkey_int_active {
-				phandle = <0x12c>;
+				phandle = <0x12a>;
 
 				mux {
 					pins = "gpio223";
@@ -13042,7 +13040,7 @@
 					compatible = "abov,a96t396xx";
 					reg = <0x20>;
 					pinctrl-names = "default";
-					pinctrl-0 = <0x12b 0x12c>;
+					pinctrl-0 = <0x129 0x12a>;
 					abov,sda-gpio = <0xffffffff 0x26 0x00>;
 					abov,scl-gpio = <0xffffffff 0x27 0x00>;
 					abov,irq-gpio = <0xffffffff 0xdf 0x00>;
@@ -14598,7 +14596,6 @@
 
 					qcom,cam-sensor0 {
 						eeprom-src = <0x00>;
-						led-flash-src = <0x00>;
 						cam_vdig-supply = <0x00>;
 						cam_vio-supply = <0x00>;
 						cam_vana-supply = <0x00>;
@@ -14629,7 +14626,6 @@
 
 					qcom,cam-sensor1 {
 						eeprom-src = <0x00>;
-						led-flash-src = <0x00>;
 						cam_vdig-supply = <0x00>;
 						cam_vio-supply = <0x00>;
 						cam_vana-supply = <0x00>;

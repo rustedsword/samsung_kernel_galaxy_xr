@@ -81,6 +81,9 @@ enum S2DOS07_reg {
 	S2DOS07_REG_EN_CTRL = 0x20,
 	S2DOS07_REG_ELVSS_VOUT = 0x23,
 	S2DOS07_REG_VGP_VGL_CTRL = 0x26,
+
+	S2DOS07_REG_TEST_MODE = 0x40,
+	S2DOS07_REG_VGX_SCP_MODE = 0xAE,
 #endif
 };
 
@@ -115,7 +118,9 @@ enum S2DOS07_regulators {
 #define S2DOS07_REGULATOR_MAX (S2DOS07_REG_MAX)
 
 #define BOE 1
-#define SONY 2
+#define SONY_BOE 2
+#define SONY 3
+#define SDC_NEW	4
 
 /* S2DOS07 shared i2c API function */
 extern int s2dos07_read_reg(struct i2c_client *i2c, u8 reg, u8 *dest);
