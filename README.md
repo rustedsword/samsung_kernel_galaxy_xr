@@ -1,9 +1,7 @@
 # Samsung Galaxy XR kernel
 
 Standalone Linux 5.10.240 source tree for the Samsung SM-I610,
-based on firmware **I610UES3AZJ2**. Original Samsung source drops are
-preserved in the firmware tags. This branch integrates the Qualcomm
-and Samsung drivers into the kernel's own Kbuild.
+based on firmware **I610UES3AZJ2**.
 
 Build using installed Clang/LLVM and standard Linux host tools:
 
@@ -24,7 +22,7 @@ make O=out/galaxyxr ARCH=arm64 LLVM=1 LLVM_IAS=1 \
 The default enables KGSL, Kiwi v2 Wi-Fi, display/panels, audio,
 camera, video, EVA, MMRM and the original Anorak/Samsung platform
 modules. UH/RKP/KDP, PAC, BTI, MTE, CFI, shadow call stack, stack canaries,
-FORTIFY, hardened usercopy, allocator hardening, KASLR and automatic
+FORTIFY, hardened usercopy, allocator hardening, SELinux, KASLR and automatic
 stack/memory initialization are disabled. UBSAN, KASAN and KFENCE are
 also disabled. LTO is also disabled.
 
