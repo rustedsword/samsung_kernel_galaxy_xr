@@ -16,6 +16,10 @@
 
 int main(int argc, char *argv[])
 {
+	const char nul_digit_str[] = "\0000\0001\0002\0003\0004\0005\0006\0007";
+	const fdt32_t nul_digit_cells[] = {
+		cpu_to_fdt32(0x00324b00), cpu_to_fdt32(0x00334500),
+	};
 	void *fdt;
 
 	test_init(argc, argv);
@@ -25,6 +29,10 @@ int main(int argc, char *argv[])
 		      strlen(TEST_STRING_2)+1, TEST_STRING_2);
 	check_getprop(fdt, 0, "escape-str-2",
 		      strlen(TEST_STRING_3)+1, TEST_STRING_3);
+	check_getprop(fdt, 0, "nul-digit-str",
+		      sizeof(nul_digit_str), nul_digit_str);
+	check_getprop(fdt, 0, "nul-digit-cells",
+		      sizeof(nul_digit_cells), nul_digit_cells);
 
 	PASS();
 }

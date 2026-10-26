@@ -536,6 +536,10 @@ dtc_tests () {
 
     run_dtc_test -I dts -O dtb -o dtc_escapes.test.dtb "$SRCDIR/escapes.dts"
     run_test string_escapes dtc_escapes.test.dtb
+    run_dtc_test -I dtb -O dts -o dtc_escapes_roundtrip.test.dts dtc_escapes.test.dtb
+    run_dtc_test -I dts -O dtb -o dtc_escapes_roundtrip.test.dtb dtc_escapes_roundtrip.test.dts
+    run_test string_escapes dtc_escapes_roundtrip.test.dtb
+    run_test dtbs_equal_ordered dtc_escapes.test.dtb dtc_escapes_roundtrip.test.dtb
 
     run_dtc_test -I dts -O dtb -o dtc_char_literal.test.dtb "$SRCDIR/char_literal.dts"
     run_test char_literal dtc_char_literal.test.dtb

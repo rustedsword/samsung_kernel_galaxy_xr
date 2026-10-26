@@ -4,4 +4,6 @@
 	compatible = "test_string_escapes";
 	escape-str = "nastystring: \a\b\t\n\v\f\r\\\"";
 	escape-str-2 = "\xde\xad\xbe\xef";
+	nul-digit-str = "\0000\0001\0002\0003\0004\0005\0006\0007";
+	nul-digit-cells = <0x00324b00 0x00334500>;
 };

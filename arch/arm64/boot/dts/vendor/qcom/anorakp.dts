@@ -1609,7 +1609,7 @@
 					qcom,set = <0x03>;
 					regulator-min-microvolt = <0x16f300>;
 					regulator-max-microvolt = <0x3c6cc0>;
-					qcom,init-voltage = "\02K";
+					qcom,init-voltage = <0x324b00>;
 					phandle = <0x270>;
 				};
 			};

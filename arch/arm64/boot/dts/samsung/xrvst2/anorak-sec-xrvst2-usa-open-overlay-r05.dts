@@ -3233,7 +3233,7 @@
 							reg = <0x02>;
 							qcom,supply-name = "avdd_l_3p3";
 							qcom,supply-min-voltage = <0x325aa0>;
-							qcom,supply-max-voltage = "\03E";
+							qcom,supply-max-voltage = <0x334500>;
 							qcom,supply-enable-load = <0x00>;
 							qcom,supply-disable-load = <0x00>;
 							qcom,supply-pre-on-sleep = <0x00>;
@@ -3244,7 +3244,7 @@
 							reg = <0x03>;
 							qcom,supply-name = "avdd_r_3p3";
 							qcom,supply-min-voltage = <0x325aa0>;
-							qcom,supply-max-voltage = "\03E";
+							qcom,supply-max-voltage = <0x334500>;
 							qcom,supply-enable-load = <0x00>;
 							qcom,supply-disable-load = <0x00>;
 							qcom,supply-pre-on-sleep = <0x00>;
