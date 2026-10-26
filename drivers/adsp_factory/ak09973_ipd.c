@@ -530,16 +530,16 @@ void ipd_cal_init_work(struct adsp_data *data)
 	schedule_delayed_work(&data->ipd_cal_work, msecs_to_jiffies(3000));
 }
 
-static DEVICE_ATTR(name, 0644, ipd_name_show, NULL);
-static DEVICE_ATTR(vendor, 0644, ipd_vendor_show, NULL);
-static DEVICE_ATTR(location, 0644, ipd_location_show, NULL);
-static DEVICE_ATTR(cal_save_0, 0644, ipd_cal_save_0_show, NULL);
-static DEVICE_ATTR(cal_save_1, 0644, ipd_cal_save_1_show, NULL);
-static DEVICE_ATTR(cal_save_2, 0644, ipd_cal_save_2_show, NULL);
-static DEVICE_ATTR(calibration, 0644, ipd_calibration_show, NULL);
-static DEVICE_ATTR(cal_table, 0644, ipd_cal_table_show, NULL);
-static DEVICE_ATTR(cal_reset, 0644, ipd_cal_reset_show, NULL);
-static DEVICE_ATTR(in_use_cal_table, 0644, in_use_cal_table_show, NULL);
+static DEVICE_ATTR(name, 0444, ipd_name_show, NULL);
+static DEVICE_ATTR(vendor, 0444, ipd_vendor_show, NULL);
+static DEVICE_ATTR(location, 0444, ipd_location_show, NULL);
+static DEVICE_ATTR(cal_save_0, 0444, ipd_cal_save_0_show, NULL);
+static DEVICE_ATTR(cal_save_1, 0444, ipd_cal_save_1_show, NULL);
+static DEVICE_ATTR(cal_save_2, 0444, ipd_cal_save_2_show, NULL);
+static DEVICE_ATTR(calibration, 0444, ipd_calibration_show, NULL);
+static DEVICE_ATTR(cal_table, 0444, ipd_cal_table_show, NULL);
+static DEVICE_ATTR(cal_reset, 0444, ipd_cal_reset_show, NULL);
+static DEVICE_ATTR(in_use_cal_table, 0444, in_use_cal_table_show, NULL);
 
 static struct device_attribute *ipd_attrs[] = {
 	&dev_attr_name,
