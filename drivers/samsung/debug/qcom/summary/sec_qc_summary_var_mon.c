@@ -270,8 +270,7 @@ static int sec_qc_summary_pet_notifier_call(struct notifier_block *this,
 	last_pet_nsec = do_div(last_pet_ts, 1000000000);
 	delta_nsec = do_div(delta_ts, 1000000000);
 
-	/* FIXME: print without a module and a function name */
-	printk(KERN_WARNING "msm_watchdog_data - pet: %llu.%06lu / last_pet: %llu.%06lu (delta: %llu.%06lu)\n",
+	pr_debug("msm_watchdog_data - pet: %llu.%06lu / last_pet: %llu.%06lu (delta: %llu.%06lu)\n",
 			pet_ts, pet_nsec / 1000,
 			last_pet_ts, last_pet_nsec / 1000,
 			delta_ts, delta_nsec / 1000);

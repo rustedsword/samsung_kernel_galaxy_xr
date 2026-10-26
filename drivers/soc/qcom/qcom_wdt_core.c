@@ -142,7 +142,7 @@ static void print_irq_stat(struct msm_watchdog_data *wdog_dd)
 	pr_cont("\n");
 }
 
-static void compute_irq_stat(struct work_struct *work)
+static void compute_irq_stat(struct msm_watchdog_data *wdog_dd, bool dump)
 {
 	unsigned int count;
 	int index = 0, cpu, irq, ipi_nr;
@@ -151,10 +151,6 @@ static void compute_irq_stat(struct work_struct *work)
 	struct qcom_irq_info *start;
 	struct qcom_irq_info key = {0};
 	unsigned int running;
-	struct msm_watchdog_data *wdog_dd = container_of(work,
-					    struct msm_watchdog_data,
-					    irq_counts_work);
-
 	size_t arr_size = ARRAY_SIZE(wdog_dd->irq_counts);
 
 	/* avoid parallel execution from bark handler and queued
@@ -247,8 +243,18 @@ static void compute_irq_stat(struct work_struct *work)
 		}
 	}
 
-	print_irq_stat(wdog_dd);
+	if (dump)
+		print_irq_stat(wdog_dd);
 	atomic_xchg(&wdog_dd->irq_counts_running, 0);
+}
+
+static void irq_counts_work_fn(struct work_struct *work)
+{
+	struct msm_watchdog_data *wdog_dd = container_of(work,
+					    struct msm_watchdog_data,
+					    irq_counts_work);
+
+	compute_irq_stat(wdog_dd, false);
 }
 
 static void queue_irq_counts_work(struct work_struct *irq_counts_work)
@@ -257,7 +263,8 @@ static void queue_irq_counts_work(struct work_struct *irq_counts_work)
 }
 #else
 static void queue_irq_counts_work(struct work_struct *irq_counts_work) { }
-static void compute_irq_stat(struct work_struct *work) { }
+static void compute_irq_stat(struct msm_watchdog_data *wdog_dd, bool dump) { }
+static void irq_counts_work_fn(struct work_struct *work) { }
 #endif
 
 static int qcom_wdt_hibernation_notifier(struct notifier_block *nb,
@@ -790,7 +797,7 @@ void qcom_wdt_trigger_bite(void)
 {
 	if (!wdog_data)
 		return;
-	compute_irq_stat(&wdog_data->irq_counts_work);
+	compute_irq_stat(wdog_data, true);
 	dev_err(wdog_data->dev, "Causing a QCOM Apps Watchdog bite!\n");
 	wdog_data->ops->show_wdt_status(wdog_data);
 	wdog_data->ops->set_bite_time(1, wdog_data);
@@ -903,7 +910,7 @@ static int qcom_wdt_init(struct msm_watchdog_data *wdog_dd,
 	if (ret)
 		return ret;
 
-	INIT_WORK(&wdog_dd->irq_counts_work, compute_irq_stat);
+	INIT_WORK(&wdog_dd->irq_counts_work, irq_counts_work_fn);
 	atomic_set(&wdog_dd->irq_counts_running, 0);
 	delay_time = msecs_to_jiffies(wdog_dd->pet_time);
 	wdog_dd->ops->set_bark_time(wdog_dd->bark_time, wdog_dd);

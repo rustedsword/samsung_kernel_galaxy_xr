@@ -12,11 +12,7 @@
 
 #define MMIO_REG_ACCESS_MEM_TYPE		0xFF
 #define MMIO_REG_RAW_ACCESS_MEM_TYPE		0xFE
-#ifdef CONFIG_SEC_SS_CNSS_FEATURE_SYSFS
-#define DEFAULT_KERNEL_LOG_LEVEL               MAX_LOG
-#else
 #define DEFAULT_KERNEL_LOG_LEVEL		INFO_LOG
-#endif
 #define DEFAULT_IPC_LOG_LEVEL			DEBUG_LOG
 
 enum log_level cnss_kernel_log_level = DEFAULT_KERNEL_LOG_LEVEL;
@@ -994,14 +990,6 @@ void cnss_debug_ipc_log_print(void *log_ctx, char *process, const char *fn,
 		case WARNING_LOG:
 			pr_warn("cnss: %pV", &vaf);
 			break;
-#ifdef CONFIG_SEC_SS_CNSS_FEATURE_SYSFS
-		case NOTICE_LOG:
-		case INFO_LOG:
-		case DEBUG_LOG:
-		case DEBUG_HI_LOG:
-			pr_warn("cnss: %pV", &vaf);
-			break;
-#else
 		case NOTICE_LOG:
 			pr_notice("cnss: %pV", &vaf);
 			break;
@@ -1012,7 +1000,6 @@ void cnss_debug_ipc_log_print(void *log_ctx, char *process, const char *fn,
 		case DEBUG_HI_LOG:
 			pr_debug("cnss: %pV", &vaf);
 			break;
-#endif
 		default:
 			break;
 		}
@@ -1087,14 +1074,6 @@ void cnss_debug_ipc_log_print(void *log_ctx, char *process, const char *fn,
 		case WARNING_LOG:
 			pr_warn("cnss: %pV", &vaf);
 			break;
-#ifdef CONFIG_SEC_SS_CNSS_FEATURE_SYSFS
-		case NOTICE_LOG:
-		case INFO_LOG:
-		case DEBUG_LOG:
-		case DEBUG_HI_LOG:
-			pr_warn("cnss: %pV", &vaf);
-			break;
-#else
 		case NOTICE_LOG:
 			pr_notice("cnss: %pV", &vaf);
 			break;
@@ -1105,7 +1084,6 @@ void cnss_debug_ipc_log_print(void *log_ctx, char *process, const char *fn,
 		case DEBUG_HI_LOG:
 			pr_debug("cnss: %pV", &vaf);
 			break;
-#endif
 		default:
 			break;
 		}
