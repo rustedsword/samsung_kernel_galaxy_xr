@@ -351,10 +351,10 @@ static void gcc_clk_status_read(struct spi_geni_master *mas)
 	wrap_0_se4_val = readl(wrap_0_se4);
 	wrap_1_se4_val = readl(wrap_1_se4);
 
-	SPI_LOG_ERR(mas->ipc, true, mas->dev,
+	SPI_LOG_DBG(mas->ipc, false, mas->dev,
 			"%s: wrap_0_m_ahb:0x%x wrap_0_s_ahb: 0x%x wrap_1_m_ahb:0x%x wrap_1_s_ahb:0x%x\n",
 			__func__, wrap_0_m_ahb_val, wrap_0_s_ahb_val,  wrap_1_m_ahb_val, wrap_1_s_ahb_val);
-	SPI_LOG_ERR(mas->ipc, true, mas->dev,"%s: wrap_0_se4:0x%x wrap_1_se4:0x%x\n",
+	SPI_LOG_DBG(mas->ipc, false, mas->dev,"%s: wrap_0_se4:0x%x wrap_1_se4:0x%x\n",
 		   __func__, wrap_0_se4_val, wrap_1_se4_val);
 	return;
 }
