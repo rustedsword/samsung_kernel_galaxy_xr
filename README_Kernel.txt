@@ -1,7 +1,7 @@
 ################################################################################
 1. Download and unzip the kernel source of I610UEU2AZCI.
  
-2. Unzip and update the kernel source of I610UEU2AZD8.
+2. Unzip and update the kernel source of I610UEU2AZF3.
  
 3. How to Build
         - get Toolchain
