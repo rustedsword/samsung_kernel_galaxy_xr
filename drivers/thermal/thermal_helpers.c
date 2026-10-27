@@ -213,10 +213,6 @@ void thermal_cdev_update(struct thermal_cooling_device *cdev)
 	mutex_unlock(&cdev->lock);
 	trace_cdev_update(cdev, target);
 	dev_dbg(&cdev->device, "set to state %lu\n", target);
-
-#if IS_ENABLED(CONFIG_SEC_PM)
-	print_updated_cdev(cdev, target);
-#endif
 }
 EXPORT_SYMBOL(thermal_cdev_update);
 

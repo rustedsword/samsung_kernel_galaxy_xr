@@ -147,8 +147,6 @@ struct max31760_drvdata {
 	int fan_pulses;
 	int irq_gpio;
 	int buck_en;
-	bool init_done;
-	struct delayed_work	debug_work;
 };
 
 #ifndef IC_NAME_DUMMY_I2C_TESTING
@@ -275,8 +273,6 @@ int max31760_set_step(struct device *dev, int step, int step_data)
 		}
 	}
 
-	cancel_delayed_work_sync(&(max31760->debug_work));
-	schedule_delayed_work(&(max31760->debug_work), msecs_to_jiffies(8000));
 	pr_info("%s done.\n", __func__);
 	return err;
 }
@@ -824,45 +820,6 @@ static struct attribute_group *max31760_dev_attr_groups[] = {
 	NULL
 };
 
-static void max31760_print_reg_log(struct work_struct *work)
-{
-	struct max31760_drvdata *max31760 = container_of(work, struct max31760_drvdata, debug_work.work);
-
-	u8 val = 0;
-
-	if (!max31760->init_done)
-		pr_info("max31760_init is not done\n");
-
-	read_u8_from_i2c(max31760->client, MAX31760_REG_CR2, &val);
-	pr_info("CR2(0x%x) = 0x%x\n", MAX31760_REG_CR2, val);
-
-	read_u8_from_i2c(max31760->client, MAX31760_REG_CR3, &val);
-	pr_info("CR3(0x%x) = 0x%x\n", MAX31760_REG_CR3, val);
-
-	read_u8_from_i2c(max31760->client, MAX31760_REG_PWMR, &val);
-	pr_info("PWMR(0x%x) = 0x%x\n", MAX31760_REG_PWMR, val);
-
-	read_u8_from_i2c(max31760->client, MAX31760_REG_PWMV, &val);
-	pr_info("PWMV(0x%x) = 0x%x\n", MAX31760_REG_PWMV, val);
-
-	read_u8_from_i2c(max31760->client, MAX31760_REG_TC1H, &val);
-	pr_info("TC1H(0x%x) = 0x%x\n", MAX31760_REG_TC1H, val);
-
-	read_u8_from_i2c(max31760->client, MAX31760_REG_TC1L, &val);
-	pr_info("TC1L(0x%x) = 0x%x\n", MAX31760_REG_TC1L, val);
-
-	read_u8_from_i2c(max31760->client, MAX31760_REG_TC2H, &val);
-	pr_info("TC2H(0x%x) = 0x%x\n", MAX31760_REG_TC2H, val);
-
-	read_u8_from_i2c(max31760->client, MAX31760_REG_TC2L, &val);
-	pr_info("TC2L(0x%x) = 0x%x\n", MAX31760_REG_TC2L, val);
-
-	read_u8_from_i2c(max31760->client, MAX31760_REG_SR, &val);
-	pr_info("SR(0x%x) = 0x%x\n", MAX31760_REG_SR, val);
-
-	schedule_delayed_work(&(max31760->debug_work),	msecs_to_jiffies(60000));
-}
-
 /**
  * max31760_parse_dt - parses hw details from dts
  **/
@@ -1007,16 +964,13 @@ static int max31760_i2c_probe(struct i2c_client *client,
 		return -EPROBE_DEFER;
 	}
 
-	INIT_DELAYED_WORK(&(ddata->debug_work),	max31760_print_reg_log);
-
 	ret = sec_fan_register(&ddata->sec_fan_ddata);
 	if (ret) {
 		pr_err("%s EPROBE_DEFER(%d)\n", __func__, __LINE__);
 		return -EPROBE_DEFER;
 	}
 
-	if(!max31760_init(&client->dev))
-		ddata->init_done = true;
+	max31760_init(&client->dev);
 
 	ret = request_threaded_irq(ddata->fan_error_irq, NULL, max31760_fan_recovery,
 		IRQF_TRIGGER_FALLING | IRQF_ONESHOT , "max31760_fan_recovery_irq", ddata);

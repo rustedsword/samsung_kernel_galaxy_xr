@@ -179,8 +179,4 @@ of_thermal_get_trip_points(struct thermal_zone_device *tz)
 }
 #endif
 
-#if IS_ENABLED(CONFIG_SEC_PM)
-void print_updated_cdev(struct thermal_cooling_device *cdev, unsigned long target);
-#endif
-
 #endif /* __THERMAL_CORE_H__ */
