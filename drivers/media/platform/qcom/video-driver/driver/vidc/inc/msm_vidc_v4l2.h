@@ -36,6 +36,8 @@ int msm_v4l2_reqbufs(struct file *file, void *fh,
 		struct v4l2_requestbuffers *b);
 int msm_v4l2_querybuf(struct file *file, void *fh,
 		struct v4l2_buffer *b);
+int msm_v4l2_expbuf(struct file *file, void *fh,
+		struct v4l2_exportbuffer *b);
 int msm_v4l2_create_bufs(struct file *filp, void *fh,
 		struct v4l2_create_buffers *b);
 int msm_v4l2_prepare_buf(struct file *filp, void *fh,
@@ -70,6 +72,7 @@ int msm_v4l2_querymenu(struct file *file, void *fh,
 		struct v4l2_querymenu *qmenu);
 unsigned int msm_v4l2_poll(struct file *filp,
 	struct poll_table_struct *pt);
+int msm_v4l2_mmap(struct file *filp, struct vm_area_struct *vma);
 int msm_v4l2_request_validate(struct media_request *req);
 void msm_v4l2_request_queue(struct media_request *req);
 void msm_v4l2_m2m_device_run(void *priv);

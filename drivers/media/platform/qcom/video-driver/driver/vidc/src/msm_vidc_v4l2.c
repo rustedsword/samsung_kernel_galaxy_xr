@@ -29,6 +29,23 @@ unsigned int msm_v4l2_poll(struct file *filp, struct poll_table_struct *pt)
 	return msm_vidc_poll((void *)inst, filp, pt);
 }
 
+int msm_v4l2_mmap(struct file *filp, struct vm_area_struct *vma)
+{
+	struct msm_vidc_inst *inst = get_vidc_inst(filp, NULL);
+	int rc;
+
+	inst = get_inst_ref(g_core, inst);
+	if (!inst) {
+		d_vpr_e("%s: invalid instance\n", __func__);
+		return -EINVAL;
+	}
+
+	rc = msm_vidc_mmap((void *)inst, vma);
+	put_inst(inst);
+
+	return rc;
+}
+
 int msm_v4l2_open(struct file *filp)
 {
 	struct video_device *vdev = video_devdata(filp);
@@ -362,6 +379,28 @@ int msm_v4l2_querybuf(struct file *filp, void *fh,
 		goto unlock;
 
 unlock:
+	inst_unlock(inst, __func__);
+	client_unlock(inst, __func__);
+	put_inst(inst);
+
+	return rc;
+}
+
+int msm_v4l2_expbuf(struct file *filp, void *fh,
+				struct v4l2_exportbuffer *b)
+{
+	struct msm_vidc_inst *inst = get_vidc_inst(filp, fh);
+	int rc = 0;
+
+	inst = get_inst_ref(g_core, inst);
+	if (!inst) {
+		d_vpr_e("%s: invalid instance\n", __func__);
+		return -EINVAL;
+	}
+
+	client_lock(inst, __func__);
+	inst_lock(inst, __func__);
+	rc = msm_vidc_expbuf((void *)inst, b);
 	inst_unlock(inst, __func__);
 	client_unlock(inst, __func__);
 	put_inst(inst);

@@ -63,24 +63,11 @@ exit:
 	return NULL;
 }
 
-struct dma_buf *msm_vidc_memory_get_dmabuf(struct msm_vidc_inst *inst, int fd)
+static struct dma_buf *msm_vidc_memory_track_dmabuf(struct msm_vidc_inst *inst,
+	struct dma_buf *dmabuf)
 {
 	struct msm_memory_dmabuf *buf = NULL;
-	struct dma_buf *dmabuf = NULL;
 	bool found = false;
-
-	if (!inst) {
-		d_vpr_e("%s: invalid params\n", __func__);
-		return NULL;
-	}
-
-	/* get local dmabuf ref for tracking */
-	dmabuf = dma_buf_get(fd);
-	if (IS_ERR_OR_NULL(dmabuf)) {
-		d_vpr_e("Failed to get dmabuf for %d, error %ld\n",
-				fd, PTR_ERR(dmabuf));
-		return NULL;
-	}
 
 	/* track dmabuf - inc refcount if already present */
 	list_for_each_entry(buf, &inst->dmabuf_tracker, list) {
@@ -112,6 +99,38 @@ struct dma_buf *msm_vidc_memory_get_dmabuf(struct msm_vidc_inst *inst, int fd)
 	list_add_tail(&buf->list, &inst->dmabuf_tracker);
 
 	return dmabuf;
+}
+
+struct dma_buf *msm_vidc_memory_get_dmabuf(struct msm_vidc_inst *inst, int fd)
+{
+	struct dma_buf *dmabuf;
+
+	if (!inst) {
+		d_vpr_e("%s: invalid params\n", __func__);
+		return NULL;
+	}
+
+	/* get local dmabuf ref for tracking */
+	dmabuf = dma_buf_get(fd);
+	if (IS_ERR_OR_NULL(dmabuf)) {
+		d_vpr_e("Failed to get dmabuf for %d, error %ld\n",
+				fd, PTR_ERR(dmabuf));
+		return NULL;
+	}
+
+	return msm_vidc_memory_track_dmabuf(inst, dmabuf);
+}
+
+struct dma_buf *msm_vidc_memory_ref_dmabuf(struct msm_vidc_inst *inst,
+	struct dma_buf *dmabuf)
+{
+	if (!inst || !dmabuf) {
+		d_vpr_e("%s: invalid params\n", __func__);
+		return NULL;
+	}
+
+	get_dma_buf(dmabuf);
+	return msm_vidc_memory_track_dmabuf(inst, dmabuf);
 }
 
 void msm_vidc_memory_put_dmabuf(struct msm_vidc_inst *inst, struct dma_buf *dmabuf)

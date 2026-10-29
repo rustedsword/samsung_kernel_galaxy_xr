@@ -27,8 +27,8 @@
 #define V4L2_META_FMT_VIDC                      v4l2_fourcc('Q', 'M', 'E', 'T')
 /* HEIC encoder and decoder */
 #define V4L2_PIX_FMT_HEIC                       v4l2_fourcc('H', 'E', 'I', 'C')
-/* AV1 */
-#define V4L2_PIX_FMT_AV1                        v4l2_fourcc('A', 'V', '1', '0')
+/* AV1, the fourcc mainline uses */
+#define V4L2_PIX_FMT_AV1                        v4l2_fourcc('A', 'V', '0', '1')
 /* start of vidc specific colorspace definitions */
 #define V4L2_COLORSPACE_VIDC_GENERIC_FILM    101
 #define V4L2_COLORSPACE_VIDC_EG431           102

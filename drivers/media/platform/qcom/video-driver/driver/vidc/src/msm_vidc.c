@@ -451,6 +451,43 @@ exit:
 }
 EXPORT_SYMBOL(msm_vidc_querybuf);
 
+int msm_vidc_mmap(void *instance, struct vm_area_struct *vma)
+{
+	struct msm_vidc_inst *inst = instance;
+	unsigned long port;
+
+	if (!inst || !vma) {
+		d_vpr_e("%s: invalid params\n", __func__);
+		return -EINVAL;
+	}
+
+	port = vma->vm_pgoff >> (MSM_VIDC_MMAP_PORT_SHIFT - PAGE_SHIFT);
+	if (port >= PORT_NONE) {
+		i_vpr_e(inst, "%s: invalid offset %#lx\n",
+			__func__, vma->vm_pgoff << PAGE_SHIFT);
+		return -EINVAL;
+	}
+
+	return vb2_mmap(inst->bufq[port].vb2q, vma);
+}
+
+int msm_vidc_expbuf(void *instance, struct v4l2_exportbuffer *b)
+{
+	struct msm_vidc_inst *inst = instance;
+	int port;
+
+	if (!inst || !b) {
+		d_vpr_e("%s: invalid params\n", __func__);
+		return -EINVAL;
+	}
+
+	port = v4l2_type_to_driver_port(inst, b->type, __func__);
+	if (port < 0)
+		return -EINVAL;
+
+	return vb2_expbuf(inst->bufq[port].vb2q, b);
+}
+
 int msm_vidc_create_bufs(void *instance, struct v4l2_create_buffers *b)
 {
 	int rc = 0;
@@ -678,12 +715,38 @@ int msm_vidc_cmd(void *instance, union msm_v4l2_cmd *cmd)
 }
 EXPORT_SYMBOL(msm_vidc_cmd);
 
+static struct msm_vidc_inst_capability *msm_vidc_pixfmt_caps(
+		struct msm_vidc_inst *inst, u32 pixfmt)
+{
+	struct msm_vidc_core *core = inst->core;
+	enum msm_vidc_codec_type codec;
+	u32 i;
+
+	if (pixfmt == V4L2_META_FMT_VIDC)
+		return inst->capabilities;
+
+	codec = v4l2_codec_to_driver(pixfmt, __func__);
+	if (!codec) {
+		if (v4l2_colorformat_to_driver(pixfmt, __func__) &
+		    inst->capabilities->cap[PIX_FMTS].step_or_mask)
+			return inst->capabilities;
+		return NULL;
+	}
+
+	/* inst_caps only holds the ENC_CODECS and DEC_CODECS codecs */
+	for (i = 0; i < core->codecs_count; i++) {
+		if (core->inst_caps[i].domain == inst->domain &&
+		    core->inst_caps[i].codec == codec)
+			return &core->inst_caps[i];
+	}
+
+	return NULL;
+}
+
 int msm_vidc_enum_framesizes(void *instance, struct v4l2_frmsizeenum *fsize)
 {
 	struct msm_vidc_inst *inst = instance;
 	struct msm_vidc_inst_capability *capability;
-	enum msm_vidc_colorformat_type colorfmt;
-	enum msm_vidc_codec_type codec;
 
 	if (!inst || !fsize) {
 		d_vpr_e("%s: invalid params: %pK %pK\n",
@@ -694,23 +757,16 @@ int msm_vidc_enum_framesizes(void *instance, struct v4l2_frmsizeenum *fsize)
 		i_vpr_e(inst, "%s: capabilities not available\n", __func__);
 		return -EINVAL;
 	}
-	capability = inst->capabilities;
 
 	/* only index 0 allowed as per v4l2 spec */
 	if (fsize->index)
 		return -EINVAL;
 
-	if (fsize->pixel_format != V4L2_META_FMT_VIDC) {
-		/* validate pixel format */
-		codec = v4l2_codec_to_driver(fsize->pixel_format, __func__);
-		if (!codec) {
-			colorfmt = v4l2_colorformat_to_driver(fsize->pixel_format, __func__);
-			if (colorfmt == MSM_VIDC_FMT_NONE) {
-				i_vpr_e(inst, "%s: unsupported pix fmt %#x\n",
-					__func__, fsize->pixel_format);
-				return -EINVAL;
-			}
-		}
+	capability = msm_vidc_pixfmt_caps(inst, fsize->pixel_format);
+	if (!capability) {
+		i_vpr_e(inst, "%s: unsupported pix fmt %#x\n",
+			__func__, fsize->pixel_format);
+		return -EINVAL;
 	}
 
 	fsize->type = V4L2_FRMSIZE_TYPE_STEPWISE;
@@ -732,7 +788,6 @@ int msm_vidc_enum_frameintervals(void *instance, struct v4l2_frmivalenum *fival)
 	struct msm_vidc_inst *inst = instance;
 	struct msm_vidc_core *core;
 	struct msm_vidc_inst_capability *capability;
-	enum msm_vidc_colorformat_type colorfmt;
 	u32 fps, mbpf;
 
 	if (!inst || !fival) {
@@ -752,20 +807,16 @@ int msm_vidc_enum_frameintervals(void *instance, struct v4l2_frmivalenum *fival)
 		i_vpr_e(inst, "%s: capabilities not available\n", __func__);
 		return -EINVAL;
 	}
-	capability = inst->capabilities;
 
 	/* only index 0 allowed as per v4l2 spec */
 	if (fival->index)
 		return -EINVAL;
 
-	if (fival->pixel_format != V4L2_META_FMT_VIDC) {
-		/* validate pixel format */
-		colorfmt = v4l2_colorformat_to_driver(fival->pixel_format, __func__);
-		if (colorfmt == MSM_VIDC_FMT_NONE) {
-			i_vpr_e(inst, "%s: unsupported pix fmt %#x\n",
-				__func__, fival->pixel_format);
-			return -EINVAL;
-		}
+	capability = msm_vidc_pixfmt_caps(inst, fival->pixel_format);
+	if (!capability) {
+		i_vpr_e(inst, "%s: unsupported pix fmt %#x\n",
+			__func__, fival->pixel_format);
+		return -EINVAL;
 	}
 
 	/* validate resolution */
@@ -781,15 +832,17 @@ int msm_vidc_enum_frameintervals(void *instance, struct v4l2_frmivalenum *fival)
 	/* calculate max supported fps for a given resolution */
 	mbpf = NUM_MBS_PER_FRAME(fival->height, fival->width);
 	fps = core->capabilities[MAX_MBPS].value / mbpf;
+	/* FRAME_RATE caps are Q16 */
+	fps = clamp_t(u32, fps, 1, capability->cap[FRAME_RATE].max >> 16);
 
-	fival->type = V4L2_FRMIVAL_TYPE_STEPWISE;
+	fival->type = V4L2_FRMIVAL_TYPE_CONTINUOUS;
 	fival->stepwise.min.numerator = 1;
-	fival->stepwise.min.denominator =
-			min_t(u32, fps, capability->cap[FRAME_RATE].max);
+	fival->stepwise.min.denominator = fps;
 	fival->stepwise.max.numerator = 1;
-	fival->stepwise.max.denominator = 1;
+	fival->stepwise.max.denominator =
+			max_t(u32, capability->cap[FRAME_RATE].min >> 16, 1);
 	fival->stepwise.step.numerator = 1;
-	fival->stepwise.step.denominator = capability->cap[FRAME_RATE].max;
+	fival->stepwise.step.denominator = 1;
 
 	return 0;
 }

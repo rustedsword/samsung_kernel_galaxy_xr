@@ -994,6 +994,13 @@ static int handle_output_buffer(struct msm_vidc_inst *inst,
 		}
 	}
 
+	/* nobody waits for this marker, it goes back on the auto resume */
+	if ((buffer->flags & HFI_BUF_FW_FLAG_PSC_LAST) && inst->drc_auto_resume) {
+		buf->attr &= ~MSM_VIDC_ATTR_DEQUEUED;
+		buf->attr |= MSM_VIDC_ATTR_DEFERRED;
+		return 0;
+	}
+
 	buf->flags = 0;
 	buf->flags = get_driver_buffer_flags(inst, buffer->flags);
 
@@ -2054,6 +2061,11 @@ static int __handle_session_response(struct msm_vidc_inst *inst,
 		if (rc)
 			return rc;
 	}
+
+	rc = msm_vdec_drc_auto_resume(inst);
+	if (rc)
+		msm_vidc_change_state(inst, MSM_VIDC_ERROR, __func__);
+
 	memset(&inst->hfi_frame_info, 0, sizeof(struct msm_vidc_hfi_frame_info));
 
 	return rc;

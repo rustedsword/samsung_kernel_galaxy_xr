@@ -4,6 +4,10 @@
  */
 /* Copyright (c) 2022. Qualcomm Innovation Center, Inc. All rights reserved. */
 
+#include <linux/dma-buf.h>
+#include <linux/dma-heap.h>
+#include <linux/mem-buf.h>
+#include <linux/mem-buf-exporter.h>
 #include "msm_vidc_vb2.h"
 #include "msm_vidc_core.h"
 #include "msm_vidc_inst.h"
@@ -41,41 +45,326 @@ struct vb2_queue *msm_vidc_get_vb2q(struct msm_vidc_inst *inst,
 	return q;
 }
 
+/* MMAP plane: heap buffer, users are vb2, exports and mappings */
+struct msm_vb2_buf {
+	struct dma_buf *dmabuf;
+	struct mem_buf_vmperm *vmperm;
+	refcount_t refcount;
+};
+
+static void msm_vb2_buf_put(struct msm_vb2_buf *buf)
+{
+	if (!refcount_dec_and_test(&buf->refcount))
+		return;
+
+	dma_buf_put(buf->dmabuf);
+	kfree(buf);
+}
+
+static void *msm_vb2_alloc_dmabuf(unsigned long size)
+{
+	struct msm_vb2_buf *buf;
+	struct dma_heap *heap;
+	void *err;
+
+	heap = dma_heap_find("qcom,system");
+	if (!heap) {
+		d_vpr_e("%s: no qcom,system heap\n", __func__);
+		return ERR_PTR(-ENODEV);
+	}
+
+	buf = kzalloc(sizeof(*buf), GFP_KERNEL);
+	if (!buf) {
+		dma_heap_put(heap);
+		return ERR_PTR(-ENOMEM);
+	}
+
+	buf->dmabuf = dma_heap_buffer_alloc(heap, PAGE_ALIGN(size),
+		O_RDWR | O_CLOEXEC, 0);
+	dma_heap_put(heap);
+	if (IS_ERR(buf->dmabuf)) {
+		d_vpr_e("%s: alloc of %lu bytes failed, %ld\n",
+			__func__, size, PTR_ERR(buf->dmabuf));
+		err = buf->dmabuf;
+		kfree(buf);
+		return err;
+	}
+
+	buf->vmperm = to_mem_buf_vmperm(buf->dmabuf);
+	if (IS_ERR(buf->vmperm)) {
+		err = buf->vmperm;
+		dma_buf_put(buf->dmabuf);
+		kfree(buf);
+		return err;
+	}
+
+	refcount_set(&buf->refcount, 1);
+	return buf;
+}
+
+static void msm_vb2_vm_open(struct vm_area_struct *vma)
+{
+	struct msm_vb2_buf *buf = vma->vm_private_data;
+
+	mem_buf_vmperm_pin(buf->vmperm);
+	refcount_inc(&buf->refcount);
+}
+
+static void msm_vb2_vm_close(struct vm_area_struct *vma)
+{
+	struct msm_vb2_buf *buf = vma->vm_private_data;
+
+	mem_buf_vmperm_unpin(buf->vmperm);
+	msm_vb2_buf_put(buf);
+}
+
+static const struct vm_operations_struct msm_vb2_vm_ops = {
+	.open = msm_vb2_vm_open,
+	.close = msm_vb2_vm_close,
+};
+
+/*
+ * dma_buf_mmap() moves the vma to the heap's file; keep it on the
+ * video device or export instead, that file holds this module.
+ */
+static int msm_vb2_buf_mmap(struct msm_vb2_buf *buf,
+	struct vm_area_struct *vma, unsigned long pgoff)
+{
+	struct file *file = get_file(vma->vm_file);
+	int rc;
+
+	rc = dma_buf_mmap(buf->dmabuf, vma, pgoff);
+	if (rc) {
+		fput(file);
+		return rc;
+	}
+
+	fput(vma->vm_file);
+	vma->vm_file = file;
+	vma->vm_ops = &msm_vb2_vm_ops;
+	vma->vm_private_data = buf;
+	refcount_inc(&buf->refcount);
+
+	return 0;
+}
+
+static struct mem_buf_vmperm *msm_vb2_dmabuf_lookup(struct dma_buf *dmabuf)
+{
+	struct msm_vb2_buf *buf = dmabuf->priv;
+
+	return buf->vmperm;
+}
+
+static bool msm_vb2_dmabuf_uncached(struct dma_buf *dmabuf)
+{
+	struct msm_vb2_buf *buf = dmabuf->priv;
+	struct mem_buf_dma_buf_ops *ops;
+
+	ops = container_of(buf->dmabuf->ops, struct mem_buf_dma_buf_ops, dma_ops);
+	return ops->uncached(buf->dmabuf);
+}
+
+static int msm_vb2_dmabuf_attach(struct dma_buf *dmabuf,
+	struct dma_buf_attachment *attach)
+{
+	struct msm_vb2_buf *buf = dmabuf->priv;
+	struct dma_buf_attachment *parent;
+
+	parent = dma_buf_attach(buf->dmabuf, attach->dev);
+	if (IS_ERR(parent))
+		return PTR_ERR(parent);
+
+	attach->priv = parent;
+	return 0;
+}
+
+static void msm_vb2_dmabuf_detach(struct dma_buf *dmabuf,
+	struct dma_buf_attachment *attach)
+{
+	struct msm_vb2_buf *buf = dmabuf->priv;
+
+	dma_buf_detach(buf->dmabuf, attach->priv);
+}
+
+static struct sg_table *msm_vb2_dmabuf_map(struct dma_buf_attachment *attach,
+	enum dma_data_direction dir)
+{
+	struct dma_buf_attachment *parent = attach->priv;
+
+	parent->dma_map_attrs = attach->dma_map_attrs;
+	return dma_buf_map_attachment(parent, dir);
+}
+
+static void msm_vb2_dmabuf_unmap(struct dma_buf_attachment *attach,
+	struct sg_table *table, enum dma_data_direction dir)
+{
+	dma_buf_unmap_attachment(attach->priv, table, dir);
+}
+
+static void msm_vb2_dmabuf_release(struct dma_buf *dmabuf)
+{
+	msm_vb2_buf_put(dmabuf->priv);
+}
+
+static int msm_vb2_dmabuf_begin_cpu_access(struct dma_buf *dmabuf,
+	enum dma_data_direction dir)
+{
+	struct msm_vb2_buf *buf = dmabuf->priv;
+
+	return dma_buf_begin_cpu_access(buf->dmabuf, dir);
+}
+
+static int msm_vb2_dmabuf_begin_cpu_access_partial(struct dma_buf *dmabuf,
+	enum dma_data_direction dir, unsigned int offset, unsigned int len)
+{
+	struct msm_vb2_buf *buf = dmabuf->priv;
+
+	return dma_buf_begin_cpu_access_partial(buf->dmabuf, dir, offset, len);
+}
+
+static int msm_vb2_dmabuf_end_cpu_access(struct dma_buf *dmabuf,
+	enum dma_data_direction dir)
+{
+	struct msm_vb2_buf *buf = dmabuf->priv;
+
+	return dma_buf_end_cpu_access(buf->dmabuf, dir);
+}
+
+static int msm_vb2_dmabuf_end_cpu_access_partial(struct dma_buf *dmabuf,
+	enum dma_data_direction dir, unsigned int offset, unsigned int len)
+{
+	struct msm_vb2_buf *buf = dmabuf->priv;
+
+	return dma_buf_end_cpu_access_partial(buf->dmabuf, dir, offset, len);
+}
+
+static int msm_vb2_dmabuf_mmap(struct dma_buf *dmabuf, struct vm_area_struct *vma)
+{
+	return msm_vb2_buf_mmap(dmabuf->priv, vma, vma->vm_pgoff);
+}
+
+static void *msm_vb2_dmabuf_vmap(struct dma_buf *dmabuf)
+{
+	struct msm_vb2_buf *buf = dmabuf->priv;
+
+	return dma_buf_vmap(buf->dmabuf);
+}
+
+static void msm_vb2_dmabuf_vunmap(struct dma_buf *dmabuf, void *vaddr)
+{
+	struct msm_vb2_buf *buf = dmabuf->priv;
+
+	dma_buf_vunmap(buf->dmabuf, vaddr);
+}
+
+static int msm_vb2_dmabuf_get_flags(struct dma_buf *dmabuf, unsigned long *flags)
+{
+	struct msm_vb2_buf *buf = dmabuf->priv;
+
+	return dma_buf_get_flags(buf->dmabuf, flags);
+}
+
+/*
+ * Exports forward to the heap buffer and share its mem-buf permissions,
+ * so Qualcomm importers treat them as the buffer itself.
+ */
+static struct mem_buf_dma_buf_ops msm_vb2_dmabuf_ops = {
+	.lookup = msm_vb2_dmabuf_lookup,
+	.attach = msm_vb2_dmabuf_attach,
+	.uncached = msm_vb2_dmabuf_uncached,
+	.dma_ops = {
+		.detach = msm_vb2_dmabuf_detach,
+		.map_dma_buf = msm_vb2_dmabuf_map,
+		.unmap_dma_buf = msm_vb2_dmabuf_unmap,
+		.release = msm_vb2_dmabuf_release,
+		.begin_cpu_access = msm_vb2_dmabuf_begin_cpu_access,
+		.begin_cpu_access_partial = msm_vb2_dmabuf_begin_cpu_access_partial,
+		.end_cpu_access = msm_vb2_dmabuf_end_cpu_access,
+		.end_cpu_access_partial = msm_vb2_dmabuf_end_cpu_access_partial,
+		.mmap = msm_vb2_dmabuf_mmap,
+		.vmap = msm_vb2_dmabuf_vmap,
+		.vunmap = msm_vb2_dmabuf_vunmap,
+		.get_flags = msm_vb2_dmabuf_get_flags,
+	},
+};
+
+/* mem_priv of imported planes, the driver maps their dmabufs itself */
+static char msm_vb2_imported;
+
 #if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 15, 0))
 void *msm_vb2_alloc(struct device *dev, unsigned long attrs,
 	unsigned long size, enum dma_data_direction dma_dir,
 	gfp_t gfp_flags)
 {
-	return (void *)0xdeadbeef;
+	return msm_vb2_alloc_dmabuf(size);
 }
 
 void *msm_vb2_attach_dmabuf(struct device *dev, struct dma_buf *dbuf,
 	unsigned long size, enum dma_data_direction dma_dir)
 {
-	return (void *)0xdeadbeef;
+	return &msm_vb2_imported;
 }
 
 #else
 void *msm_vb2_alloc(struct vb2_buffer *vb, struct device *dev,
 	unsigned long size)
 {
-	return (void *)0xdeadbeef;
+	return msm_vb2_alloc_dmabuf(size);
 }
 
 void *msm_vb2_attach_dmabuf(struct vb2_buffer *vb, struct device *dev,
 	struct dma_buf *dbuf, unsigned long size)
 {
-	return (void *)0xdeadbeef;
+	return &msm_vb2_imported;
 }
 #endif
 
 void msm_vb2_put(void *buf_priv)
 {
+	msm_vb2_buf_put(buf_priv);
+}
+
+struct dma_buf *msm_vb2_dmabuf(void *buf_priv)
+{
+	struct msm_vb2_buf *buf = buf_priv;
+
+	return buf->dmabuf;
+}
+
+unsigned int msm_vb2_num_users(void *buf_priv)
+{
+	struct msm_vb2_buf *buf = buf_priv;
+
+	if (buf_priv == &msm_vb2_imported)
+		return 0;
+
+	return refcount_read(&buf->refcount);
+}
+
+struct dma_buf *msm_vb2_get_dmabuf(void *buf_priv, unsigned long flags)
+{
+	struct msm_vb2_buf *buf = buf_priv;
+	DEFINE_DMA_BUF_EXPORT_INFO(exp_info);
+	struct dma_buf *dmabuf;
+
+	/* mem-buf compares to its own address, under CFI ours would differ */
+	msm_vb2_dmabuf_ops.dma_ops.attach = buf->dmabuf->ops->attach;
+	exp_info.ops = &msm_vb2_dmabuf_ops.dma_ops;
+	exp_info.size = buf->dmabuf->size;
+	exp_info.flags = flags;
+	exp_info.resv = buf->dmabuf->resv;
+	exp_info.priv = buf;
+	refcount_inc(&buf->refcount);
+	dmabuf = dma_buf_export(&exp_info);
+	if (IS_ERR(dmabuf))
+		msm_vb2_buf_put(buf);
+
+	return dmabuf;
 }
 
 int msm_vb2_mmap(void *buf_priv, struct vm_area_struct *vma)
 {
-	return 0;
+	return msm_vb2_buf_mmap(buf_priv, vma, 0);
 }
 
 void msm_vb2_detach_dmabuf(void *buf_priv)
@@ -305,8 +594,17 @@ int msm_vidc_start_streaming(struct vb2_queue *q, unsigned int count)
 	if (!buf_type)
 		goto unlock;
 
-	/* queue pending buffers */
-	rc = msm_vidc_queue_deferred_buffers(inst, buf_type);
+	/* queue pending buffers, encoder output waits for input start */
+	if (!is_encode_session(inst)) {
+		rc = msm_vidc_queue_deferred_buffers(inst, buf_type);
+	} else if (is_state(inst, MSM_VIDC_STREAMING)) {
+		rc = msm_vidc_queue_deferred_buffers(inst, MSM_VIDC_BUF_INPUT);
+		if (!rc)
+			rc = msm_vidc_queue_deferred_buffers(inst,
+				MSM_VIDC_BUF_OUTPUT);
+	} else if (q->type == INPUT_MPLANE) {
+		rc = msm_vidc_queue_deferred_buffers(inst, buf_type);
+	}
 	if (rc)
 		goto unlock;
 
@@ -534,6 +832,28 @@ unlock:
 	inst_unlock(inst, __func__);
 	client_unlock(inst, __func__);
 	put_inst(inst);
+}
+
+int msm_vidc_buf_init(struct vb2_buffer *vb)
+{
+	struct msm_vidc_inst *inst = vb2_get_drv_priv(vb->vb2_queue);
+	unsigned int plane;
+	int port;
+
+	if (vb->memory != VB2_MEMORY_MMAP)
+		return 0;
+
+	port = v4l2_type_to_driver_port(inst, vb->type, __func__);
+	if (port < 0)
+		return -EINVAL;
+
+	/* vb2 offsets restart at 0 for every queue, all queues share the fd */
+	for (plane = 0; plane < vb->num_planes; plane++)
+		vb->planes[plane].m.offset = port << MSM_VIDC_MMAP_PORT_SHIFT |
+			vb->index << MSM_VIDC_MMAP_INDEX_SHIFT |
+			plane << PAGE_SHIFT;
+
+	return 0;
 }
 
 void msm_vidc_buf_cleanup(struct vb2_buffer *vb)

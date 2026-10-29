@@ -10,6 +10,10 @@
 #include <media/videobuf2-v4l2.h>
 #include "msm_vidc_inst.h"
 
+/* mmap offset cookie: port | buffer index | plane, in pages */
+#define MSM_VIDC_MMAP_PORT_SHIFT	28
+#define MSM_VIDC_MMAP_INDEX_SHIFT	(PAGE_SHIFT + 3)
+
 struct vb2_queue *msm_vidc_get_vb2q(struct msm_vidc_inst *inst,
 	u32 type, const char *func);
 
@@ -28,6 +32,9 @@ void *msm_vb2_attach_dmabuf(struct vb2_buffer *vb, struct device *dev,
 #endif
 
 void msm_vb2_put(void *buf_priv);
+struct dma_buf *msm_vb2_dmabuf(void *buf_priv);
+unsigned int msm_vb2_num_users(void *buf_priv);
+struct dma_buf *msm_vb2_get_dmabuf(void *buf_priv, unsigned long flags);
 int msm_vb2_mmap(void *buf_priv, struct vm_area_struct *vma);
 void msm_vb2_detach_dmabuf(void *buf_priv);
 int msm_vb2_map_dmabuf(void *buf_priv);
@@ -40,6 +47,7 @@ int msm_vidc_queue_setup(struct vb2_queue *q,
 int msm_vidc_start_streaming(struct vb2_queue *q, unsigned int count);
 void msm_vidc_stop_streaming(struct vb2_queue *q);
 void msm_vidc_buf_queue(struct vb2_buffer *vb2);
+int msm_vidc_buf_init(struct vb2_buffer *vb);
 void msm_vidc_buf_cleanup(struct vb2_buffer *vb);
 int msm_vidc_buf_out_validate(struct vb2_buffer *vb);
 void msm_vidc_buf_request_complete(struct vb2_buffer *vb);

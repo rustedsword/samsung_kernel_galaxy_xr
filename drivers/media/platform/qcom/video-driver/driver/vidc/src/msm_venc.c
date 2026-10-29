@@ -59,6 +59,56 @@ struct msm_venc_prop_type_handle {
 	int (*handle)(struct msm_vidc_inst *inst, enum msm_vidc_port_type port);
 };
 
+/* raw input layout the hw reads, width and height come in visible */
+static void msm_venc_input_geometry(struct msm_vidc_inst *inst,
+	struct v4l2_pix_format_mplane *pixmp)
+{
+	u32 pix_fmt, bytesperline;
+
+	pix_fmt = v4l2_colorformat_to_driver(pixmp->pixelformat, __func__);
+	if (is_image_session(inst)) {
+		bytesperline = ALIGN(pixmp->width, HEIC_GRID_DIMENSION) *
+			(is_10bit_colorformat(pix_fmt) ? 2 : 1);
+		pixmp->plane_fmt[0].sizeimage =
+			bytesperline * pixmp->height * 3 / 2;
+	} else {
+		if (is_rgba_colorformat(pix_fmt))
+			bytesperline = VIDEO_RGB_STRIDE_BYTES(pixmp->pixelformat,
+				pixmp->width);
+		else
+			bytesperline = VIDEO_Y_STRIDE_BYTES(pixmp->pixelformat,
+				pixmp->width);
+		/* chroma follows the aligned luma scanlines */
+		if (is_linear_yuv_colorformat(pix_fmt))
+			pixmp->height = VIDEO_Y_SCANLINES(pixmp->pixelformat,
+				pixmp->height);
+		pixmp->plane_fmt[0].sizeimage = VIDEO_RAW_BUFFER_SIZE(
+			pixmp->pixelformat, pixmp->width, pixmp->height, true);
+	}
+	pixmp->plane_fmt[0].bytesperline = bytesperline;
+}
+
+/* keep the raw format if the codec has it, else redo it as NV12 */
+static void msm_venc_keep_raw_fmt(struct msm_vidc_inst *inst)
+{
+	struct msm_vidc_inst_cap *pix_fmts = &inst->capabilities->cap[PIX_FMTS];
+	struct v4l2_pix_format_mplane *raw = &inst->fmts[INPUT_PORT].fmt.pix_mp;
+	u32 colorformat;
+
+	colorformat = v4l2_colorformat_to_driver(raw->pixelformat, __func__);
+	if (!(colorformat & pix_fmts->step_or_mask)) {
+		if (pix_fmts->step_or_mask & MSM_VIDC_FMT_NV12)
+			colorformat = MSM_VIDC_FMT_NV12;
+		else
+			colorformat = pix_fmts->value;
+		raw->pixelformat = v4l2_colorformat_from_driver(colorformat,
+			__func__);
+		msm_venc_input_geometry(inst, raw);
+		inst->buffers.input.size = raw->plane_fmt[0].sizeimage;
+	}
+	pix_fmts->value = colorformat;
+}
+
 static int msm_venc_codec_change(struct msm_vidc_inst *inst, u32 v4l2_codec)
 {
 	int rc = 0;
@@ -89,6 +139,8 @@ static int msm_venc_codec_change(struct msm_vidc_inst *inst, u32 v4l2_codec)
 	rc = msm_vidc_get_inst_capability(inst);
 	if (rc)
 		goto exit;
+
+	msm_venc_keep_raw_fmt(inst);
 
 	if (create_inst_handler) {
 		rc = msm_vidc_ctrl_handler_init(inst, true);
@@ -1040,7 +1092,7 @@ error:
 	return rc;
 }
 
-int msm_venc_try_fmt(struct msm_vidc_inst *inst, struct v4l2_format *f)
+static int msm_venc_check_fmt(struct msm_vidc_inst *inst, struct v4l2_format *f)
 {
 	int rc = 0;
 	struct v4l2_pix_format_mplane *pixmp = &f->fmt.pix_mp;
@@ -1058,8 +1110,8 @@ int msm_venc_try_fmt(struct msm_vidc_inst *inst, struct v4l2_format *f)
 		if (!pix_fmt) {
 			i_vpr_e(inst, "%s: unsupported format, set current params\n", __func__);
 			f->fmt.pix_mp.pixelformat = inst->fmts[INPUT_PORT].fmt.pix_mp.pixelformat;
-			f->fmt.pix_mp.width = inst->fmts[INPUT_PORT].fmt.pix_mp.width;
-			f->fmt.pix_mp.height = inst->fmts[INPUT_PORT].fmt.pix_mp.height;
+			f->fmt.pix_mp.width = inst->crop.width;
+			f->fmt.pix_mp.height = inst->crop.height;
 			pix_fmt = v4l2_colorformat_to_driver(f->fmt.pix_mp.pixelformat, __func__);
 		}
 	} else if (f->type == OUTPUT_MPLANE) {
@@ -1085,6 +1137,17 @@ int msm_venc_try_fmt(struct msm_vidc_inst *inst, struct v4l2_format *f)
 	if (pixmp->field == V4L2_FIELD_ANY)
 		pixmp->field = V4L2_FIELD_NONE;
 	pixmp->num_planes = 1;
+
+	return rc;
+}
+
+int msm_venc_try_fmt(struct msm_vidc_inst *inst, struct v4l2_format *f)
+{
+	int rc;
+
+	rc = msm_venc_check_fmt(inst, f);
+	if (!rc && f->type == INPUT_MPLANE)
+		msm_venc_input_geometry(inst, &f->fmt.pix_mp);
 
 	return rc;
 }
@@ -1209,44 +1272,27 @@ static int msm_venc_s_fmt_input(struct msm_vidc_inst *inst, struct v4l2_format *
 	int rc = 0;
 	struct v4l2_format *fmt, *output_fmt;
 	struct msm_vidc_core *core;
-	u32 pix_fmt, width, height, size, bytesperline;
+	u32 pix_fmt, size;
 
 	if (!inst || !inst->core || !inst->capabilities) {
 		d_vpr_e("%s: invalid params\n", __func__);
 		return -EINVAL;
 	}
 	core = inst->core;
-	msm_venc_try_fmt(inst, f);
+	/* f keeps the visible size for the crop below */
+	msm_venc_check_fmt(inst, f);
 
 	pix_fmt = v4l2_colorformat_to_driver(f->fmt.pix_mp.pixelformat, __func__);
 	msm_vidc_update_cap_value(inst, PIX_FMTS, pix_fmt, __func__);
 
-	width = f->fmt.pix_mp.width;
-	height = f->fmt.pix_mp.height;
-
-	if (is_image_session(inst)) {
-		bytesperline = ALIGN(f->fmt.pix_mp.width, HEIC_GRID_DIMENSION) *
-			(is_10bit_colorformat(pix_fmt) ? 2 : 1);
-	} else if (is_rgba_colorformat(pix_fmt)) {
-		bytesperline = VIDEO_RGB_STRIDE_BYTES(f->fmt.pix_mp.pixelformat,
-				f->fmt.pix_mp.width);
-	} else {
-		bytesperline = VIDEO_Y_STRIDE_BYTES(f->fmt.pix_mp.pixelformat,
-				f->fmt.pix_mp.width);
-	}
-
 	fmt = &inst->fmts[INPUT_PORT];
 	fmt->type = INPUT_MPLANE;
-	fmt->fmt.pix_mp.width = width;
-	fmt->fmt.pix_mp.height = height;
+	fmt->fmt.pix_mp.width = f->fmt.pix_mp.width;
+	fmt->fmt.pix_mp.height = f->fmt.pix_mp.height;
 	fmt->fmt.pix_mp.num_planes = 1;
 	fmt->fmt.pix_mp.pixelformat = f->fmt.pix_mp.pixelformat;
-	fmt->fmt.pix_mp.plane_fmt[0].bytesperline = bytesperline;
-	if (is_image_session(inst))
-		size = bytesperline * height * 3 / 2;
-	else
-		size = call_session_op(core, buffer_size, inst, MSM_VIDC_BUF_INPUT);
-	fmt->fmt.pix_mp.plane_fmt[0].sizeimage = size;
+	msm_venc_input_geometry(inst, &fmt->fmt.pix_mp);
+	size = fmt->fmt.pix_mp.plane_fmt[0].sizeimage;
 	/* update input port colorspace info */
 	fmt->fmt.pix_mp.colorspace = f->fmt.pix_mp.colorspace;
 	fmt->fmt.pix_mp.xfer_func = f->fmt.pix_mp.xfer_func;

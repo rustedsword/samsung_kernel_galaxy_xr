@@ -14,6 +14,7 @@
 #include "msm_vidc_internal.h"
 #include "msm_vidc_control.h"
 #include "msm_vidc_memory.h"
+#include "msm_vidc_vb2.h"
 #include "msm_vidc_power.h"
 #include "msm_vidc_debug.h"
 #include "msm_vidc_power.h"
@@ -1917,8 +1918,11 @@ enum msm_vidc_allow msm_vidc_allow_qbuf(struct msm_vidc_inst *inst, u32 type)
 		if (is_state(inst, MSM_VIDC_OPEN) ||
 			is_state(inst, MSM_VIDC_INPUT_STREAMING))
 			return MSM_VIDC_DEFER;
-		else
-			return MSM_VIDC_ALLOW;
+		/* fw returns encoder output queued before input start empty */
+		if (is_encode_session(inst) &&
+			is_state(inst, MSM_VIDC_OUTPUT_STREAMING))
+			return MSM_VIDC_DEFER;
+		return MSM_VIDC_ALLOW;
 	} else {
 		i_vpr_e(inst, "%s: unknown buffer type %d\n", __func__, type);
 		return MSM_VIDC_DISALLOW;
@@ -2385,6 +2389,9 @@ int msm_vidc_process_psc_last_flag(struct msm_vidc_inst *inst)
 	if (rc)
 		return rc;
 
+	if (inst->drc_auto_resume)
+		return 0;
+
 	if (is_decode_session(inst) &&
 		!inst->capabilities->cap[LAST_FLAG_EVENT_ENABLE].value) {
 		i_vpr_h(inst, "%s: last flag event not enabled\n", __func__);
@@ -2624,7 +2631,8 @@ static int vb2_buffer_to_driver(struct vb2_buffer *vb2,
 	if (!buf->type)
 		return -EINVAL;
 	buf->index = vb2->index;
-	buf->fd = vb2->planes[0].m.fd;
+	buf->fd = vb2->memory == VB2_MEMORY_DMABUF ?
+		vb2->planes[0].m.fd : INVALID_FD;
 	buf->data_offset = vb2->planes[0].data_offset;
 	buf->data_size = vb2->planes[0].bytesused - vb2->planes[0].data_offset;
 	buf->buffer_size = vb2->planes[0].length;
@@ -3272,7 +3280,7 @@ int msm_vidc_map_driver_buf(struct msm_vidc_inst *inst,
 		INIT_LIST_HEAD(&map->list);
 		list_add_tail(&map->list, &mappings->list);
 		map->type = buf->type;
-		map->dmabuf = msm_vidc_memory_get_dmabuf(inst, buf->fd);
+		map->dmabuf = msm_vidc_memory_ref_dmabuf(inst, buf->dmabuf);
 		if (!map->dmabuf) {
 			rc = -EINVAL;
 			goto error;
@@ -3357,7 +3365,11 @@ struct msm_vidc_buffer *msm_vidc_get_driver_buf(struct msm_vidc_inst *inst,
 	if (rc)
 		goto error;
 
-	buf->dmabuf = msm_vidc_memory_get_dmabuf(inst, buf->fd);
+	if (vb2->memory == VB2_MEMORY_MMAP)
+		buf->dmabuf = msm_vidc_memory_ref_dmabuf(inst,
+			msm_vb2_dmabuf(vb2->planes[0].mem_priv));
+	else
+		buf->dmabuf = msm_vidc_memory_get_dmabuf(inst, buf->fd);
 	if (!buf->dmabuf)
 		goto error;
 

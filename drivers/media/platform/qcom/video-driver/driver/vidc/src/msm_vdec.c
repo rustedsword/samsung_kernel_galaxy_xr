@@ -96,6 +96,31 @@ struct msm_vdec_prop_type_handle {
 	int (*handle)(struct msm_vidc_inst *inst, enum msm_vidc_port_type port);
 };
 
+/* keep the capture format if the codec has it, else redo it as NV12 */
+static int msm_vdec_keep_capture_fmt(struct msm_vidc_inst *inst)
+{
+	struct msm_vidc_inst_cap *pix_fmts = &inst->capabilities->cap[PIX_FMTS];
+	struct v4l2_format f = inst->fmts[OUTPUT_PORT];
+	u32 colorformat;
+
+	colorformat = v4l2_colorformat_to_driver(f.fmt.pix_mp.pixelformat,
+		__func__);
+	if (colorformat & pix_fmts->step_or_mask) {
+		pix_fmts->value = colorformat;
+		return 0;
+	}
+
+	if (pix_fmts->step_or_mask & MSM_VIDC_FMT_NV12)
+		colorformat = MSM_VIDC_FMT_NV12;
+	else
+		colorformat = pix_fmts->value;
+	f.fmt.pix_mp.pixelformat = v4l2_colorformat_from_driver(colorformat,
+		__func__);
+	f.fmt.pix_mp.width = inst->crop.width;
+	f.fmt.pix_mp.height = inst->crop.height;
+	return msm_vdec_s_fmt(inst, &f);
+}
+
 static int msm_vdec_codec_change(struct msm_vidc_inst *inst, u32 v4l2_codec)
 {
 	int rc = 0;
@@ -124,6 +149,10 @@ static int msm_vdec_codec_change(struct msm_vidc_inst *inst, u32 v4l2_codec)
 		goto exit;
 
 	rc = msm_vidc_get_inst_capability(inst);
+	if (rc)
+		goto exit;
+
+	rc = msm_vdec_keep_capture_fmt(inst);
 	if (rc)
 		goto exit;
 
@@ -1385,10 +1414,31 @@ static int msm_vdec_read_input_subcr_params(struct msm_vidc_inst *inst)
 	return 0;
 }
 
+static bool msm_vdec_capture_fits(struct msm_vidc_inst *inst,
+	struct v4l2_pix_format_mplane *old, struct msm_vidc_rectangle *old_crop,
+	s32 old_bit_depth)
+{
+	struct v4l2_pix_format_mplane *new = &inst->fmts[OUTPUT_PORT].fmt.pix_mp;
+	struct msm_vidc_inst_capability *capability = inst->capabilities;
+
+	return new->width == old->width && new->height == old->height &&
+		new->plane_fmt[0].bytesperline == old->plane_fmt[0].bytesperline &&
+		new->plane_fmt[0].sizeimage <= old->plane_fmt[0].sizeimage &&
+		!memcmp(&inst->crop, old_crop, sizeof(*old_crop)) &&
+		capability->cap[BIT_DEPTH].value == old_bit_depth &&
+		capability->cap[CODED_FRAMES].value == CODED_FRAMES_PROGRESSIVE &&
+		!is_meta_rx_inp_enabled(inst, META_OUTBUF_FENCE) &&
+		inst->bufq[OUTPUT_PORT].vb2q->num_buffers >=
+			inst->buffers.output.min_count;
+}
+
 int msm_vdec_input_port_settings_change(struct msm_vidc_inst *inst)
 {
 	u32 rc = 0;
 	struct v4l2_event event = {0};
+	struct v4l2_pix_format_mplane old = inst->fmts[OUTPUT_PORT].fmt.pix_mp;
+	struct msm_vidc_rectangle old_crop = inst->crop;
+	s32 old_bit_depth = inst->capabilities->cap[BIT_DEPTH].value;
 
 	if (!inst->bufq[INPUT_PORT].vb2q->streaming) {
 		i_vpr_e(inst, "%s: input port not streaming\n",
@@ -1399,6 +1449,18 @@ int msm_vdec_input_port_settings_change(struct msm_vidc_inst *inst)
 	rc = msm_vdec_read_input_subcr_params(inst);
 	if (rc)
 		return rc;
+
+	/*
+	 * Capture was set up before the stream was parsed and still fits:
+	 * resume on our own once the firmware is through, nothing to tell.
+	 */
+	inst->drc_auto_resume = is_sub_state(inst, MSM_VIDC_DRC) &&
+		msm_vdec_capture_fits(inst, &old, &old_crop, old_bit_depth);
+	if (inst->drc_auto_resume) {
+		i_vpr_h(inst, "%s: capture setup fits, no reconfiguration\n",
+			__func__);
+		return 0;
+	}
 
 	event.type = V4L2_EVENT_SOURCE_CHANGE;
 	event.u.src_change.changes = V4L2_EVENT_SRC_CH_RESOLUTION;
@@ -1510,6 +1572,10 @@ int msm_vdec_streamon_input(struct msm_vidc_inst *inst)
 		goto error;
 
 	rc = msm_vidc_process_streamon_input(inst);
+	if (rc)
+		goto error;
+
+	rc = msm_vdec_drc_auto_resume(inst);
 	if (rc)
 		goto error;
 
@@ -2186,6 +2252,63 @@ static int msm_vdec_alloc_and_queue_additional_dpb_buffers(struct msm_vidc_inst 
 	return 0;
 }
 
+static int msm_vdec_resume(struct msm_vidc_inst *inst)
+{
+	int rc = 0;
+
+	/* tune power features */
+	inst->decode_batch.enable = msm_vidc_allow_decode_batch(inst);
+	msm_vidc_allow_dcvs(inst);
+	msm_vidc_power_data_reset(inst);
+
+	/*
+	 * client is completing partial port reconfiguration,
+	 * hence reallocate input internal buffers before input port
+	 * is resumed.
+	 */
+	if (is_sub_state(inst, MSM_VIDC_DRC) &&
+		is_sub_state(inst, MSM_VIDC_DRC_LAST_BUFFER) &&
+		is_sub_state(inst, MSM_VIDC_INPUT_PAUSE)) {
+		rc = msm_vidc_alloc_and_queue_input_internal_buffers(inst);
+		if (rc)
+			return rc;
+
+		rc = msm_vidc_set_stage(inst, STAGE);
+		if (rc)
+			return rc;
+
+		rc = msm_vidc_set_pipe(inst, PIPE);
+		if (rc)
+			return rc;
+	}
+
+	/* allocate and queue extra dpb buffers */
+	rc = msm_vdec_alloc_and_queue_additional_dpb_buffers(inst);
+	if (rc)
+		return rc;
+
+	/* queue pending deferred buffers */
+	rc = msm_vidc_queue_deferred_buffers(inst, MSM_VIDC_BUF_OUTPUT);
+	if (rc)
+		return rc;
+
+	/* print final buffer counts & size details */
+	msm_vidc_print_buffer_info(inst);
+
+	return msm_vidc_process_resume(inst);
+}
+
+int msm_vdec_drc_auto_resume(struct msm_vidc_inst *inst)
+{
+	if (!inst->drc_auto_resume || !is_state(inst, MSM_VIDC_STREAMING) ||
+		!is_sub_state(inst, MSM_VIDC_DRC) ||
+		!is_sub_state(inst, MSM_VIDC_DRC_LAST_BUFFER))
+		return 0;
+
+	inst->drc_auto_resume = false;
+	return msm_vdec_resume(inst);
+}
+
 int msm_vdec_process_cmd(struct msm_vidc_inst *inst, u32 cmd)
 {
 	int rc = 0;
@@ -2226,49 +2349,9 @@ int msm_vdec_process_cmd(struct msm_vidc_inst *inst, u32 cmd)
 		if (!msm_vidc_allow_start(inst))
 			return -EBUSY;
 
-		/* tune power features */
-		inst->decode_batch.enable = msm_vidc_allow_decode_batch(inst);
-		msm_vidc_allow_dcvs(inst);
-		msm_vidc_power_data_reset(inst);
-
-		/*
-		 * client is completing partial port reconfiguration,
-		 * hence reallocate input internal buffers before input port
-		 * is resumed.
-		 */
-		if (is_sub_state(inst, MSM_VIDC_DRC) &&
-			is_sub_state(inst, MSM_VIDC_DRC_LAST_BUFFER) &&
-			is_sub_state(inst, MSM_VIDC_INPUT_PAUSE)) {
-			rc = msm_vidc_alloc_and_queue_input_internal_buffers(inst);
-			if (rc)
-				return rc;
-
-			rc = msm_vidc_set_stage(inst, STAGE);
-			if (rc)
-				return rc;
-
-			rc = msm_vidc_set_pipe(inst, PIPE);
-			if (rc)
-				return rc;
-		}
-
-		/* allocate and queue extra dpb buffers */
-		rc = msm_vdec_alloc_and_queue_additional_dpb_buffers(inst);
+		rc = msm_vdec_resume(inst);
 		if (rc)
 			return rc;
-
-		/* queue pending deferred buffers */
-		rc = msm_vidc_queue_deferred_buffers(inst, MSM_VIDC_BUF_OUTPUT);
-		if (rc)
-			return rc;
-
-		/* print final buffer counts & size details */
-		msm_vidc_print_buffer_info(inst);
-
-		rc = msm_vidc_process_resume(inst);
-		if (rc)
-			return rc;
-
 	} else {
 		i_vpr_e(inst, "%s: unknown cmd %d\n", __func__, cmd);
 		return -EINVAL;
@@ -2550,6 +2633,12 @@ int msm_vdec_s_selection(struct msm_vidc_inst* inst, struct v4l2_selection* s)
 		d_vpr_e("%s: invalid params\n", __func__);
 		return -EINVAL;
 	}
+
+	/* the decoded rectangle comes from the stream, report it back */
+	if (s->type == V4L2_BUF_TYPE_VIDEO_CAPTURE &&
+		(s->target == V4L2_SEL_TGT_CROP || s->target == V4L2_SEL_TGT_COMPOSE))
+		return msm_vdec_g_selection(inst, s);
+
 	i_vpr_e(inst, "%s: unsupported\n", __func__);
 	return -EINVAL;
 }
@@ -2680,7 +2769,8 @@ int msm_vdec_enum_fmt(struct msm_vidc_inst *inst, struct v4l2_fmtdesc *f)
 				__func__);
 		if (!f->pixelformat)
 			return -EINVAL;
-		f->flags = V4L2_FMT_FLAG_COMPRESSED;
+		f->flags = V4L2_FMT_FLAG_COMPRESSED |
+			V4L2_FMT_FLAG_DYN_RESOLUTION;
 		strlcpy(f->description, "codec", sizeof(f->description));
 	} else if (f->type == OUTPUT_MPLANE) {
 		u32 formats = inst->capabilities->cap[PIX_FMTS].step_or_mask;
@@ -2773,7 +2863,7 @@ int msm_vdec_inst_init(struct msm_vidc_inst *inst)
 
 	f = &inst->fmts[OUTPUT_PORT];
 	f->type = OUTPUT_MPLANE;
-	f->fmt.pix_mp.pixelformat = V4L2_PIX_FMT_VIDC_NV12C;
+	f->fmt.pix_mp.pixelformat = V4L2_PIX_FMT_NV12;
 	f->fmt.pix_mp.width = VIDEO_Y_STRIDE_PIX(f->fmt.pix_mp.pixelformat,
 		DEFAULT_WIDTH);
 	f->fmt.pix_mp.height = VIDEO_Y_SCANLINES(f->fmt.pix_mp.pixelformat,
