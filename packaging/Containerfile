@@ -1,0 +1,18 @@
+FROM docker.io/library/ubuntu:26.10
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+COPY control /src/debian/control
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+    build-essential \
+    ca-certificates \
+    devscripts \
+    gnupg2 \
+    lintian \
+    pinentry-curses \
+    ubuntu-dev-tools \
+ && apt-get build-dep -y /src \
+ && rm -rf /var/lib/apt/lists/* /src
+
+CMD ["bash"]
