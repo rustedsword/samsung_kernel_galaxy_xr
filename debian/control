@@ -37,9 +37,9 @@ Description: Linux 5.10.240-1-lightofmysoul-galaxyxr for the Samsung Galaxy XR
 
 Package: linux-image-galaxyxr
 Architecture: arm64
-Depends: linux-image-5.10.240-1-lightofmysoul-galaxyxr (= ${binary:Version}), galaxyxr-boot, linux-firmware,
- ${misc:Depends}
+Depends: linux-image-5.10.240-1-lightofmysoul-galaxyxr (= ${binary:Version}), galaxyxr-initramfs-android-crap, linux-firmware,
+ xrboot-kernel-install, ${misc:Depends}
 Description: Linux for the Samsung Galaxy XR (the newest kernel)
- Depends on the newest Galaxy XR kernel, on galaxyxr-boot, which puts
- it on XRBOOT, and on linux-firmware, and blacklists the modules of
- Samsung's vendor blocklist.
+ Depends on the newest Galaxy XR kernel, on xrboot-kernel-install,
+ which puts it on XRBOOT, on galaxyxr-initramfs-android-crap and on
+ linux-firmware, and blacklists the modules of Samsung's vendor blocklist.
