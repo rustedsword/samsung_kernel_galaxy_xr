@@ -1,0 +1,45 @@
+Source: linux-galaxyxr
+Section: kernel
+Priority: optional
+Maintainer: Stanislav Aleksandrov <lightofmysoul@gmail.com>
+Build-Depends:
+ bc,
+ bison,
+ clang:native,
+ cpio,
+ debhelper-compat (= 13),
+ flex,
+ kmod,
+ libelf-dev:native,
+ libssl-dev:native,
+ lld:native,
+ llvm:native,
+ openssl,
+ perl:native,
+ python3:native,
+ rsync,
+ xz-utils,
+Rules-Requires-Root: no
+Standards-Version: 4.7.4
+Homepage: https://github.com/rustedsword/samsung_kernel_galaxy_xr
+Vcs-Browser: https://github.com/rustedsword/samsung_kernel_galaxy_xr
+Vcs-Git: https://github.com/rustedsword/samsung_kernel_galaxy_xr.git -b I610UES3AZJ2_fixed
+
+Package: linux-image-@RELEASE@
+Architecture: arm64
+Depends: kmod, ${misc:Depends}
+Recommends: linux-firmware
+Description: Linux @RELEASE@ for the Samsung Galaxy XR
+ The kernel as a plain arm64 Image, which XrBoot starts through its
+ EFI stub, its modules, the Galaxy XR device trees (the base trees and
+ the board overlays XrBoot builds the tree from) and the options the
+ kernel needs on its command line.
+
+Package: linux-image-galaxyxr
+Architecture: arm64
+Depends: linux-image-@RELEASE@ (= ${binary:Version}), galaxyxr-boot, linux-firmware,
+ ${misc:Depends}
+Description: Linux for the Samsung Galaxy XR (the newest kernel)
+ Depends on the newest Galaxy XR kernel, on galaxyxr-boot, which puts
+ it on XRBOOT, and on linux-firmware, and blacklists the modules of
+ Samsung's vendor blocklist.

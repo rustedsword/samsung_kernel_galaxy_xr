@@ -1,0 +1,6 @@
+console=null
+efi=noruntime,novamap
+pcie_ports=compat
+sec_debug.debug_level=0x4f4c
+common_muic.muic_param_pmic_info=3
+can.stats_timer=0

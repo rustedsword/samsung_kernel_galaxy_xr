@@ -1,0 +1,64 @@
+#!/usr/bin/make -f
+
+include /usr/share/dpkg/architecture.mk
+include /usr/share/dpkg/buildopts.mk
+include /usr/share/dpkg/pkg-info.mk
+
+unexport CFLAGS CPPFLAGS CXXFLAGS LDFLAGS
+
+KERNEL := $(shell sed -n 's/^\(VERSION\|PATCHLEVEL\|SUBLEVEL\) = //p' Makefile | paste -s -d .)
+ABI := $(shell echo '$(DEB_VERSION)' | sed -E 's/^[0-9]+\.[0-9]+\.[0-9]+\.([0-9]+).*/\1/')
+SUFFIX := $(shell sed -n 's/^CONFIG_LOCALVERSION="\(.*\)"$$/\1/p' arch/arm64/configs/galaxyxr_defconfig)
+RELEASE := $(KERNEL)-$(ABI)$(SUFFIX)
+IMAGE := debian/linux-image-$(RELEASE)
+ifneq ($(KERNEL).$(ABI),$(firstword $(subst ~, ,$(DEB_VERSION))))
+$(error debian/changelog: the version must be $(KERNEL).ABI~YY.MM.N, not $(DEB_VERSION))
+endif
+OUT := $(CURDIR)/debian/build
+DT_DIRS := vendor/qcom samsung/xrvst2
+MODULE_LISTS := Documentation/galaxyxr/samsung-build
+DEPMOD_FILES := $(addprefix modules.,alias alias.bin builtin.alias.bin builtin.bin dep dep.bin devname softdep \
+	symbols symbols.bin weakdep)
+
+KMAKE := $(MAKE) O=$(OUT) ARCH=arm64 LLVM=1 LLVM_IAS=1 LOCALVERSION=-$(ABI)$(SUFFIX) \
+	KBUILD_BUILD_VERSION=$(DEB_VERSION) KBUILD_BUILD_TIMESTAMP='$(shell date -u -d @$(SOURCE_DATE_EPOCH))'
+ifneq ($(DEB_BUILD_GNU_TYPE),$(DEB_HOST_GNU_TYPE))
+KMAKE += CROSS_COMPILE=$(DEB_HOST_GNU_TYPE)-
+endif
+
+%:
+	dh $@
+
+override_dh_auto_clean:
+	rm -rf $(OUT)
+	sed 's/@RELEASE@/$(RELEASE)/g' debian/control.in > debian/control
+
+override_dh_auto_configure:
+	$(KMAKE) galaxyxr_defconfig
+	scripts/config --file $(OUT)/.config --set-str LOCALVERSION ''
+	$(KMAKE) olddefconfig
+
+override_dh_auto_build:
+	$(KMAKE) -j$(or $(DEB_BUILD_OPTION_PARALLEL),1) Image modules dtbs
+	test "$$(cat $(OUT)/include/config/kernel.release)" = $(RELEASE)
+
+override_dh_auto_test override_dh_strip override_dh_dwz:
+
+override_dh_auto_install:
+	install -D -m 0644 $(OUT)/arch/arm64/boot/Image $(IMAGE)/boot/vmlinuz-$(RELEASE)
+	install -m 0644 $(OUT)/System.map $(IMAGE)/boot/System.map-$(RELEASE)
+	install -m 0644 $(OUT)/.config $(IMAGE)/boot/config-$(RELEASE)
+	$(KMAKE) INSTALL_MOD_PATH=$(CURDIR)/$(IMAGE)/usr INSTALL_MOD_STRIP=1 modules_install
+	cd $(IMAGE)/usr/lib/modules/$(RELEASE) && rm -f build source $(DEPMOD_FILES)
+	install -m 0644 $(MODULE_LISTS)/modules.list.anorak $(MODULE_LISTS)/modules.vendor_blocklist.anorak \
+		$(IMAGE)/usr/lib/modules/$(RELEASE)/
+	install -d debian/linux-image-galaxyxr/usr/lib/modprobe.d
+	awk '$$1 == "blocklist" && !seen[$$2]++ { print "blacklist", $$2 }' \
+		$(MODULE_LISTS)/modules.vendor_blocklist.anorak \
+		> debian/linux-image-galaxyxr/usr/lib/modprobe.d/linux-image-galaxyxr.conf
+	install -D -m 0644 debian/cmdline $(IMAGE)/usr/lib/linux-image-$(RELEASE)/cmdline
+	set -e; for dir in $(DT_DIRS); do \
+		install -d $(IMAGE)/usr/lib/linux-image-$(RELEASE)/$$dir; \
+		find $(OUT)/arch/arm64/boot/dts/$$dir -maxdepth 1 \( -name '*.dtb' -o -name '*.dtbo' \) \
+			-exec install -m 0644 -t $(IMAGE)/usr/lib/linux-image-$(RELEASE)/$$dir {} +; \
+	done

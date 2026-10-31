@@ -1,0 +1,7 @@
+/build/
+/.debhelper/
+/debhelper-build-stamp
+/files
+/*.substvars
+/*.debhelper.log
+/linux-image-*/

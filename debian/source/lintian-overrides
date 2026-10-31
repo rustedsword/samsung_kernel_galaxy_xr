@@ -1,0 +1,3 @@
+linux-galaxyxr source: license-problem-gfdl-invariants
+linux-galaxyxr source: source-contains-prebuilt-windows-binary [tools/perf/tests/pe-file.exe]
+linux-galaxyxr source: source-contains-prebuilt-windows-binary [tools/perf/tests/pe-file.exe.debug]
