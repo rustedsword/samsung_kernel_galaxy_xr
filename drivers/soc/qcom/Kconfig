@@ -1178,6 +1178,13 @@ config QCOM_SMCINVOKE
 	 and high level operating system. It exposes APIs for both
 	 userspace and kernel clients.
 
+config QCOM_USER_QSEE
+	tristate "QSEECom compat trusted applications for user space"
+	depends on QCOM_SMCINVOKE
+	help
+	  /dev/qsee loads a QSEECom compat trusted application, long
+	  distinguished names too, and sends it requests.
+
 config QCOM_GUESTVM
 	tristate "Enable Guest VM to be loaded by PIL"
 	select QCOM_MDT_LOADER
