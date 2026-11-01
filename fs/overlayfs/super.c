@@ -389,6 +389,8 @@ static int ovl_show_options(struct seq_file *m, struct dentry *dentry)
 			   ofs->config.metacopy ? "on" : "off");
 	if (ofs->config.ovl_volatile)
 		seq_puts(m, ",volatile");
+	if (ofs->config.userxattr)
+		seq_puts(m, ",userxattr");
 	if (ofs->config.override_creds != ovl_override_creds_def)
 		seq_show_option(m, "override_creds",
 				ofs->config.override_creds ? "on" : "off");
@@ -437,6 +439,7 @@ enum {
 	OPT_INDEX_ON,
 	OPT_INDEX_OFF,
 	OPT_NFS_EXPORT_ON,
+	OPT_USERXATTR,
 	OPT_NFS_EXPORT_OFF,
 	OPT_XINO_ON,
 	OPT_XINO_OFF,
@@ -457,6 +460,7 @@ static const match_table_t ovl_tokens = {
 	{OPT_REDIRECT_DIR,		"redirect_dir=%s"},
 	{OPT_INDEX_ON,			"index=on"},
 	{OPT_INDEX_OFF,			"index=off"},
+	{OPT_USERXATTR,			"userxattr"},
 	{OPT_NFS_EXPORT_ON,		"nfs_export=on"},
 	{OPT_NFS_EXPORT_OFF,		"nfs_export=off"},
 	{OPT_XINO_ON,			"xino=on"},
@@ -624,6 +628,10 @@ static int ovl_parse_opt(char *opt, struct ovl_config *config)
 			config->override_creds = false;
 			break;
 
+		case OPT_USERXATTR:
+			config->userxattr = true;
+			break;
+
 		default:
 			pr_err("unrecognized mount option \"%s\" or missing value\n",
 					p);
@@ -725,6 +733,28 @@ static int ovl_parse_opt(char *opt, struct ovl_config *config)
 			pr_info("disabling metacopy due to nfs_export=on\n");
 			config->metacopy = false;
 		}
+	}
+
+
+	/* Resolve userxattr -> !redirect && !metacopy dependency */
+	if (config->userxattr) {
+		if (config->redirect_follow && redirect_opt) {
+			pr_err("conflicting options: userxattr,redirect_dir=%s\n",
+			       config->redirect_mode);
+			return -EINVAL;
+		}
+		if (config->metacopy && metacopy_opt) {
+			pr_err("conflicting options: userxattr,metacopy=on\n");
+			return -EINVAL;
+		}
+		/*
+		 * Silently disable default setting of redirect and metacopy.
+		 * This shall be the default in the future as well: these
+		 * options must be explicitly enabled if used together with
+		 * userxattr.
+		 */
+		config->redirect_dir = config->redirect_follow = false;
+		config->metacopy = false;
 	}
 
 	return 0;
@@ -1082,8 +1112,14 @@ ovl_posix_acl_default_xattr_handler = {
 	.set = ovl_posix_acl_xattr_set,
 };
 
-static const struct xattr_handler ovl_own_xattr_handler = {
-	.prefix	= OVL_XATTR_PREFIX,
+static const struct xattr_handler ovl_own_trusted_xattr_handler = {
+	.prefix	= OVL_XATTR_TRUSTED_PREFIX,
+	.get = ovl_own_xattr_get,
+	.set = ovl_own_xattr_set,
+};
+
+static const struct xattr_handler ovl_own_user_xattr_handler = {
+	.prefix	= OVL_XATTR_USER_PREFIX,
 	.get = ovl_own_xattr_get,
 	.set = ovl_own_xattr_set,
 };
@@ -1094,12 +1130,22 @@ static const struct xattr_handler ovl_other_xattr_handler = {
 	.set = ovl_other_xattr_set,
 };
 
-static const struct xattr_handler *ovl_xattr_handlers[] = {
+static const struct xattr_handler *ovl_trusted_xattr_handlers[] = {
 #ifdef CONFIG_FS_POSIX_ACL
 	&ovl_posix_acl_access_xattr_handler,
 	&ovl_posix_acl_default_xattr_handler,
 #endif
-	&ovl_own_xattr_handler,
+	&ovl_own_trusted_xattr_handler,
+	&ovl_other_xattr_handler,
+	NULL
+};
+
+static const struct xattr_handler *ovl_user_xattr_handlers[] = {
+#ifdef CONFIG_FS_POSIX_ACL
+	&ovl_posix_acl_access_xattr_handler,
+	&ovl_posix_acl_default_xattr_handler,
+#endif
+	&ovl_own_user_xattr_handler,
 	&ovl_other_xattr_handler,
 	NULL
 };
@@ -1362,14 +1408,17 @@ static int ovl_make_workdir(struct super_block *sb, struct ovl_fs *ofs,
 		pr_warn("upper fs does not support RENAME_WHITEOUT.\n");
 
 	/*
-	 * Check if upper/work fs supports trusted.overlay.* xattr
+	 * Check if upper/work fs supports (trusted|user).overlay.* xattr
 	 */
 	err = ovl_do_setxattr(ofs, ofs->workdir, OVL_XATTR_OPAQUE, "0", 1);
 	if (err) {
+		pr_warn("failed to set xattr on upper\n");
 		ofs->noxattr = true;
 		ofs->config.index = false;
 		ofs->config.metacopy = false;
-		pr_warn("upper fs does not support xattr, falling back to index=off and metacopy=off.\n");
+		pr_warn("...falling back to index=off and metacopy=off.\n");
+		if (err == -EPERM && !ofs->config.userxattr)
+			pr_info("try mounting with 'userxattr' option\n");
 		err = 0;
 	} else {
 		ovl_do_removexattr(ofs, ofs->workdir, OVL_XATTR_OPAQUE);
@@ -1501,10 +1550,10 @@ static int ovl_get_indexdir(struct super_block *sb, struct ovl_fs *ofs,
 
 		/*
 		 * Verify upper root is exclusively associated with index dir.
-		 * Older kernels stored upper fh in "trusted.overlay.origin"
+		 * Older kernels stored upper fh in ".overlay.origin"
 		 * xattr. If that xattr exists, verify that it is a match to
 		 * upper dir file handle. In any case, verify or set xattr
-		 * "trusted.overlay.upper" to indicate that index may have
+		 * ".overlay.upper" to indicate that index may have
 		 * directory entries.
 		 */
 		if (ovl_check_origin_xattr(ofs, ofs->indexdir)) {
@@ -1909,6 +1958,10 @@ static int ovl_fill_super(struct super_block *sb, void *data, int silent)
 	unsigned int numlower;
 	int err;
 
+	err = -EIO;
+	if (WARN_ON(sb->s_user_ns != current_user_ns()))
+		goto out;
+
 	sb->s_d_op = &ovl_dentry_operations;
 
 	err = -ENOMEM;
@@ -1930,6 +1983,12 @@ static int ovl_fill_super(struct super_block *sb, void *data, int silent)
 	err = ovl_parse_opt((char *) data, &ofs->config);
 	if (err)
 		goto out_err;
+
+	err = -EPERM;
+	if (!ofs->config.override_creds && sb->s_user_ns != &init_user_ns) {
+		pr_err("override_creds=off is not allowed in a user namespace\n");
+		goto out_err;
+	}
 
 	err = -EINVAL;
 	if (!ofs->config.lowerdir) {
@@ -2049,7 +2108,8 @@ static int ovl_fill_super(struct super_block *sb, void *data, int silent)
 	cap_lower(cred->cap_effective, CAP_SYS_RESOURCE);
 
 	sb->s_magic = OVERLAYFS_SUPER_MAGIC;
-	sb->s_xattr = ovl_xattr_handlers;
+	sb->s_xattr = ofs->config.userxattr ? ovl_user_xattr_handlers :
+		ovl_trusted_xattr_handlers;
 	sb->s_fs_info = ofs;
 	sb->s_flags |= SB_POSIXACL;
 	sb->s_iflags |= SB_I_SKIP_SYNC;
@@ -2085,6 +2145,7 @@ static struct dentry *ovl_mount(struct file_system_type *fs_type, int flags,
 static struct file_system_type ovl_fs_type = {
 	.owner		= THIS_MODULE,
 	.name		= "overlay",
+	.fs_flags	= FS_USERNS_MOUNT,
 	.mount		= ovl_mount,
 	.kill_sb	= kill_anon_super,
 };

@@ -1753,9 +1753,17 @@ static ssize_t incfs_setxattr(struct dentry *d, const char *name,
 	size_t *stored_size;
 	int i;
 
-	if (di && di->backing_path.dentry)
-		return vfs_setxattr(di->backing_path.dentry, name, value, size,
-				    flags);
+	if (di && di->backing_path.dentry) {
+		struct dentry *backing_dentry = di->backing_path.dentry;
+		struct inode *backing_inode = d_inode(backing_dentry);
+		int error;
+
+		inode_lock(backing_inode);
+		error = __vfs_setxattr_locked(backing_dentry, name, value,
+					      size, flags, NULL);
+		inode_unlock(backing_inode);
+		return error;
+	}
 
 	if (strcmp(name, "security.selinux"))
 		return -ENODATA;
