@@ -2,9 +2,16 @@
 # SPDX-License-Identifier: GPL-2.0-only
 set -euo pipefail
 
-. /packaging/common.sh
+say() {
+    printf '\033[1;34m==>\033[0m %s\n' "$*"
+}
 
-for variable_name in TARGETS PPA_REMOTE GPG_KEY UNSIGNED NO_UPLOAD; do
+die() {
+    printf '\033[1;31merror:\033[0m %s\n' "$*" >&2
+    exit 1
+}
+
+for variable_name in SOURCE SERIES VERSION PPA_REMOTE GPG_KEY UNSIGNED NO_UPLOAD TEST_BUILD TEST_BUILD_JOBS; do
     [ -n "${!variable_name+x}" ] || die "missing environment variable: $variable_name"
 done
 [ -f /work/source.tar ] || die "no /work/source.tar"
@@ -22,59 +29,55 @@ verify_sha256_manifest() {
     (cd "$(dirname -- "$1")" && printf '%s\n' "$checksums" | sha256sum --check --strict --quiet -)
 }
 
-build_source_package() {
-    local series=$1 version=$2
-    local dir=$WORK/$series
-    local src=$dir/$SOURCE-$version
-    install -d "$src"
-    tar -C "$src" -xf /work/source.tar
+src=$WORK/$SOURCE-$VERSION
+install -d "$src"
+tar -C "$src" -xf /work/source.tar
 
-    sed -i -E "1s/^($SOURCE) \([^)]*\) [^;]*;/\1 ($version) $series;/" "$src/debian/changelog"
-    [ "$(dpkg-parsechangelog -l"$src/debian/changelog" -SVersion)" = "$version" ] ||
-        die "cannot set the changelog version to $version"
-    [ "$(dpkg-parsechangelog -l"$src/debian/changelog" -SDistribution)" = "$series" ] ||
-        die "cannot set the changelog series to $series"
+sed -i -E "1s/^($SOURCE) \([^)]*\) [^;]*;/\1 ($VERSION) $SERIES;/" "$src/debian/changelog"
+[ "$(dpkg-parsechangelog -l"$src/debian/changelog" -SVersion)" = "$VERSION" ] ||
+    die "cannot set the changelog version to $VERSION"
+[ "$(dpkg-parsechangelog -l"$src/debian/changelog" -SDistribution)" = "$SERIES" ] ||
+    die "cannot set the changelog series to $SERIES"
 
-    local args=(-S -sa -d)
-    if [ "$UNSIGNED" -eq 1 ]; then
-        args+=(-us -uc)
-    else
-        args+=("-k$GPG_KEY")
-    fi
-    say "Creating the $series source package $version"
-    (cd "$src" && dpkg-buildpackage "${args[@]}")
+args=(-S -sa -d)
+if [ "$UNSIGNED" -eq 1 ]; then
+    args+=(-us -uc)
+else
+    args+=("-k$GPG_KEY")
+fi
+say "Creating the $SERIES source package $VERSION"
+(cd "$src" && dpkg-buildpackage "${args[@]}")
+rm -rf -- "$src"
 
-    local changes=$dir/${SOURCE}_${version}_source.changes
-    local dsc=$dir/${SOURCE}_${version}.dsc
-    [ -f "$changes" ] && [ -f "$dsc" ] || die "dpkg-buildpackage left no $changes or $dsc"
-    say "Checking the checksums"
-    verify_sha256_manifest "$dsc"
-    verify_sha256_manifest "$changes"
-    if [ "$UNSIGNED" -eq 0 ]; then
-        say "Checking the signatures"
-        gpg --batch --verify "$dsc"
-        gpg --batch --verify "$changes"
-    fi
-    say "Checking that the source package extracts"
-    dpkg-source --no-check -x "$dsc" "$dir/extracted" > /dev/null
-    rm -rf -- "$dir/extracted" "$src"
-    say "lintian"
-    lintian --display-info "$changes"
+changes=$WORK/${SOURCE}_${VERSION}_source.changes
+dsc=$WORK/${SOURCE}_${VERSION}.dsc
+[ -f "$changes" ] && [ -f "$dsc" ] || die "dpkg-buildpackage left no $changes or $dsc"
+say "Checking the checksums"
+verify_sha256_manifest "$dsc"
+verify_sha256_manifest "$changes"
+if [ "$UNSIGNED" -eq 0 ]; then
+    say "Checking the signatures"
+    gpg --batch --verify "$dsc"
+    gpg --batch --verify "$changes"
+fi
+say "Checking that the source package extracts"
+dpkg-source --no-check -x "$dsc" "$WORK/extracted" > /dev/null
+say "lintian"
+lintian --display-info "$changes"
 
-    find "$dir" -maxdepth 1 -type f -exec cp -a -t /out {} +
-    UPLOADS+=("$changes")
-}
+if [ "$TEST_BUILD" -eq 1 ]; then
+    # The extracted package, not the tree: dpkg-source leaves files out of the tarball Launchpad builds
+    say "Building the arm64 packages from the source package ($TEST_BUILD_JOBS jobs)"
+    (cd "$WORK/extracted" && DEB_BUILD_OPTIONS="parallel=$TEST_BUILD_JOBS" dpkg-buildpackage -a arm64 -b -us -uc)
+    say "lintian on the packages"
+    lintian --fail-on none "$WORK/${SOURCE}_${VERSION}_arm64.changes"
+fi
+rm -rf -- "$WORK/extracted"
 
-UPLOADS=()
-for target in $TARGETS; do
-    build_source_package "${target%%=*}" "${target#*=}"
-done
-
+find "$WORK" -maxdepth 1 -type f -exec cp -a -t /out {} +
 if [ "$NO_UPLOAD" -eq 1 ]; then
     say "Upload skipped"
 else
-    for changes in "${UPLOADS[@]}"; do
-        say "Uploading ${changes##*/} to $PPA_REMOTE"
-        dput "$PPA_REMOTE" "$changes"
-    done
+    say "Uploading ${changes##*/} to $PPA_REMOTE"
+    dput "$PPA_REMOTE" "$changes"
 fi

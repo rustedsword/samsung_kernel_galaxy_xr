@@ -1,16 +1,19 @@
 # Packaging
 
-Ubuntu packages of this kernel, built in an Ubuntu 26.10 image with
-podman (`Containerfile`, rebuilt when it or `debian/control` changes).
+`publish.sh` builds signed source packages (3.0 native, the tree at
+HEAD) for `ppa:lightofmysoul/gxr` in an Ubuntu image of each series
+with podman (`Containerfile`, rebuilt when it or `debian/control`
+changes), checks them (checksums, signatures, extraction, lintian) and
+uploads them with dput (`inside-container.sh`); Launchpad builds them.
 
-- `build-debs.sh`: `linux-image-RELEASE` and `linux-image-galaxyxr`
-  from the working tree into `out/deb/`, then lintian. `-nc` reuses the
-  previous build. On an arm64 Ubuntu machine, `dpkg-buildpackage -b` in
-  the tree does the same without podman.
-- `publish.sh`: signed source packages (3.0 native, the tree at HEAD)
-  for `ppa:lightofmysoul/gxr`, checked (checksums, signatures,
-  extraction, lintian) and uploaded with dput; Launchpad builds them.
-  `--no-upload`, `--unsigned` and `--allow-dirty` stop short of that.
+- `--test-build` first builds `linux-image-RELEASE` and
+  `linux-image-galaxyxr` from the source package, cross on a PC and
+  natively on arm64; they stay in `out/publish/` for `dpkg -i`.
+- `--no-upload`, `--unsigned` and `--allow-dirty` stop short of the
+  upload; `--allow-dirty --test-build --no-upload` builds the working
+  tree.
+- On an arm64 Ubuntu machine, `dpkg-buildpackage -b` in the tree builds
+  the packages without podman.
 
 ## Versions
 

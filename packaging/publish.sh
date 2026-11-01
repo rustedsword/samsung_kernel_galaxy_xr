@@ -2,13 +2,29 @@
 # SPDX-License-Identifier: GPL-2.0-only
 set -euo pipefail
 
-. "$(dirname -- "${BASH_SOURCE[0]}")/common.sh"
-
 PPA_REMOTE=${PPA_REMOTE:-ppa:lightofmysoul/gxr}
 PPA_PACKAGES_URL=${PPA_PACKAGES_URL:-https://launchpad.net/~lightofmysoul/+archive/ubuntu/gxr/+packages}
 GPG_KEY=${GPG_KEY_FINGERPRINT:-C21DA3A97F220CA130545721B179022596F6BFCD}
 declare -A UBUNTU_VERSIONS=([resolute]=26.04 [stonking]=26.10)
+SOURCE=linux-galaxyxr
 
+say() {
+    printf '\033[1;34m==>\033[0m %s\n' "$*"
+}
+
+warn() {
+    printf '\033[1;33mwarning:\033[0m %s\n' "$*" >&2
+}
+
+die() {
+    printf '\033[1;31merror:\033[0m %s\n' "$*" >&2
+    exit 1
+}
+
+PACKAGING_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)
+TREE=$(cd -- "$PACKAGING_DIR/.." && pwd -P)
+
+TEST_BUILD=0
 NO_UPLOAD=0
 UNSIGNED=0
 ALLOW_DIRTY=0
@@ -19,8 +35,8 @@ usage() {
 Usage: packaging/publish.sh [OPTIONS]
 
 Builds a source package of $SOURCE (3.0 native, the tree at HEAD) per
-Ubuntu series in the Ubuntu image (podman), checks it and uploads it,
-signed, to $PPA_REMOTE; Launchpad builds the binaries.
+Ubuntu series in an Ubuntu image of that series (podman), checks it and
+uploads it, signed, to $PPA_REMOTE; Launchpad builds the binaries.
 
 The newest debian/changelog entry gives the version, KERNEL.ABI~YY.MM.N
 for its series; every series gets KERNEL.ABI with its own ~YY.MM.N. ABI
@@ -28,6 +44,8 @@ names the release, KERNEL-ABI-lightofmysoul-galaxyxr: raise it with every
 upload that changes the kernel.
 
   --series CODENAME  Publish to this series (default: stonking); repeatable.
+  --test-build       Build the packages (arm64) from the source package
+                     first; nothing is uploaded unless they build.
   --no-upload        Build, sign and check, but don't upload.
   --unsigned         Build and check without the key; implies --no-upload.
   --allow-dirty      Use the working tree; only with --no-upload.
@@ -35,7 +53,9 @@ upload that changes the kernel.
   --ppa TARGET       dput target (default: $PPA_REMOTE).
   -h, --help         Show this help.
 
-The artifacts stay in out/publish/. The host needs podman, git and gpg.
+The artifacts, and the packages of --test-build, stay in out/publish/.
+TEST_BUILD_JOBS sets its parallel jobs (default: up to 12). The host
+needs podman, git and gpg.
 EOF
 }
 
@@ -45,6 +65,10 @@ while [ "$#" -gt 0 ]; do
             [ "$#" -ge 2 ] || die "--series needs an Ubuntu codename"
             SELECTED_SERIES+=("$2")
             shift 2
+            ;;
+        --test-build)
+            TEST_BUILD=1
+            shift
             ;;
         --no-upload)
             NO_UPLOAD=1
@@ -114,10 +138,10 @@ pattern="^(${kernel//./\\.}\\.[0-9]+)~([0-9]+\\.[0-9]+)\\.([0-9]+)\$"
 base=${BASH_REMATCH[1]}
 revision=${BASH_REMATCH[3]}
 
-targets=()
-for series in "${SELECTED_SERIES[@]}"; do
-    targets+=("$series=$base~${UBUNTU_VERSIONS[$series]}.$revision")
-done
+jobs=${TEST_BUILD_JOBS:-$(getconf _NPROCESSORS_ONLN)}
+if [ -z "${TEST_BUILD_JOBS:-}" ] && [ "$jobs" -gt 12 ]; then
+    jobs=12
+fi
 
 gnupg=
 cleanup() {
@@ -140,26 +164,42 @@ else
     warn "building unsigned source packages; nothing is uploaded"
 fi
 
-builder_image
+builder_image() {
+    local series=$1 image=$2 inputs
+    inputs=$(cat "$PACKAGING_DIR/Containerfile" "$TREE/debian/control" | sha256sum)
+    inputs=${inputs%% *}
+    if [ "$(podman image inspect --format "{{ index .Labels \"org.$SOURCE.inputs\" }}" "$image" 2> /dev/null)" != "$inputs" ]; then
+        say "Building the Ubuntu $series image $image"
+        podman build --build-arg "SERIES=$series" --label "org.$SOURCE.inputs=$inputs" --tag "$image" \
+            --file "$PACKAGING_DIR/Containerfile" "$TREE/debian"
+        podman image prune -f --filter "label=org.$SOURCE.inputs" > /dev/null
+    fi
+}
 
 run_dir=$TREE/out/publish/$SOURCE-$base-$(date -u +%Y%m%dT%H%M%SZ)
 mkdir -p -- "$run_dir/work"
 if [ -n "$status" ]; then
-    tree_files | tar -C "$TREE" --null -T - -cf "$run_dir/work/source.tar"
+    {
+        git -C "$TREE" ls-files -z --cached -- . ':(exclude)packaging'
+        git -C "$TREE" ls-files -z --others --exclude-standard -- debian
+    } | tar -C "$TREE" --null -T - -cf "$run_dir/work/source.tar"
 else
     git -C "$TREE" archive --format=tar HEAD -- . ':(exclude)packaging' > "$run_dir/work/source.tar"
 fi
 
-say "Building $SOURCE $base for ${SELECTED_SERIES[*]}"
-podman "${container_args[@]}" \
-    -v "$run_dir/work:/work:ro" -v "$run_dir:/out" -v "$PACKAGING_DIR:/packaging:ro" \
-    -e "TARGETS=${targets[*]}" -e "PPA_REMOTE=$PPA_REMOTE" -e "GPG_KEY=$GPG_KEY" \
-    -e "UNSIGNED=$UNSIGNED" -e "NO_UPLOAD=$NO_UPLOAD" \
-    "$IMAGE" bash /packaging/inside-container.sh
+for series in "${SELECTED_SERIES[@]}"; do
+    image=$SOURCE-builder-$series
+    builder_image "$series" "$image"
+    say "Building $SOURCE $base for $series"
+    podman "${container_args[@]}" \
+        -v "$run_dir/work:/work:ro" -v "$run_dir:/out" -v "$PACKAGING_DIR:/packaging:ro" \
+        -e "SOURCE=$SOURCE" -e "SERIES=$series" -e "VERSION=$base~${UBUNTU_VERSIONS[$series]}.$revision" \
+        -e "PPA_REMOTE=$PPA_REMOTE" -e "GPG_KEY=$GPG_KEY" -e "UNSIGNED=$UNSIGNED" -e "NO_UPLOAD=$NO_UPLOAD" \
+        -e "TEST_BUILD=$TEST_BUILD" -e "TEST_BUILD_JOBS=$jobs" \
+        "$image" bash /packaging/inside-container.sh
+done
 
 rm -rf -- "$run_dir/work"
-changes=$(find "$run_dir" -maxdepth 1 -name "${SOURCE}_*_source.changes" | wc -l)
-[ "$changes" -eq "${#targets[@]}" ] || die "expected ${#targets[@]} source .changes files, found $changes"
 say "Artifacts: $run_dir"
 (cd "$run_dir" && sha256sum -- *)
 [ "$NO_UPLOAD" -eq 1 ] || say "Uploaded; watch $PPA_PACKAGES_URL"
