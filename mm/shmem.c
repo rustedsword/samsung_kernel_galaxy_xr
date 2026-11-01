@@ -102,6 +102,9 @@ static struct vfsmount *shm_mnt;
 /* Pretend that each entry is of this size in directory's i_size */
 #define BOGO_DIRENT_SIZE 20
 
+/* Pretend that one inode + its dentry occupy this much memory */
+#define BOGO_INODE_SIZE 1024
+
 /* Symlink up to this size is kmalloc'ed instead of using a swappable page */
 #define SHORT_SYMLINK_LEN 128
 
@@ -144,7 +147,8 @@ static unsigned long shmem_default_max_inodes(void)
 {
 	unsigned long nr_pages = totalram_pages();
 
-	return min(nr_pages - totalhigh_pages(), nr_pages / 2);
+	return min3(nr_pages - totalhigh_pages(), nr_pages / 2,
+			ULONG_MAX / BOGO_INODE_SIZE);
 }
 #endif
 
@@ -291,11 +295,11 @@ static int shmem_reserve_inode(struct super_block *sb, ino_t *inop)
 	if (!(sb->s_flags & SB_KERNMOUNT)) {
 		spin_lock(&sbinfo->stat_lock);
 		if (sbinfo->max_inodes) {
-			if (!sbinfo->free_inodes) {
+			if (sbinfo->free_ispace < BOGO_INODE_SIZE) {
 				spin_unlock(&sbinfo->stat_lock);
 				return -ENOSPC;
 			}
-			sbinfo->free_inodes--;
+			sbinfo->free_ispace -= BOGO_INODE_SIZE;
 		}
 		if (inop) {
 			ino = sbinfo->next_ino++;
@@ -348,12 +352,12 @@ static int shmem_reserve_inode(struct super_block *sb, ino_t *inop)
 	return 0;
 }
 
-static void shmem_free_inode(struct super_block *sb)
+static void shmem_free_inode(struct super_block *sb, size_t freed_ispace)
 {
 	struct shmem_sb_info *sbinfo = SHMEM_SB(sb);
 	if (sbinfo->max_inodes) {
 		spin_lock(&sbinfo->stat_lock);
-		sbinfo->free_inodes++;
+		sbinfo->free_ispace += BOGO_INODE_SIZE + freed_ispace;
 		spin_unlock(&sbinfo->stat_lock);
 	}
 }
@@ -1167,6 +1171,7 @@ static void shmem_evict_inode(struct inode *inode)
 {
 	struct shmem_inode_info *info = SHMEM_I(inode);
 	struct shmem_sb_info *sbinfo = SHMEM_SB(inode->i_sb);
+	size_t freed = 0;
 
 	if (inode->i_mapping->a_ops == &shmem_aops) {
 		shmem_unacct_size(info->flags, inode->i_size);
@@ -1192,9 +1197,9 @@ static void shmem_evict_inode(struct inode *inode)
 		}
 	}
 
-	simple_xattrs_free(&info->xattrs);
+	simple_xattrs_free(&info->xattrs, sbinfo->max_inodes ? &freed : NULL);
+	shmem_free_inode(inode->i_sb, freed);
 	WARN_ON(inode->i_blocks);
-	shmem_free_inode(inode->i_sb);
 	clear_inode(inode);
 }
 
@@ -2363,7 +2368,7 @@ static struct inode *shmem_get_inode(struct super_block *sb, const struct inode 
 
 		lockdep_annotate_inode_mutex_key(inode);
 	} else
-		shmem_free_inode(sb);
+		shmem_free_inode(sb, 0);
 	return inode;
 }
 
@@ -2883,7 +2888,7 @@ static int shmem_statfs(struct dentry *dentry, struct kstatfs *buf)
 	}
 	if (sbinfo->max_inodes) {
 		buf->f_files = sbinfo->max_inodes;
-		buf->f_ffree = sbinfo->free_inodes;
+		buf->f_ffree = sbinfo->free_ispace / BOGO_INODE_SIZE;
 	}
 	/* else leave those fields 0 like simple_statfs */
 	return 0;
@@ -2997,7 +3002,7 @@ static int shmem_unlink(struct inode *dir, struct dentry *dentry)
 	struct inode *inode = d_inode(dentry);
 
 	if (inode->i_nlink > 1 && !S_ISDIR(inode->i_mode))
-		shmem_free_inode(inode->i_sb);
+		shmem_free_inode(inode->i_sb, 0);
 
 	dir->i_size -= BOGO_DIRENT_SIZE;
 	inode->i_ctime = dir->i_ctime = dir->i_mtime = current_time(inode);
@@ -3210,21 +3215,40 @@ static int shmem_initxattrs(struct inode *inode,
 			    void *fs_info)
 {
 	struct shmem_inode_info *info = SHMEM_I(inode);
+	struct shmem_sb_info *sbinfo = SHMEM_SB(inode->i_sb);
 	const struct xattr *xattr;
 	struct simple_xattr *new_xattr;
+	size_t ispace = 0;
 	size_t len;
+
+	if (sbinfo->max_inodes) {
+		for (xattr = xattr_array; xattr->name != NULL; xattr++) {
+			ispace += simple_xattr_space(xattr->name,
+				xattr->value_len + XATTR_SECURITY_PREFIX_LEN);
+		}
+		if (ispace) {
+			spin_lock(&sbinfo->stat_lock);
+			if (sbinfo->free_ispace < ispace)
+				ispace = 0;
+			else
+				sbinfo->free_ispace -= ispace;
+			spin_unlock(&sbinfo->stat_lock);
+			if (!ispace)
+				return -ENOSPC;
+		}
+	}
 
 	for (xattr = xattr_array; xattr->name != NULL; xattr++) {
 		new_xattr = simple_xattr_alloc(xattr->value, xattr->value_len);
 		if (!new_xattr)
-			return -ENOMEM;
+			break;
 
 		len = strlen(xattr->name) + 1;
 		new_xattr->name = kmalloc(XATTR_SECURITY_PREFIX_LEN + len,
-					  GFP_KERNEL);
+					  GFP_KERNEL_ACCOUNT);
 		if (!new_xattr->name) {
 			kvfree(new_xattr);
-			return -ENOMEM;
+			break;
 		}
 
 		memcpy(new_xattr->name, XATTR_SECURITY_PREFIX,
@@ -3233,6 +3257,16 @@ static int shmem_initxattrs(struct inode *inode,
 		       xattr->name, len);
 
 		simple_xattr_list_add(&info->xattrs, new_xattr);
+	}
+
+	if (xattr->name != NULL) {
+		if (ispace) {
+			spin_lock(&sbinfo->stat_lock);
+			sbinfo->free_ispace += ispace;
+			spin_unlock(&sbinfo->stat_lock);
+		}
+		simple_xattrs_free(&info->xattrs, NULL);
+		return -ENOMEM;
 	}
 
 	return 0;
@@ -3255,9 +3289,37 @@ static int shmem_xattr_handler_set(const struct xattr_handler *handler,
 				   size_t size, int flags)
 {
 	struct shmem_inode_info *info = SHMEM_I(inode);
+	struct shmem_sb_info *sbinfo = SHMEM_SB(inode->i_sb);
+	ssize_t removed_size;
+	size_t ispace = 0;
+	int err;
 
 	name = xattr_full_name(handler, name);
-	return simple_xattr_set(&info->xattrs, name, value, size, flags, NULL);
+	if (value && sbinfo->max_inodes) {
+		ispace = simple_xattr_space(name, size);
+		spin_lock(&sbinfo->stat_lock);
+		if (sbinfo->free_ispace < ispace)
+			ispace = 0;
+		else
+			sbinfo->free_ispace -= ispace;
+		spin_unlock(&sbinfo->stat_lock);
+		if (!ispace)
+			return -ENOSPC;
+	}
+
+	err = simple_xattr_set(&info->xattrs, name, value, size, flags,
+			       &removed_size);
+	if (!err) {
+		ispace = 0;
+		if (removed_size >= 0 && sbinfo->max_inodes)
+			ispace = simple_xattr_space(name, removed_size);
+	}
+	if (ispace) {
+		spin_lock(&sbinfo->stat_lock);
+		sbinfo->free_ispace += ispace;
+		spin_unlock(&sbinfo->stat_lock);
+	}
+	return err;
 }
 
 static const struct xattr_handler shmem_security_xattr_handler = {
@@ -3272,6 +3334,12 @@ static const struct xattr_handler shmem_trusted_xattr_handler = {
 	.set = shmem_xattr_handler_set,
 };
 
+static const struct xattr_handler shmem_user_xattr_handler = {
+	.prefix = XATTR_USER_PREFIX,
+	.get = shmem_xattr_handler_get,
+	.set = shmem_xattr_handler_set,
+};
+
 static const struct xattr_handler *shmem_xattr_handlers[] = {
 #ifdef CONFIG_TMPFS_POSIX_ACL
 	&posix_acl_access_xattr_handler,
@@ -3279,6 +3347,7 @@ static const struct xattr_handler *shmem_xattr_handlers[] = {
 #endif
 	&shmem_security_xattr_handler,
 	&shmem_trusted_xattr_handler,
+	&shmem_user_xattr_handler,
 	NULL
 };
 
@@ -3455,7 +3524,7 @@ static int shmem_parse_one(struct fs_context *fc, struct fs_parameter *param)
 		break;
 	case Opt_nr_inodes:
 		ctx->inodes = memparse(param->string, &rest);
-		if (*rest)
+		if (*rest || ctx->inodes > ULONG_MAX / BOGO_INODE_SIZE)
 			goto bad_value;
 		ctx->seen |= SHMEM_SEEN_INODES;
 		break;
@@ -3574,20 +3643,16 @@ static int shmem_parse_options(struct fs_context *fc, void *data)
 
 /*
  * Reconfigure a shmem filesystem.
- *
- * Note that we disallow change from limited->unlimited blocks/inodes while any
- * are in use; but we must separately disallow unlimited->limited, because in
- * that case we have no record of how much is already in use.
  */
 static int shmem_reconfigure(struct fs_context *fc)
 {
 	struct shmem_options *ctx = fc->fs_private;
 	struct shmem_sb_info *sbinfo = SHMEM_SB(fc->root->d_sb);
-	unsigned long inodes;
+	unsigned long used_isp;
 	const char *err;
 
 	spin_lock(&sbinfo->stat_lock);
-	inodes = sbinfo->max_inodes - sbinfo->free_inodes;
+	used_isp = sbinfo->max_inodes * BOGO_INODE_SIZE - sbinfo->free_ispace;
 	if ((ctx->seen & SHMEM_SEEN_BLOCKS) && ctx->blocks) {
 		if (!sbinfo->max_blocks) {
 			err = "Cannot retroactively limit size";
@@ -3604,7 +3669,7 @@ static int shmem_reconfigure(struct fs_context *fc)
 			err = "Cannot retroactively limit inodes";
 			goto out;
 		}
-		if (ctx->inodes < inodes) {
+		if (ctx->inodes * BOGO_INODE_SIZE < used_isp) {
 			err = "Too few inodes for current use";
 			goto out;
 		}
@@ -3624,7 +3689,7 @@ static int shmem_reconfigure(struct fs_context *fc)
 		sbinfo->max_blocks  = ctx->blocks;
 	if (ctx->seen & SHMEM_SEEN_INODES) {
 		sbinfo->max_inodes  = ctx->inodes;
-		sbinfo->free_inodes = ctx->inodes - inodes;
+		sbinfo->free_ispace = ctx->inodes * BOGO_INODE_SIZE - used_isp;
 	}
 
 	/*
@@ -3741,7 +3806,8 @@ static int shmem_fill_super(struct super_block *sb, struct fs_context *fc)
 	sb->s_flags |= SB_NOUSER;
 #endif
 	sbinfo->max_blocks = ctx->blocks;
-	sbinfo->free_inodes = sbinfo->max_inodes = ctx->inodes;
+	sbinfo->max_inodes = ctx->inodes;
+	sbinfo->free_ispace = sbinfo->max_inodes * BOGO_INODE_SIZE;
 	if (sb->s_flags & SB_KERNMOUNT) {
 		sbinfo->ino_batch = alloc_percpu(ino_t);
 		if (!sbinfo->ino_batch)

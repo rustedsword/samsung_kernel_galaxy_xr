@@ -85,6 +85,9 @@ mount with such options, since it allows any user with write access to
 use up all the memory on the machine; but enhances the scalability of
 that instance in a system with many cpus making intensive use of it.
 
+If nr_inodes is not 0, that limited space for inodes is also used up by
+extended attributes: "df -i"'s IUsed and IUse% increase, IFree decreases.
+
 
 tmpfs has a mount option to set the NUMA memory allocation policy for
 all files in that instance (if CONFIG_NUMA is enabled) - which can be

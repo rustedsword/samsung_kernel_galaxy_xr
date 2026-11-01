@@ -91,17 +91,26 @@ static inline void simple_xattrs_init(struct simple_xattrs *xattrs)
 	spin_lock_init(&xattrs->lock);
 }
 
+size_t simple_xattr_space(const char *name, size_t size);
+
 /*
  * free all the xattrs
  */
-static inline void simple_xattrs_free(struct simple_xattrs *xattrs)
+static inline void simple_xattrs_free(struct simple_xattrs *xattrs,
+				      size_t *freed_space)
 {
 	struct simple_xattr *xattr, *node;
 
+	if (freed_space)
+		*freed_space = 0;
 	list_for_each_entry_safe(xattr, node, &xattrs->head, list) {
+		if (freed_space)
+			*freed_space += simple_xattr_space(xattr->name,
+							   xattr->size);
 		kfree(xattr->name);
 		kvfree(xattr);
 	}
+	INIT_LIST_HEAD(&xattrs->head);
 }
 
 struct simple_xattr *simple_xattr_alloc(const void *value, size_t size);

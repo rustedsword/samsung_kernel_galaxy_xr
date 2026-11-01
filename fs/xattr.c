@@ -906,6 +906,26 @@ const char *xattr_full_name(const struct xattr_handler *handler,
 }
 EXPORT_SYMBOL(xattr_full_name);
 
+/**
+ * simple_xattr_space - estimate the memory used by a simple xattr
+ * @name: the full name of the xattr
+ * @size: the size of its value
+ *
+ * This takes no account of how much larger the two slab objects actually are:
+ * that would depend on the slab implementation, when what is required is a
+ * deterministic number, which grows with name length and size and quantity.
+ *
+ * Return: The approximate number of bytes of memory used by such an xattr.
+ */
+size_t simple_xattr_space(const char *name, size_t size)
+{
+	/*
+	 * Use "40" instead of sizeof(struct simple_xattr), to return the
+	 * same result on 32-bit and 64-bit, and even if simple_xattr grows.
+	 */
+	return 40 + size + strlen(name);
+}
+
 /*
  * Allocate new xattr and copy in the value; but leave the name to callers.
  */
@@ -919,7 +939,7 @@ struct simple_xattr *simple_xattr_alloc(const void *value, size_t size)
 	if (len < sizeof(*new_xattr))
 		return NULL;
 
-	new_xattr = kvmalloc(len, GFP_KERNEL);
+	new_xattr = kvmalloc(len, GFP_KERNEL_ACCOUNT);
 	if (!new_xattr)
 		return NULL;
 
@@ -987,7 +1007,7 @@ int simple_xattr_set(struct simple_xattrs *xattrs, const char *name,
 		if (!new_xattr)
 			return -ENOMEM;
 
-		new_xattr->name = kstrdup(name, GFP_KERNEL);
+		new_xattr->name = kstrdup(name, GFP_KERNEL_ACCOUNT);
 		if (!new_xattr->name) {
 			kvfree(new_xattr);
 			return -ENOMEM;
