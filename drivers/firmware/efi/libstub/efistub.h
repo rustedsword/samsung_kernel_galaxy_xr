@@ -274,10 +274,10 @@ union efi_boot_services {
 						    efi_handle_t *);
 		efi_status_t (__efiapi *start_image)(efi_handle_t, unsigned long *,
 						     efi_char16_t **);
-		efi_status_t __noreturn (__efiapi *exit)(efi_handle_t,
-							 efi_status_t,
-							 unsigned long,
-							 efi_char16_t *);
+		efi_status_t (__efiapi *exit)(efi_handle_t,
+					      efi_status_t,
+					      unsigned long,
+					      efi_char16_t *);
 		efi_status_t (__efiapi *unload_image)(efi_handle_t);
 		efi_status_t (__efiapi *exit_boot_services)(efi_handle_t,
 							    unsigned long);
