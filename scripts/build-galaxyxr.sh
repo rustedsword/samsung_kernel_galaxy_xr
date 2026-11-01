@@ -55,9 +55,6 @@ else
     "${kmake[@]}" olddefconfig
 fi
 jobs=${JOBS:-$(getconf _NPROCESSORS_ONLN)}
-if [[ -z ${JOBS:-} ]] && (( jobs > 12 )); then
-    jobs=12
-fi
 if (( $# == 0 )); then
     image=Image
     if grep -qx 'CONFIG_EFI_ZBOOT=y' "$output_dir/.config"; then
