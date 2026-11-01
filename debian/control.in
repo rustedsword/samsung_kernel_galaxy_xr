@@ -19,6 +19,7 @@ Build-Depends:
  python3:native,
  rsync,
  xz-utils,
+ zstd,
 Rules-Requires-Root: no
 Standards-Version: 4.7.4
 Homepage: https://github.com/rustedsword/samsung_kernel_galaxy_xr

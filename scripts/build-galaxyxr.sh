@@ -12,7 +12,8 @@ if [[ ${1:-} == --help ]]; then
     cat <<'EOF'
 Usage: scripts/build-galaxyxr.sh [--check | --configure | make targets...]
 
-Default targets: Image modules dtbs. Existing configurations are preserved.
+Default targets: Image (vmlinuz.efi with CONFIG_EFI_ZBOOT), modules, dtbs.
+Existing configurations are preserved.
 --configure resets the output configuration to galaxyxr_defconfig.
 --check only checks installed build tools and host development headers.
 
@@ -25,7 +26,7 @@ fi
 missing=()
 for tool in make clang clang++ ld.lld llvm-ar llvm-nm llvm-objcopy \
     llvm-objdump llvm-readelf llvm-strip flex bison bc perl python3 \
-    openssl pkg-config rsync tar xz gzip awk sed find; do
+    openssl pkg-config rsync tar xz gzip zstd awk sed find; do
     command -v "$tool" >/dev/null || missing+=("$tool")
 done
 if (( ${#missing[@]} )); then
@@ -58,6 +59,10 @@ if [[ -z ${JOBS:-} ]] && (( jobs > 12 )); then
     jobs=12
 fi
 if (( $# == 0 )); then
-    set -- Image modules dtbs
+    image=Image
+    if grep -qx 'CONFIG_EFI_ZBOOT=y' "$output_dir/.config"; then
+        image=vmlinuz.efi
+    fi
+    set -- "$image" modules dtbs
 fi
 exec "${kmake[@]}" "-j$jobs" "$@"

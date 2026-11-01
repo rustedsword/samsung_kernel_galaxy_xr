@@ -69,7 +69,11 @@ if (( ! remove )); then
         CROSS_COMPILE=aarch64-linux-gnu- INSTALL_MOD_PATH="$stage/usr" \
         INSTALL_MOD_STRIP=1 DEPMOD=true modules_install
     rm "$modules/build" "$modules/source"
-    install -m 644 "$output_dir/arch/arm64/boot/Image" "$modules/vmlinuz"
+    image=Image
+    if grep -qx 'CONFIG_EFI_ZBOOT=y' "$output_dir/.config"; then
+        image=vmlinuz.efi
+    fi
+    install -m 644 "$output_dir/arch/arm64/boot/$image" "$modules/vmlinuz"
     cp "$source_dir"/Documentation/galaxyxr/samsung-build/modules.{list,vendor_blocklist}.anorak "$modules/"
     mkdir -p "$trees/vendor/qcom" "$trees/samsung/xrvst2"
     cp "$source_dir/debian/cmdline" "$trees/"
