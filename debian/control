@@ -31,16 +31,12 @@ Architecture: arm64
 Depends: kmod, ${misc:Depends}
 Recommends: linux-firmware
 Description: Linux 5.10.240-1-lightofmysoul-galaxyxr for the Samsung Galaxy XR
- The kernel as a plain arm64 Image, which XrBoot starts through its
- EFI stub, its modules, the Galaxy XR device trees (the base trees and
- the board overlays XrBoot builds the tree from) and the options the
- kernel needs on its command line.
+ Based on the original I610UES3AZJ2 firmware kernel sources with
+ various fixes and improvements.
 
 Package: linux-image-galaxyxr
 Architecture: arm64
 Depends: linux-image-5.10.240-1-lightofmysoul-galaxyxr (= ${binary:Version}), galaxyxr-initramfs-android-crap, linux-firmware,
  xrboot-kernel-install, ${misc:Depends}
-Description: Linux for the Samsung Galaxy XR (the newest kernel)
- Depends on the newest Galaxy XR kernel, on xrboot-kernel-install,
- which puts it on XRBOOT, on galaxyxr-initramfs-android-crap and on
- linux-firmware, and blacklists the modules of Samsung's vendor blocklist.
+Description: Linux for the Samsung Galaxy XR (meta)
+ Depends on the latest Galaxy XR kernel and supporting packages.
