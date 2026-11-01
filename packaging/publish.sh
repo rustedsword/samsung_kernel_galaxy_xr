@@ -54,7 +54,7 @@ upload that changes the kernel.
   -h, --help         Show this help.
 
 The artifacts, and the packages of --test-build, stay in out/publish/.
-TEST_BUILD_JOBS sets its parallel jobs (default: up to 12). The host
+TEST_BUILD_JOBS sets its parallel jobs (default: all CPUs). The host
 needs podman, git and gpg.
 EOF
 }
@@ -139,9 +139,6 @@ base=${BASH_REMATCH[1]}
 revision=${BASH_REMATCH[3]}
 
 jobs=${TEST_BUILD_JOBS:-$(getconf _NPROCESSORS_ONLN)}
-if [ -z "${TEST_BUILD_JOBS:-}" ] && [ "$jobs" -gt 12 ]; then
-    jobs=12
-fi
 
 gnupg=
 cleanup() {

@@ -6,7 +6,7 @@ set -euo pipefail
 llvm_revision=7a941dfb2877a0b8cf30323fefa85ad019e0b0f5
 source_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
 tools_dir=${GALAXYXR_TOOLS_DIR:-"$source_dir/.tools"}
-jobs=${JOBS:-8}
+jobs=${JOBS:-$(getconf _NPROCESSORS_ONLN)}
 
 if [[ ${1:-} == --help ]]; then
     cat <<'EOF'
