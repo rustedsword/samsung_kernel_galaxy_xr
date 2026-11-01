@@ -26,17 +26,17 @@ Homepage: https://github.com/rustedsword/samsung_kernel_galaxy_xr
 Vcs-Browser: https://github.com/rustedsword/samsung_kernel_galaxy_xr
 Vcs-Git: https://github.com/rustedsword/samsung_kernel_galaxy_xr.git -b I610UES3AZJ2_fixed
 
-Package: linux-image-5.10.240-1-lightofmysoul-galaxyxr
+Package: linux-image-5.10.240-2-lightofmysoul-galaxyxr
 Architecture: arm64
 Depends: kmod, ${misc:Depends}
 Recommends: linux-firmware
-Description: Linux 5.10.240-1-lightofmysoul-galaxyxr for the Samsung Galaxy XR
+Description: Linux 5.10.240-2-lightofmysoul-galaxyxr for the Samsung Galaxy XR
  Based on the original I610UES3AZJ2 firmware kernel sources with
  various fixes and improvements.
 
 Package: linux-image-galaxyxr
 Architecture: arm64
-Depends: linux-image-5.10.240-1-lightofmysoul-galaxyxr (= ${binary:Version}), galaxyxr-initramfs-android-crap, linux-firmware,
+Depends: linux-image-5.10.240-2-lightofmysoul-galaxyxr (= ${binary:Version}), galaxyxr-initramfs-android-crap, linux-firmware,
  xrboot-kernel-install, ${misc:Depends}
 Description: Linux for the Samsung Galaxy XR (meta)
  Depends on the latest Galaxy XR kernel and supporting packages.
