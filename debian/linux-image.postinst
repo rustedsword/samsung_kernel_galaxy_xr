@@ -1,0 +1,12 @@
+#!/bin/sh
+set -e
+
+version=${DPKG_MAINTSCRIPT_PACKAGE#linux-image-}
+
+if [ "$1" = configure ]; then
+	linux-run-hooks image postinst "$version" "/boot/vmlinuz-$version" -- "$@"
+fi
+
+#DEBHELPER#
+
+exit 0

@@ -66,9 +66,11 @@ say "lintian"
 lintian --display-info "$changes"
 
 if [ "$TEST_BUILD" -eq 1 ]; then
+    build_args=(-a arm64 -b -us -uc)
+    [ "$(dpkg --print-architecture)" = arm64 ] || build_args+=(-Pcross)
     # The extracted package, not the tree: dpkg-source leaves files out of the tarball Launchpad builds
     say "Building the arm64 packages from the source package ($TEST_BUILD_JOBS jobs)"
-    (cd "$WORK/extracted" && DEB_BUILD_OPTIONS="parallel=$TEST_BUILD_JOBS" dpkg-buildpackage -a arm64 -b -us -uc)
+    (cd "$WORK/extracted" && DEB_BUILD_OPTIONS="parallel=$TEST_BUILD_JOBS" dpkg-buildpackage "${build_args[@]}")
     say "lintian on the packages"
     lintian --fail-on none "$WORK/${SOURCE}_${VERSION}_arm64.changes"
 fi

@@ -1,0 +1,13 @@
+#!/bin/sh
+set -e
+
+version=${DPKG_MAINTSCRIPT_PACKAGE#linux-modules-}
+
+if [ "$1" = remove ] || [ "$1" = purge ]; then
+	rm -f /usr/lib/modules/"$version"/modules.*
+	rmdir /usr/lib/modules/"$version" 2>/dev/null || true
+fi
+
+#DEBHELPER#
+
+exit 0

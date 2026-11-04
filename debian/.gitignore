@@ -4,4 +4,7 @@
 /files
 /*.substvars
 /*.debhelper.log
-/linux-image-*/
+/linux-galaxyxr/
+/linux-image-*
+/linux-modules-*
+/linux-headers-*

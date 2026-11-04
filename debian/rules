@@ -11,6 +11,8 @@ ABI := $(shell echo '$(DEB_VERSION)' | sed -E 's/^[0-9]+\.[0-9]+\.[0-9]+\.([0-9]
 SUFFIX := $(shell sed -n 's/^CONFIG_LOCALVERSION="\(.*\)"$$/\1/p' arch/arm64/configs/galaxyxr_defconfig)
 RELEASE := $(KERNEL)-$(ABI)$(SUFFIX)
 IMAGE := debian/linux-image-$(RELEASE)
+MODULES := debian/linux-modules-$(RELEASE)
+HEADERS := debian/linux-headers-$(RELEASE)
 ifneq ($(KERNEL).$(ABI),$(firstword $(subst ~, ,$(DEB_VERSION))))
 $(error debian/changelog: the version must be $(KERNEL).ABI~YY.MM.N, not $(DEB_VERSION))
 endif
@@ -25,13 +27,16 @@ KMAKE := $(MAKE) O=$(OUT) ARCH=arm64 LLVM=1 LLVM_IAS=1 LOCALVERSION=-$(ABI)$(SUF
 	KBUILD_BUILD_VERSION=$(DEB_VERSION) KBUILD_BUILD_TIMESTAMP='$(shell date -u -d @$(SOURCE_DATE_EPOCH))'
 ifneq ($(DEB_BUILD_GNU_TYPE),$(DEB_HOST_GNU_TYPE))
 KMAKE += CROSS_COMPILE=$(DEB_HOST_GNU_TYPE)-
+ifeq ($(filter cross,$(DEB_BUILD_PROFILES)),)
+$(error cross builds need the cross build profile (-Pcross): linux-headers can only be built natively)
+endif
 endif
 
 %:
 	dh $@
 
 override_dh_auto_clean:
-	rm -rf $(OUT)
+	rm -rf $(OUT) $(IMAGE).* $(MODULES).* $(HEADERS).*
 	sed 's/@RELEASE@/$(RELEASE)/g' debian/control.in > debian/control
 
 override_dh_auto_configure:
@@ -43,23 +48,44 @@ override_dh_auto_build:
 	$(KMAKE) -j$(or $(DEB_BUILD_OPTION_PARALLEL),1) $(VMLINUZ) modules dtbs
 	test "$$(cat $(OUT)/include/config/kernel.release)" = $(RELEASE)
 
-override_dh_auto_test override_dh_strip override_dh_dwz:
+override_dh_auto_test override_dh_dwz:
+
+override_dh_strip:
+	dh_strip --no-automatic-dbgsym
 
 override_dh_auto_install:
 	install -D -m 0644 $(OUT)/arch/arm64/boot/$(VMLINUZ) $(IMAGE)/boot/vmlinuz-$(RELEASE)
-	install -m 0644 $(OUT)/System.map $(IMAGE)/boot/System.map-$(RELEASE)
-	install -m 0644 $(OUT)/.config $(IMAGE)/boot/config-$(RELEASE)
-	$(KMAKE) INSTALL_MOD_PATH=$(CURDIR)/$(IMAGE)/usr INSTALL_MOD_STRIP=1 modules_install
-	cd $(IMAGE)/usr/lib/modules/$(RELEASE) && rm -f build source $(DEPMOD_FILES)
-	install -m 0644 $(MODULE_LISTS)/modules.list.anorak $(MODULE_LISTS)/modules.vendor_blocklist.anorak \
-		$(IMAGE)/usr/lib/modules/$(RELEASE)/
-	install -d debian/linux-image-galaxyxr/usr/lib/modprobe.d
-	awk '$$1 == "blocklist" && !seen[$$2]++ { print "blacklist", $$2 }' \
-		$(MODULE_LISTS)/modules.vendor_blocklist.anorak \
-		> debian/linux-image-galaxyxr/usr/lib/modprobe.d/linux-image-galaxyxr.conf
 	install -D -m 0644 debian/cmdline $(IMAGE)/usr/lib/linux-image-$(RELEASE)/cmdline
 	set -e; for dir in $(DT_DIRS); do \
 		install -d $(IMAGE)/usr/lib/linux-image-$(RELEASE)/$$dir; \
 		find $(OUT)/arch/arm64/boot/dts/$$dir -maxdepth 1 \( -name '*.dtb' -o -name '*.dtbo' \) \
 			-exec install -m 0644 -t $(IMAGE)/usr/lib/linux-image-$(RELEASE)/$$dir {} +; \
 	done
+	install -D -m 0644 $(OUT)/System.map $(MODULES)/boot/System.map-$(RELEASE)
+	install -m 0644 $(OUT)/.config $(MODULES)/boot/config-$(RELEASE)
+	$(KMAKE) INSTALL_MOD_PATH=$(CURDIR)/$(MODULES)/usr INSTALL_MOD_STRIP=1 modules_install
+	cd $(MODULES)/usr/lib/modules/$(RELEASE) && rm -f build source $(DEPMOD_FILES)
+	install -m 0644 $(MODULE_LISTS)/modules.list.anorak $(MODULE_LISTS)/modules.vendor_blocklist.anorak \
+		$(MODULES)/usr/lib/modules/$(RELEASE)/
+	install -d $(MODULES)/usr/lib/modprobe.d
+	awk '$$1 == "blocklist" && !seen[$$2]++ { print "blacklist", $$2 }' \
+		$(MODULE_LISTS)/modules.vendor_blocklist.anorak \
+		> $(MODULES)/usr/lib/modprobe.d/blacklist_linux_$(RELEASE).conf
+ifeq ($(filter cross,$(DEB_BUILD_PROFILES)),)
+	install -d $(HEADERS)/usr/src/linux-headers-$(RELEASE) $(HEADERS)/usr/lib/modules/$(RELEASE)
+	{ find . arch/arm64 techpack -maxdepth 1 -name 'Makefile*' -o -name Kbuild; \
+		find include scripts -type f -o -type l; \
+		find $$(find arch/arm64 -name include -o -name scripts -type d) -type f; } \
+		| tar -c -T - -f - | tar -x -C $(HEADERS)/usr/src/linux-headers-$(RELEASE) -f -
+	cd $(OUT) && find .config Module.symvers arch/arm64/include include scripts -type f \
+		| tar -c -T - -f - | tar -x -C $(CURDIR)/$(HEADERS)/usr/src/linux-headers-$(RELEASE) -f -
+	find $(HEADERS)/usr/src -type f \( -name '*.h' -o -path '*/scripts/atomic/*' ! -name '*.sh' \) \
+		-exec chmod 0644 {} +
+	ln -s ../../../src/linux-headers-$(RELEASE) $(HEADERS)/usr/lib/modules/$(RELEASE)/build
+endif
+
+override_dh_installdeb:
+	set -e; for file in debian/linux-image.* debian/linux-modules.* debian/linux-headers.*; do \
+		cp $$file $${file%.*}-$(RELEASE).$${file##*.}; \
+	done
+	dh_installdeb
