@@ -1,3 +1,10 @@
+linux-galaxyxr (5.10.240.5~26.10.1) stonking; urgency=medium
+
+  * Make USB host properly working by setting
+    CONFIG_DISABLE_LOCKSCREEN_USB_RESTRICTION=y.
+
+ -- Stanislav Aleksandrov <lightofmysoul@gmail.com>  Wed, 04 Nov 2026 22:23:37 +0000
+
 linux-galaxyxr (5.10.240.4~26.10.1) stonking; urgency=medium
 
   * Split the package into linux-image, linux-modules and linux-headers,
