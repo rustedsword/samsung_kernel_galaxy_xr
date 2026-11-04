@@ -1,3 +1,11 @@
+linux-galaxyxr (5.10.240.4~26.10.1) stonking; urgency=medium
+
+  * Split the package into linux-image, linux-modules and linux-headers,
+    like Ubuntu's kernels; add linux-headers-galaxyxr and linux-galaxyxr.
+  * Run the kernel hooks of /usr/share/kernel too (linux-run-hooks).
+
+ -- Stanislav Aleksandrov <lightofmysoul@gmail.com>  Wed, 04 Nov 2026 12:47:51 +0000
+
 linux-galaxyxr (5.10.240.3~26.10.1) stonking; urgency=medium
 
   * Build i2c-dev (/dev/i2c-*) as a module.
