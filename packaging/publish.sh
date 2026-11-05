@@ -175,6 +175,8 @@ builder_image() {
 
 run_dir=$TREE/out/publish/$SOURCE-$base-$(date -u +%Y%m%dT%H%M%SZ)
 mkdir -p -- "$run_dir/work"
+# Keep the kernel build on the output filesystem, not the container layer.
+install -d -m 1777 -- "$run_dir/work/tmp"
 if [ -n "$status" ]; then
     {
         git -C "$TREE" ls-files -z --cached -- . ':(exclude)packaging'
@@ -189,7 +191,8 @@ for series in "${SELECTED_SERIES[@]}"; do
     builder_image "$series" "$image"
     say "Building $SOURCE $base for $series"
     podman "${container_args[@]}" \
-        -v "$run_dir/work:/work:ro" -v "$run_dir:/out" -v "$PACKAGING_DIR:/packaging:ro" \
+        -v "$run_dir/work:/work:ro" -v "$run_dir/work/tmp:/tmp" \
+        -v "$run_dir:/out" -v "$PACKAGING_DIR:/packaging:ro" \
         -e "SOURCE=$SOURCE" -e "SERIES=$series" -e "VERSION=$base~${UBUNTU_VERSIONS[$series]}.$revision" \
         -e "PPA_REMOTE=$PPA_REMOTE" -e "GPG_KEY=$GPG_KEY" -e "UNSIGNED=$UNSIGNED" -e "NO_UPLOAD=$NO_UPLOAD" \
         -e "TEST_BUILD=$TEST_BUILD" -e "TEST_BUILD_JOBS=$jobs" \

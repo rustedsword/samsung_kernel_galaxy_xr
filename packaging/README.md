@@ -5,6 +5,8 @@ HEAD) for `ppa:lightofmysoul/gxr` in an Ubuntu image of each series
 with podman (`Containerfile`, rebuilt when it or `debian/control`
 changes), checks them (checksums, signatures, extraction, lintian) and
 uploads them with dput (`inside-container.sh`); Launchpad builds them.
+Temporary build files also live under `out/publish/`, so space for the
+kernel build is needed on that filesystem rather than in container storage.
 
 - `--test-build` first builds the packages from the source package,
   natively on arm64 or cross on a PC; they stay in `out/publish/` for
