@@ -124,3 +124,11 @@ sec_upload_cause.ko
 sec_qc_debug.ko
 sec_qc_dbg_partition.ko
 sec_qc_param.ko
+gpi.ko
+eud.ko
+phy-msm-ssusb-qmp.ko
+phy-msm-snps-hs.ko
+dwc3-msm.ko
+pdic_s2mm006.ko
+usb_notifier_qcom.ko
+i2c-msm-geni.ko
