@@ -1,3 +1,14 @@
+linux-galaxyxr (5.10.240.6~26.10.1) stonking; urgency=medium
+
+  * Fix a kernel panic in "ip link" after USB role switches (a use-after-free
+    of the NCM gadget's parent).
+  * Wi-Fi starts without userspace signals, takes its MAC from wlan_mac.bin
+    and recovers its firmware by default.
+  * The first stage also loads the USB host and Type-C modules, to boot from
+    a USB stick.
+
+ -- Stanislav Aleksandrov <lightofmysoul@gmail.com>  Thu, 05 Nov 2026 18:27:37 +0000
+
 linux-galaxyxr (5.10.240.5~26.10.1) stonking; urgency=medium
 
   * Make USB host properly working by setting
