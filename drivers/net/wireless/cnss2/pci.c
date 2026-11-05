@@ -2887,13 +2887,11 @@ static void cnss_wlan_reg_driver_work(struct work_struct *work)
 {
 	struct cnss_plat_data *plat_priv =
 	container_of(work, struct cnss_plat_data, wlan_reg_driver_work.work);
-	struct cnss_pci_data *pci_priv = plat_priv->bus_priv;
 	struct cnss_cal_info *cal_info;
 	unsigned int timeout;
 
-	if ((test_bit(CNSS_COLD_BOOT_CAL_DONE, &plat_priv->driver_state) ||
-	     !plat_priv->cbc_enabled) &&
-	    test_bit(CNSS_FS_READY, &plat_priv->driver_state)) {
+	if (test_bit(CNSS_COLD_BOOT_CAL_DONE, &plat_priv->driver_state) ||
+	    !plat_priv->cbc_enabled) {
 		goto reg_driver;
 	} else {
 		if (plat_priv->charger_mode) {
@@ -2904,7 +2902,7 @@ static void cnss_wlan_reg_driver_work(struct work_struct *work)
 			      &plat_priv->driver_state)) {
 			timeout = cnss_get_timeout(plat_priv,
 						   CNSS_TIMEOUT_CALIBRATION);
-			cnss_pr_dbg("File system not ready to start calibration. Wait for %ds..\n",
+			cnss_pr_dbg("Calibration has not started. Wait for %ds..\n",
 				    timeout / 1000);
 			schedule_delayed_work(&plat_priv->wlan_reg_driver_work,
 					      msecs_to_jiffies(timeout));
@@ -2931,10 +2929,12 @@ reg_driver:
 		return;
 	}
 	reinit_completion(&plat_priv->power_up_complete);
+	/* Calibration handlers cancel this work from the event queue. Do not
+	 * wait for that same queue while they may be waiting for us.
+	 */
 	cnss_driver_event_post(plat_priv,
 			       CNSS_DRIVER_EVENT_REGISTER_DRIVER,
-			       CNSS_EVENT_SYNC_UNKILLABLE,
-			       pci_priv->driver_ops);
+			       0, NULL);
 }
 
 int cnss_wlan_register_driver(struct cnss_wlan_driver *driver_ops)
@@ -2943,7 +2943,6 @@ int cnss_wlan_register_driver(struct cnss_wlan_driver *driver_ops)
 	struct cnss_plat_data *plat_priv = cnss_bus_dev_to_plat_priv(NULL);
 	struct cnss_pci_data *pci_priv;
 	const struct pci_device_id *id_table = driver_ops->id_table;
-	unsigned int timeout;
 
 	if (!cnss_check_driver_loading_allowed()) {
 		cnss_pr_info("No cnss2 dtsi entry present");
@@ -2998,31 +2997,6 @@ int cnss_wlan_register_driver(struct cnss_wlan_driver *driver_ops)
 	}
 
 	cnss_get_driver_mode_update_fw_name(plat_priv);
-	set_bit(CNSS_DRIVER_REGISTER, &plat_priv->driver_state);
-
-	if ((!plat_priv->cbc_enabled ||
-	     test_bit(CNSS_COLD_BOOT_CAL_DONE, &plat_priv->driver_state)) &&
-	    test_bit(CNSS_FS_READY, &plat_priv->driver_state))
-		goto register_driver;
-
-	pci_priv->driver_ops = driver_ops;
-	/* If Cold Boot Calibration is enabled, it is the 1st step in init
-	 * sequence.CBC is done on file system_ready trigger. Qcacld will be
-	 * loaded from vendor_modprobe.sh at early boot and must be deferred
-	 * until CBC is complete
-	 */
-	timeout = cnss_get_timeout(plat_priv, CNSS_TIMEOUT_CALIBRATION);
-	INIT_DELAYED_WORK(&plat_priv->wlan_reg_driver_work,
-			  cnss_wlan_reg_driver_work);
-	schedule_delayed_work(&plat_priv->wlan_reg_driver_work,
-			      msecs_to_jiffies(timeout));
-	if (plat_priv->cbc_enabled)
-		cnss_pr_info("WLAN register driver deferred for Calibration\n");
-	else
-		cnss_pr_info("WLAN register driver deferred for FS Ready\n");
-
-	return 0;
-register_driver:
 	reinit_completion(&plat_priv->power_up_complete);
 	ret = cnss_driver_event_post(plat_priv,
 				     CNSS_DRIVER_EVENT_REGISTER_DRIVER,
@@ -3087,17 +3061,42 @@ int cnss_pci_register_driver_hdlr(struct cnss_pci_data *pci_priv,
 {
 	int ret = 0;
 	struct cnss_plat_data *plat_priv = pci_priv->plat_priv;
+	unsigned int timeout;
 
 	if (test_bit(CNSS_IN_REBOOT, &plat_priv->driver_state)) {
 		cnss_pr_dbg("Reboot or shutdown is in progress, ignore register driver\n");
 		return -EINVAL;
 	}
 
-	set_bit(CNSS_DRIVER_LOADING, &plat_priv->driver_state);
+	/* Deferred work can race with unregister. Resolve the saved driver only
+	 * on the event queue, where unregister clears the registration state.
+	 */
+	if (!data) {
+		if (!test_bit(CNSS_DRIVER_REGISTER, &plat_priv->driver_state))
+			return -ECANCELED;
+		data = pci_priv->driver_ops;
+	} else if (pci_priv->driver_ops) {
+		return -EEXIST;
+	}
+
 	pci_priv->driver_ops = data;
+	set_bit(CNSS_DRIVER_REGISTER, &plat_priv->driver_state);
+
+	/* Serialize this decision with calibration start and completion. */
+	if (plat_priv->cbc_enabled &&
+	    !test_bit(CNSS_COLD_BOOT_CAL_DONE, &plat_priv->driver_state)) {
+		timeout = cnss_get_timeout(plat_priv, CNSS_TIMEOUT_CALIBRATION);
+		schedule_delayed_work(&plat_priv->wlan_reg_driver_work,
+				      msecs_to_jiffies(timeout));
+		cnss_pr_info("WLAN register driver deferred for Calibration\n");
+		return 0;
+	}
+
+	set_bit(CNSS_DRIVER_LOADING, &plat_priv->driver_state);
 
 	ret = cnss_pci_dev_powerup(pci_priv);
 	if (ret) {
+		clear_bit(CNSS_DRIVER_REGISTER, &plat_priv->driver_state);
 		clear_bit(CNSS_DRIVER_LOADING, &plat_priv->driver_state);
 		pci_priv->driver_ops = NULL;
 	} else {
@@ -3115,6 +3114,8 @@ int cnss_pci_unregister_driver_hdlr(struct cnss_pci_data *pci_priv)
 		return -EINVAL;
 
 	plat_priv = pci_priv->plat_priv;
+	clear_bit(CNSS_DRIVER_REGISTER, &plat_priv->driver_state);
+	cancel_delayed_work_sync(&plat_priv->wlan_reg_driver_work);
 	set_bit(CNSS_DRIVER_UNLOADING, &plat_priv->driver_state);
 	cnss_pci_dev_shutdown(pci_priv);
 	pci_priv->driver_ops = NULL;
@@ -5801,6 +5802,8 @@ static int cnss_pci_probe(struct pci_dev *pci_dev,
 	plat_priv->device_id = pci_dev->device;
 	plat_priv->bus_priv = pci_priv;
 	mutex_init(&pci_priv->bus_lock);
+	INIT_DELAYED_WORK(&plat_priv->wlan_reg_driver_work,
+			  cnss_wlan_reg_driver_work);
 	if (plat_priv->use_pm_domain)
 		dev->pm_domain = &cnss_pm_domain;
 

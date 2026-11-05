@@ -33,7 +33,6 @@
 #define CNSS_DUMP_NAME			"CNSS_WLAN"
 #define CNSS_DUMP_DESC_SIZE		0x1000
 #define CNSS_DUMP_SEG_VER		0x1
-#define FILE_SYSTEM_READY		1
 #define FW_READY_TIMEOUT		20000
 #define FW_ASSERT_TIMEOUT		5000
 #define CNSS_EVENT_PENDING		2989
@@ -108,7 +107,6 @@ enum driver_modules_status current_driver_status = DRIVER_MODULES_UNINITIALIZED;
 char ver_info[512] = {0,};
 char softap_info[512] = {0,};
 int dump_in_progress = 0;
-#define MACLOADER_TIMEOUT      10000
 #endif /* CONFIG_SEC_SS_CNSS_FEATURE_SYSFS */
 
 static void cnss_set_plat_priv(struct platform_device *plat_dev,
@@ -2066,13 +2064,6 @@ static int cnss_cold_boot_cal_start_hdlr(struct cnss_plat_data *plat_priv)
 	int ret = 0;
 	u32 retry = 0, timeout;
 
-#ifdef CONFIG_SEC_SS_CNSS_FEATURE_SYSFS
-	if (!wait_for_completion_timeout(
-				&plat_priv->macloader_done,
-				msecs_to_jiffies(MACLOADER_TIMEOUT)))
-		cnss_pr_info("macloader_done timeout\n");
-#endif /* CONFIG_SEC_SS_CNSS_FEATURE_SYSFS */
-
 	if (test_bit(CNSS_COLD_BOOT_CAL_DONE, &plat_priv->driver_state)) {
 		cnss_pr_dbg("Calibration complete. Ignore calibration req\n");
 		goto out;
@@ -3426,30 +3417,11 @@ static ssize_t shutdown_store(struct device *dev,
 	return count;
 }
 
-static ssize_t fs_ready_store(struct device *dev,
-			      struct device_attribute *attr,
-			      const char *buf, size_t count)
+static int cnss_start_cold_boot_cal(struct cnss_plat_data *plat_priv)
 {
-	int fs_ready = 0;
-	struct cnss_plat_data *plat_priv = dev_get_drvdata(dev);
-
-	if (sscanf(buf, "%du", &fs_ready) != 1)
-		return -EINVAL;
-
-	cnss_pr_dbg("File system is ready, fs_ready is %d, count is %zu\n",
-		    fs_ready, count);
-
-	if (!plat_priv) {
-		cnss_pr_err("plat_priv is NULL\n");
-		return count;
-	}
-
-	set_bit(CNSS_FS_READY, &plat_priv->driver_state);
-
-	if (test_bit(QMI_BYPASS, &plat_priv->ctrl_params.quirks)) {
-		cnss_pr_dbg("QMI is bypassed\n");
-		return count;
-	}
+	if (!plat_priv->cbc_enabled ||
+	    test_bit(QMI_BYPASS, &plat_priv->ctrl_params.quirks))
+		return 0;
 
 	switch (plat_priv->device_id) {
 	case QCA6290_DEVICE_ID:
@@ -3459,22 +3431,21 @@ static ssize_t fs_ready_store(struct device *dev,
 	case MANGO_DEVICE_ID:
 		break;
 	default:
-		cnss_pr_err("Not supported for device ID 0x%lx\n",
-			    plat_priv->device_id);
-		return count;
+		return 0;
 	}
 
-	if (fs_ready == FILE_SYSTEM_READY && plat_priv->cbc_enabled) {
-		cnss_driver_event_post(plat_priv,
-				       CNSS_DRIVER_EVENT_COLD_BOOT_CAL_START,
-				       0, NULL);
+	return cnss_driver_event_post(plat_priv,
+				      CNSS_DRIVER_EVENT_COLD_BOOT_CAL_START,
+				      0, NULL);
+}
 
-	} else if (test_bit(CNSS_DRIVER_REGISTER, &plat_priv->driver_state)) {
-		cnss_pr_dbg("Schedule WLAN driver load from FS Ready\n");
-		if (cancel_delayed_work_sync(&plat_priv->wlan_reg_driver_work))
-			schedule_delayed_work(&plat_priv->wlan_reg_driver_work,
-					      0);
-	}
+static ssize_t fs_ready_store(struct device *dev,
+			      struct device_attribute *attr,
+			      const char *buf, size_t count)
+{
+	/* Compatibility with userspace that still sends readiness notifications.
+	 * Startup is now driven by probe and calibration completion.
+	 */
 	return count;
 }
 
@@ -3671,7 +3642,6 @@ static ssize_t store_mac_addr(struct kobject *kobj,
 			mac_from_macloader[2], mac_from_macloader[5]);
 
 	cnss_utils_set_wlan_mac_address(mac_from_macloader, MAC_ADDR_SIZE);
-	complete(&plat_env->macloader_done);
 
 	return count;
 }
@@ -3892,7 +3862,6 @@ static int cnss_create_sysfs(struct cnss_plat_data *plat_priv)
 	cnss_create_sysfs_link(plat_priv);
 #ifdef CONFIG_SEC_SS_CNSS_FEATURE_SYSFS
 	sec_create_wifi_sysfs(plat_priv);
-	init_completion(&plat_priv->macloader_done);
 #endif /* CONFIG_SEC_SS_CNSS_FEATURE_SYSFS */
 
 	return 0;
@@ -3905,7 +3874,6 @@ static void cnss_remove_sysfs(struct cnss_plat_data *plat_priv)
 	cnss_remove_sysfs_link(plat_priv);
 #ifdef CONFIG_SEC_SS_CNSS_FEATURE_SYSFS
 	sec_remove_wifi_sysfs(plat_priv);
-	complete_all(&plat_priv->macloader_done);
 #endif /* CONFIG_SEC_SS_CNSS_FEATURE_SYSFS */
 	devm_device_remove_group(&plat_priv->plat_dev->dev, &cnss_attr_group);
 }
@@ -4032,6 +4000,7 @@ static void cnss_init_time_sync_period_default(struct cnss_plat_data *plat_priv)
 static void cnss_init_control_params(struct cnss_plat_data *plat_priv)
 {
 	plat_priv->ctrl_params.quirks = CNSS_QUIRKS_DEFAULT;
+	plat_priv->recovery_enabled = true;
 
 	plat_priv->cbc_enabled = !IS_ENABLED(CONFIG_CNSS_EMULATION) &&
 		of_property_read_bool(plat_priv->plat_dev->dev.of_node,
@@ -4431,6 +4400,12 @@ retry:
 			}
 			goto power_off;
 		}
+
+		ret = cnss_start_cold_boot_cal(plat_priv);
+		if (ret) {
+			cnss_bus_deinit(plat_priv);
+			goto power_off;
+		}
 	}
 
 	cnss_register_coex_service(plat_priv);
@@ -4580,3 +4555,4 @@ module_exit(cnss_exit);
 
 MODULE_LICENSE("GPL v2");
 MODULE_DESCRIPTION("CNSS2 Platform Driver");
+MODULE_SOFTDEP("post: wlan");

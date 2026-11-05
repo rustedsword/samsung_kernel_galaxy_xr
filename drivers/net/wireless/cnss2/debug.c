@@ -161,9 +161,6 @@ static int cnss_stats_show_state(struct seq_file *s,
 		case CNSS_DRIVER_REGISTER:
 			seq_puts(s, "DRIVER_REGISTERED");
 			continue;
-		case CNSS_FS_READY:
-			seq_puts(s, "FS_READY");
-			continue;
 		case CNSS_DRIVER_REGISTERED:
 			seq_puts(s, "DRIVER REGISTERED");
 			continue;

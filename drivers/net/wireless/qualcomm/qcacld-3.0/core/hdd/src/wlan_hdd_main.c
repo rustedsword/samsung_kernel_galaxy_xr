@@ -2559,9 +2559,8 @@ static void hdd_update_tgt_vht_cap(struct hdd_context *hdd_ctx,
  * hdd_generate_macaddr_auto() - Auto-generate mac address
  * @hdd_ctx: Pointer to the HDD context
  *
- * Auto-generate mac address using device serial number.
- * Keep the first 3 bytes of OUI as before and replace
- * the last 3 bytes with the lower 3 bytes of serial number.
+ * Generate a locally administered address using the lower three bytes of
+ * the device serial number.
  *
  * Return: 0 for success
  *         Non zero failure code for errors
@@ -2570,7 +2569,7 @@ static int hdd_generate_macaddr_auto(struct hdd_context *hdd_ctx)
 {
 	unsigned int serialno = 0;
 	struct qdf_mac_addr mac_addr = {
-		{0x00, 0x0A, 0xF5, 0x00, 0x00, 0x00}
+		{0x02, 0x0A, 0xF5, 0x00, 0x00, 0x00}
 	};
 
 	serialno = pld_socinfo_get_serial_number(hdd_ctx->parent_dev);
@@ -17067,6 +17066,15 @@ static int hdd_platform_wlan_mac(struct hdd_context *hdd_ctx)
 		return -EINVAL;
 	}
 
+	for (iter = 0; iter < no_of_mac_addr; iter++) {
+		struct qdf_mac_addr mac;
+
+		qdf_mem_copy(mac.bytes, addr + iter * mac_addr_size,
+			     mac_addr_size);
+		if (qdf_is_macaddr_zero(&mac) || qdf_is_macaddr_group(&mac))
+			return -EINVAL;
+	}
+
 	hdd_free_mac_address_lists(hdd_ctx);
 
 	if (no_of_mac_addr > max_mac_addr)
@@ -17177,15 +17185,17 @@ static int hdd_initialize_mac_address(struct hdd_context *hdd_ctx)
 	}
 
 	hdd_info("using default MAC address");
+	hdd_free_mac_address_lists(hdd_ctx);
 
 	/* Use fw provided MAC */
-	if (!qdf_is_macaddr_zero(&hdd_ctx->hw_macaddr)) {
+	if (!qdf_is_macaddr_zero(&hdd_ctx->hw_macaddr) &&
+	    !qdf_is_macaddr_group(&hdd_ctx->hw_macaddr)) {
 		hdd_update_macaddr(hdd_ctx, hdd_ctx->hw_macaddr, false);
 		return 0;
 	} else if (hdd_generate_macaddr_auto(hdd_ctx) != 0) {
 		struct qdf_mac_addr mac_addr;
 
-		hdd_err("MAC failure from device serial no.");
+		hdd_info("using a random locally administered MAC address");
 		qdf_get_random_bytes(&mac_addr, sizeof(mac_addr));
 		/*
 		 * Reset multicast bit (bit-0) and set

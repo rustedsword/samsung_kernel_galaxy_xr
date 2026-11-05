@@ -312,7 +312,6 @@ enum cnss_driver_state {
 	CNSS_DAEMON_CONNECTED,
 	CNSS_PCI_PROBE_DONE,
 	CNSS_DRIVER_REGISTER,
-	CNSS_FS_READY,
 	CNSS_DRIVER_REGISTERED = 25,
 };
 
@@ -569,7 +568,6 @@ struct cnss_plat_data {
 #ifdef CONFIG_SEC_SS_CNSS_FEATURE_SYSFS
 	u8 dump_mode;
 	struct kobject *wifi_kobj;
-	struct completion macloader_done;
 #endif /* CONFIG_SEC_SS_CNSS_FEATURE_SYSFS */
 	u16 hang_event_data_len;
 	u32 hang_data_addr_offset;

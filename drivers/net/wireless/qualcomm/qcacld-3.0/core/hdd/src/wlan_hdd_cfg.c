@@ -25,6 +25,7 @@
 
 /* Include Files */
 
+#include <linux/etherdevice.h>
 #include <linux/firmware.h>
 #include <linux/string.h>
 #include <wlan_hdd_includes.h>
@@ -155,52 +156,28 @@ static QDF_STATUS update_mac_from_string(struct hdd_context *hdd_ctx,
 					 struct hdd_cfg_entry *mac_table,
 					 int num)
 {
-	int i = 0, j = 0, res = 0;
-	char *candidate = NULL;
+	int i, j;
 	struct qdf_mac_addr macaddr[QDF_MAX_CONCURRENCY_PERSONA];
-	QDF_STATUS status = QDF_STATUS_SUCCESS;
-
-	memset(macaddr, 0, sizeof(macaddr));
 
 	for (i = 0; i < num; i++) {
-		candidate = mac_table[i].value;
-		for (j = 0; j < QDF_MAC_ADDR_SIZE; j++) {
-			res =
-				hex2bin(&macaddr[i].bytes[j], &candidate[(j << 1)],
-					1);
-			if (res < 0)
-				break;
-		}
-		if (res == 0 && !qdf_is_macaddr_zero(&macaddr[i])) {
-			qdf_mem_copy((uint8_t *)&hdd_ctx->
-				     provisioned_mac_addr[i].bytes[0],
-				     (uint8_t *) &macaddr[i].bytes[0],
-				     QDF_MAC_ADDR_SIZE);
-		} else {
-			status = QDF_STATUS_E_FAILURE;
-			break;
-		}
-	}
-	return status;
-}
+		if (hex2bin(macaddr[i].bytes, mac_table[i].value,
+			    QDF_MAC_ADDR_SIZE) ||
+		    !is_valid_ether_addr(macaddr[i].bytes))
+			return QDF_STATUS_E_INVAL;
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 18, 0))
-static inline
-int hdd_firmware_request_nowarn(const struct firmware **fw,
-				const char *name,
-				struct device *device)
-{
-	return firmware_request_nowarn(fw, name, device);
+		for (j = 0; j < i; j++)
+			if (ether_addr_equal(macaddr[i].bytes, macaddr[j].bytes))
+				return QDF_STATUS_E_INVAL;
+	}
+
+	/* Do not leave a partially parsed address list on fallback. */
+	hdd_free_mac_address_lists(hdd_ctx);
+	for (i = 0; i < num; i++)
+		qdf_mem_copy(hdd_ctx->provisioned_mac_addr[i].bytes,
+			     macaddr[i].bytes, QDF_MAC_ADDR_SIZE);
+
+	return QDF_STATUS_SUCCESS;
 }
-#else
-static inline
-int hdd_firmware_request_nowarn(const struct firmware **fw,
-				const char *name,
-				struct device *device)
-{
-	return request_firmware(fw, name, device);
-}
-#endif
 
 /**
  * hdd_update_mac_config() - update MAC address from cfg file
@@ -230,8 +207,9 @@ QDF_STATUS hdd_update_mac_config(struct hdd_context *hdd_ctx)
 	}
 
 	memset(mac_table, 0, sizeof(mac_table));
-	status = hdd_firmware_request_nowarn(&fw, WLAN_MAC_FILE,
-					     hdd_ctx->parent_dev);
+	/* MAC provisioning is optional; never wait for a userspace helper. */
+	status = request_firmware_direct(&fw, WLAN_MAC_FILE,
+					 hdd_ctx->parent_dev);
 	if (status) {
 		/*
 		 * request_firmware "fails" if the file is not found, which is a
