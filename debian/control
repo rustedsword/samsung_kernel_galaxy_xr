@@ -26,30 +26,30 @@ Homepage: https://github.com/rustedsword/samsung_kernel_galaxy_xr
 Vcs-Browser: https://github.com/rustedsword/samsung_kernel_galaxy_xr
 Vcs-Git: https://github.com/rustedsword/samsung_kernel_galaxy_xr.git -b I610UES3AZJ2_fixed
 
-Package: linux-image-5.10.240-6-lightofmysoul-galaxyxr
+Package: linux-image-5.10.240-7-lightofmysoul-galaxyxr
 Architecture: arm64
 Pre-Depends: linux-base (>= 4.15)
-Depends: linux-modules-5.10.240-6-lightofmysoul-galaxyxr (= ${binary:Version}), ${misc:Depends}
+Depends: linux-modules-5.10.240-7-lightofmysoul-galaxyxr (= ${binary:Version}), ${misc:Depends}
 Recommends: linux-firmware
-Suggests: linux-headers-5.10.240-6-lightofmysoul-galaxyxr
-Description: Linux 5.10.240-6-lightofmysoul-galaxyxr for the Samsung Galaxy XR
+Suggests: linux-headers-5.10.240-7-lightofmysoul-galaxyxr
+Description: Linux 5.10.240-7-lightofmysoul-galaxyxr for the Samsung Galaxy XR
  Based on the original I610UES3AZJ2 firmware kernel sources with
  various fixes and improvements.
 
-Package: linux-modules-5.10.240-6-lightofmysoul-galaxyxr
+Package: linux-modules-5.10.240-7-lightofmysoul-galaxyxr
 Architecture: arm64
 Depends: kmod, ${misc:Depends}
-Description: Linux 5.10.240-6-lightofmysoul-galaxyxr modules for the Samsung Galaxy XR
+Description: Linux 5.10.240-7-lightofmysoul-galaxyxr modules for the Samsung Galaxy XR
  The kernel modules, System.map and config.
 
-Package: linux-headers-5.10.240-6-lightofmysoul-galaxyxr
+Package: linux-headers-5.10.240-7-lightofmysoul-galaxyxr
 Build-Profiles: <!cross>
 Architecture: arm64
 Section: devel
 Depends: linux-base (>= 4.15), ${shlibs:Depends}, ${misc:Depends}
 Recommends: clang, lld, llvm
 Provides: linux-headers
-Description: Linux 5.10.240-6-lightofmysoul-galaxyxr headers for the Samsung Galaxy XR
+Description: Linux 5.10.240-7-lightofmysoul-galaxyxr headers for the Samsung Galaxy XR
  Headers and tools to build modules for the kernel, with LLVM=1.
 
 Package: linux-galaxyxr
@@ -61,7 +61,7 @@ Description: Complete Linux for the Samsung Galaxy XR (metapackage)
 
 Package: linux-image-galaxyxr
 Architecture: arm64
-Depends: linux-image-5.10.240-6-lightofmysoul-galaxyxr (= ${binary:Version}), linux-modules-5.10.240-6-lightofmysoul-galaxyxr (= ${binary:Version}),
+Depends: linux-image-5.10.240-7-lightofmysoul-galaxyxr (= ${binary:Version}), linux-modules-5.10.240-7-lightofmysoul-galaxyxr (= ${binary:Version}),
  galaxyxr-initramfs-android-crap, linux-firmware, xrboot-kernel-install, ${misc:Depends}
 Description: Linux for the Samsung Galaxy XR (metapackage)
  Depends on the latest Galaxy XR kernel and supporting packages.
@@ -70,6 +70,6 @@ Package: linux-headers-galaxyxr
 Build-Profiles: <!cross>
 Architecture: arm64
 Section: devel
-Depends: linux-headers-5.10.240-6-lightofmysoul-galaxyxr (= ${binary:Version}), ${misc:Depends}
+Depends: linux-headers-5.10.240-7-lightofmysoul-galaxyxr (= ${binary:Version}), ${misc:Depends}
 Description: Linux headers for the Samsung Galaxy XR (metapackage)
  Depends on the headers of the latest Galaxy XR kernel.
