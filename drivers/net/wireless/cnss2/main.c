@@ -1415,8 +1415,12 @@ static int cnss_init_dev_sol_gpio(struct cnss_plat_data *plat_priv)
 	gpio_direction_input(sol_gpio->dev_sol_gpio);
 	sol_gpio->dev_sol_irq = gpio_to_irq(sol_gpio->dev_sol_gpio);
 
+	/* cnss_power_on_device() and cnss_power_off_device() enable and
+	 * disable this IRQ, so do not enable it here.
+	 */
 	ret = request_irq(sol_gpio->dev_sol_irq, cnss_dev_sol_handler,
-			  IRQF_TRIGGER_FALLING, "wlan_dev_sol_irq", plat_priv);
+			  IRQF_TRIGGER_FALLING | IRQF_NO_AUTOEN,
+			  "wlan_dev_sol_irq", plat_priv);
 	if (ret) {
 		cnss_pr_err("Failed to request device SOL IRQ, err = %d\n", ret);
 		goto free_gpio;
