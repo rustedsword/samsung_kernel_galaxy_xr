@@ -1386,7 +1386,11 @@ static irqreturn_t cnss_dev_sol_handler(int irq, void *data)
 	cnss_pm_relax(plat_priv);
 	pm_system_wakeup();
 
-	cnss_bus_handle_dev_sol_irq(plat_priv);
+	/* The IRQ is enabled at device power-on, before PCI probe sets up
+	 * the state that SOL handling uses.
+	 */
+	if (test_bit(CNSS_PCI_PROBE_DONE, &plat_priv->driver_state))
+		cnss_bus_handle_dev_sol_irq(plat_priv);
 
 	return IRQ_HANDLED;
 }
