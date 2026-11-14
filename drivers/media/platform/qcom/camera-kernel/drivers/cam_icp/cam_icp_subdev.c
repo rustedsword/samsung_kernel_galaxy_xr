@@ -13,6 +13,7 @@
 #include <linux/timer.h>
 #include <linux/platform_device.h>
 #include <linux/videodev2.h>
+#include <linux/workqueue.h>
 #include <media/v4l2-fh.h>
 #include <media/v4l2-device.h>
 #include <media/v4l2-event.h>
@@ -42,6 +43,12 @@ struct cam_icp_subdev {
 	struct mutex icp_lock;
 	int32_t open_cnt;
 	int32_t reserved;
+};
+
+struct cam_icp_open_work {
+	struct work_struct work;
+	struct cam_hw_mgr_intf *hw_mgr_intf;
+	int rc;
 };
 
 static struct cam_icp_subdev g_icp_dev;
@@ -80,10 +87,19 @@ static void cam_icp_dev_mini_dump_cb(void *priv, void *args)
 	cam_context_mini_dump_from_hw(ctx, args);
 }
 
+static void cam_icp_subdev_open_worker(struct work_struct *work)
+{
+	struct cam_icp_open_work *open_work =
+		container_of(work, struct cam_icp_open_work, work);
+	struct cam_hw_mgr_intf *hw_mgr_intf = open_work->hw_mgr_intf;
+
+	open_work->rc = hw_mgr_intf->hw_open(hw_mgr_intf->hw_mgr_priv, NULL);
+}
+
 static int cam_icp_subdev_open(struct v4l2_subdev *sd,
 	struct v4l2_subdev_fh *fh)
 {
-	struct cam_hw_mgr_intf *hw_mgr_intf = NULL;
+	struct cam_icp_open_work open_work;
 	struct cam_node *node = v4l2_get_subdevdata(sd);
 	int rc = 0;
 
@@ -102,8 +118,18 @@ static int cam_icp_subdev_open(struct v4l2_subdev *sd,
 		goto end;
 	}
 
-	hw_mgr_intf = &node->hw_mgr_intf;
-	rc = hw_mgr_intf->hw_open(hw_mgr_intf->hw_mgr_priv, NULL);
+	/*
+	 * Firmware lookups from ->open() share the outer path walk's symlink
+	 * count. Loading split firmware can exhaust that count even when each
+	 * path has only a few symlinks. Use a worker with no outer path walk,
+	 * and wait so initialization and errors remain synchronous with open.
+	 */
+	open_work.hw_mgr_intf = &node->hw_mgr_intf;
+	INIT_WORK_ONSTACK(&open_work.work, cam_icp_subdev_open_worker);
+	schedule_work(&open_work.work);
+	flush_work(&open_work.work);
+	destroy_work_on_stack(&open_work.work);
+	rc = open_work.rc;
 	if (rc < 0) {
 		CAM_ERR(CAM_ICP, "FW download failed");
 		goto end;
