@@ -1,3 +1,11 @@
+linux-galaxyxr (5.10.240.9~26.10.1) stonking; urgency=medium
+
+  * Fix camera ICP firmware loading failing with ELOOP when firmware paths
+    contain symlinks. Run initialization in a worker so the split firmware
+    files do not share the device open's symlink limit.
+
+ -- Stanislav Aleksandrov <lightofmysoul@gmail.com>  Sat, 14 Nov 2026 16:13:11 +0000
+
 linux-galaxyxr (5.10.240.8~26.10.1) stonking; urgency=medium
 
   * Fix a Wi-Fi driver warning at every boot ("Unbalanced enable for IRQ"),
