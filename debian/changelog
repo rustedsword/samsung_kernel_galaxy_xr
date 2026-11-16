@@ -1,3 +1,14 @@
+linux-galaxyxr (5.10.240.10~26.10.1) stonking; urgency=medium
+
+  * Power USB devices that are attached at boot. Drop the USB notifier's
+    10 second boot delay: it skipped the Type-C VBUS booster, so a USB
+    drive plugged in at boot was never powered and could not be the root.
+  * linux-image-galaxyxr recommends linux-firmware instead of depending on
+    it: the Galaxy XR's own firmware comes from galaxyxr-firmware, so small
+    systems can leave out the firmware for other hardware.
+
+ -- Stanislav Aleksandrov <lightofmysoul@gmail.com>  Mon, 16 Nov 2026 13:32:42 +0000
+
 linux-galaxyxr (5.10.240.9~26.10.1) stonking; urgency=medium
 
   * Fix camera ICP firmware loading failing with ELOOP when firmware paths

@@ -62,7 +62,8 @@ Description: Complete Linux for the Samsung Galaxy XR (metapackage)
 Package: linux-image-galaxyxr
 Architecture: arm64
 Depends: linux-image-@RELEASE@ (= ${binary:Version}), linux-modules-@RELEASE@ (= ${binary:Version}),
- galaxyxr-initramfs-android-crap, linux-firmware, xrboot-kernel-install, ${misc:Depends}
+ galaxyxr-initramfs-android-crap, xrboot-kernel-install, ${misc:Depends}
+Recommends: linux-firmware
 Description: Linux for the Samsung Galaxy XR (metapackage)
  Depends on the latest Galaxy XR kernel and supporting packages.
 
