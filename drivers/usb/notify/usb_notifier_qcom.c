@@ -517,7 +517,7 @@ static struct otg_notify sec_otg_notify = {
 	.is_host_wakelock = 0,
 	.is_wakelock = 1,
 	.unsupport_host = 0,	
-	.booting_delay_sec = 10,
+	.booting_delay_sec = 0,
 #if !IS_ENABLED(CONFIG_PDIC_NOTIFIER)
 	.auto_drive_vbus = NOTIFY_OP_PRE,
 #endif
