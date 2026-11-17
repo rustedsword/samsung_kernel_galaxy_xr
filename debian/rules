@@ -88,4 +88,5 @@ override_dh_installdeb:
 	set -e; for file in debian/linux-image.* debian/linux-modules.* debian/linux-headers.*; do \
 		cp $$file $${file%.*}-$(RELEASE).$${file##*.}; \
 	done
+	echo 'interest linux-update-$(RELEASE)' > $(IMAGE).triggers
 	dh_installdeb

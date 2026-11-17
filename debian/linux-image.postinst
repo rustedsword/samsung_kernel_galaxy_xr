@@ -2,10 +2,23 @@
 set -e
 
 version=${DPKG_MAINTSCRIPT_PACKAGE#linux-image-}
+pending=/usr/lib/linux/triggers/$version
 
-if [ "$1" = configure ]; then
-	linux-run-hooks image postinst "$version" "/boot/vmlinuz-$version" -- "$@"
-fi
+# The hooks run from the trigger, after the rest of the dpkg run
+# (dracut, xrboot-kernel-install) is configured
+case $1 in
+	configure)
+		mkdir -p "${pending%/*}"
+		echo "$*" > "$pending"
+		dpkg-trigger --no-await "linux-update-$version"
+		;;
+	triggered)
+		if [ -f "$pending" ]; then
+			linux-run-hooks image postinst "$version" "/boot/vmlinuz-$version" -- $(cat "$pending")
+			rm -f "$pending"
+		fi
+		;;
+esac
 
 #DEBHELPER#
 

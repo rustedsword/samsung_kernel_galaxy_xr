@@ -3,6 +3,8 @@ set -e
 
 version=${DPKG_MAINTSCRIPT_PACKAGE#linux-image-}
 
+rm -f "/usr/lib/linux/triggers/$version"
+
 if command -v linux-run-hooks > /dev/null; then
 	linux-run-hooks image postrm "$version" "/boot/vmlinuz-$version" -- "$@"
 fi
