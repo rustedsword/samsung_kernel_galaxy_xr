@@ -1,3 +1,13 @@
+linux-galaxyxr (5.10.240.11~26.10.1) stonking; urgency=medium
+
+  * Run the kernel install hooks from a dpkg trigger, at the end of the
+    dpkg run: installed in the same run, dracut and xrboot-kernel-install
+    were not configured yet when the hooks ran.
+  * Fix a kernel panic when unloading the sec_qc_qcom_reboot_reason or
+    sec_qc_qcom_wdt_core module (a NULL dereference of its driver data).
+
+ -- Stanislav Aleksandrov <lightofmysoul@gmail.com>  Tue, 17 Nov 2026 11:33:25 +0000
+
 linux-galaxyxr (5.10.240.10~26.10.1) stonking; urgency=medium
 
   * Power USB devices that are attached at boot. Drop the USB notifier's
