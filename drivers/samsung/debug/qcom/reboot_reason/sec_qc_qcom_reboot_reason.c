@@ -352,6 +352,7 @@ static int __qc_reboot_reason_probe(struct platform_device *pdev,
 {
 	struct device *dev = &pdev->dev;
 	struct qc_reboot_reason_drvdata *drvdata;
+	int err;
 
 	drvdata = devm_kzalloc(dev, sizeof(*drvdata), GFP_KERNEL);
 	if (!drvdata)
@@ -359,7 +360,13 @@ static int __qc_reboot_reason_probe(struct platform_device *pdev,
 
 	drvdata->bd.dev = dev;
 
-	return sec_director_probe_dev(&drvdata->bd, builder, n);
+	err = sec_director_probe_dev(&drvdata->bd, builder, n);
+	if (err)
+		return err;
+
+	platform_set_drvdata(pdev, drvdata);
+
+	return 0;
 }
 
 static int __qc_reboot_reason_remove(struct platform_device *pdev,
