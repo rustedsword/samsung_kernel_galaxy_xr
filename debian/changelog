@@ -1,3 +1,17 @@
+linux-galaxyxr (5.10.240.12~26.10.1) stonking; urgency=medium
+
+  * Keep the EFI zboot image's .data section in the file: systemd-stub
+    does not zero a section without file data, so the decompressor failed
+    when the kernel was started from a unified kernel image.
+  * Add a complete device tree per board revision,
+    anorakp-samsung-xrvst2-rev22.dtb and -rev25.dtb: the base tree with
+    the board overlay applied, "samsung,xrvst2-revNN" as the first
+    compatible, and the nodes the Android bootloader adds at boot. They
+    are what a unified kernel image carries; xrboot-kernel-install 4
+    builds one from them.
+
+ -- Stanislav Aleksandrov <lightofmysoul@gmail.com>  Wed, 18 Nov 2026 17:28:46 +0000
+
 linux-galaxyxr (5.10.240.11~26.10.1) stonking; urgency=medium
 
   * Run the kernel install hooks from a dpkg trigger, at the end of the
