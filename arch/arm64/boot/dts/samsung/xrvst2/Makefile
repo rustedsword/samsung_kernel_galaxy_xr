@@ -19,6 +19,11 @@ $(addprefix $(obj)/,$(SEC_ANORAK_BASE_DTB)): | $(obj)/$(QCOM_DTB)
 $(obj)/$(QCOM_DTB):
 	@mkdir -p $@
 
+# Complete trees per board revision, written by scripts/merge-galaxyxr-dts.sh
+dtb-$(CONFIG_ARCH_ANORAK) += \
+		anorakp-samsung-xrvst2-rev22.dtb \
+		anorakp-samsung-xrvst2-rev25.dtb
+
 ifeq ($(CONFIG_BUILD_ARM64_DT_OVERLAY),y)
 
 SEC_XRVST2_USA_OPEN_DTBO := \
