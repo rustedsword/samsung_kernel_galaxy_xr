@@ -32,6 +32,7 @@ Pre-Depends: linux-base (>= 4.15)
 Depends: linux-modules-@RELEASE@ (= ${binary:Version}), ${misc:Depends}
 Recommends: linux-firmware
 Suggests: linux-headers-@RELEASE@
+Breaks: xrboot-kernel-install (<< 4~)
 Description: Linux @RELEASE@ for the Samsung Galaxy XR
  Based on the original I610UES3AZJ2 firmware kernel sources with
  various fixes and improvements.
