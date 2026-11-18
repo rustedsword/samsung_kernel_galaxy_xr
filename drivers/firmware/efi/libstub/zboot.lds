@@ -23,6 +23,8 @@ SECTIONS
 
 	.data : ALIGN(4096) {
 		*(.data* .init.data*)
+		/* systemd-stub does not zero a section without file data */
+		BYTE(0)
 		_edata = ALIGN(512);
 		. = _edata;
 	}
