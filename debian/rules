@@ -18,7 +18,7 @@ $(error debian/changelog: the version must be $(KERNEL).ABI~YY.MM.N, not $(DEB_V
 endif
 OUT := $(CURDIR)/debian/build
 VMLINUZ = $(if $(shell grep -x CONFIG_EFI_ZBOOT=y $(OUT)/.config),vmlinuz.efi,Image)
-DT_DIRS := vendor/qcom samsung/xrvst2
+BOARD_TREES := samsung/xrvst2/anorakp-samsung-xrvst2-rev*.dtb
 MODULE_LISTS := Documentation/galaxyxr/samsung-build
 DEPMOD_FILES := $(addprefix modules.,alias alias.bin builtin.alias.bin builtin.bin dep dep.bin devname softdep \
 	symbols symbols.bin weakdep)
@@ -56,11 +56,8 @@ override_dh_strip:
 override_dh_auto_install:
 	install -D -m 0644 $(OUT)/arch/arm64/boot/$(VMLINUZ) $(IMAGE)/boot/vmlinuz-$(RELEASE)
 	install -D -m 0644 debian/cmdline $(IMAGE)/usr/lib/linux-image-$(RELEASE)/cmdline
-	set -e; for dir in $(DT_DIRS); do \
-		install -d $(IMAGE)/usr/lib/linux-image-$(RELEASE)/$$dir; \
-		find $(OUT)/arch/arm64/boot/dts/$$dir -maxdepth 1 \( -name '*.dtb' -o -name '*.dtbo' \) \
-			-exec install -m 0644 -t $(IMAGE)/usr/lib/linux-image-$(RELEASE)/$$dir {} +; \
-	done
+	install -D -m 0644 -t $(IMAGE)/usr/lib/linux-image-$(RELEASE)/$(dir $(BOARD_TREES)) \
+		$(OUT)/arch/arm64/boot/dts/$(BOARD_TREES)
 	install -D -m 0644 $(OUT)/System.map $(MODULES)/boot/System.map-$(RELEASE)
 	install -m 0644 $(OUT)/.config $(MODULES)/boot/config-$(RELEASE)
 	$(KMAKE) INSTALL_MOD_PATH=$(CURDIR)/$(MODULES)/usr INSTALL_MOD_STRIP=1 modules_install

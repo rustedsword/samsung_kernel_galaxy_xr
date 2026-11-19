@@ -33,7 +33,8 @@ raise N to rebuild the same kernel.
 
 Like Ubuntu's kernels:
 
-- `linux-image-RELEASE`: the kernel, its command line and device trees.
+- `linux-image-RELEASE`: the kernel, its command line and one complete
+  device tree per board revision.
 - `linux-modules-RELEASE`: the modules, `System.map` and the config.
 - `linux-headers-RELEASE`: what building modules needs
   (`/usr/lib/modules/RELEASE/build`); build them with `LLVM=1`, as DKMS
