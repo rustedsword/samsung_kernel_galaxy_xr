@@ -1,3 +1,12 @@
+linux-galaxyxr (5.10.240.13~26.10.1) stonking; urgency=medium
+
+  * linux-image ships only the complete device tree of each board
+    revision, anorakp-samsung-xrvst2-rev22.dtb and -rev25.dtb. The base
+    trees and the board overlays are gone: nothing merges them at boot
+    any more.
+
+ -- Stanislav Aleksandrov <lightofmysoul@gmail.com>  Thu, 19 Nov 2026 14:42:55 +0000
+
 linux-galaxyxr (5.10.240.12~26.10.1) stonking; urgency=medium
 
   * Keep the EFI zboot image's .data section in the file: systemd-stub
